@@ -4,6 +4,7 @@ import { SyncPayload } from '../utils/syncManager';
 import { ALL_BADGES } from '../data/aimaBookData';
 import { soundFX } from '../utils/soundEffects';
 import confetti from 'canvas-confetti';
+import { syncScholarToSupabase } from '../utils/supabaseClient';
 
 interface ProgressContextType {
   stats: UserStats;
@@ -136,9 +137,18 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, []);
 
-  // Save to localStorage
+  // Save to localStorage and sync to Supabase in background
   useEffect(() => {
     localStorage.setItem('aima_user_stats', JSON.stringify(stats));
+    try {
+      const savedUser = localStorage.getItem('aima_user_profile');
+      if (savedUser) {
+        const user = JSON.parse(savedUser);
+        if (user && user.name) {
+          syncScholarToSupabase(user, stats);
+        }
+      }
+    } catch {}
   }, [stats]);
 
   useEffect(() => {
