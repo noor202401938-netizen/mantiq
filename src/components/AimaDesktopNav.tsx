@@ -160,30 +160,52 @@ export const AimaDesktopNav: React.FC<AimaDesktopNavProps> = ({
             </div>
 
             {isGuest ? (
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  soundFX.playClick();
-                  openSignIn();
-                }}
-                style={{
-                  padding: '4px 8px',
-                  borderRadius: '8px',
-                  background: 'var(--quest-accent)',
-                  color: '#13211C',
-                  fontSize: '11px',
-                  fontWeight: 800,
-                  border: 'none',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px'
-                }}
-                title="Sign in or register"
-              >
-                <LogIn size={12} /> Sign In
-              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    soundFX.playClick();
+                    openSignIn();
+                  }}
+                  style={{
+                    padding: '4px 8px',
+                    borderRadius: '8px',
+                    background: 'var(--quest-accent)',
+                    color: '#13211C',
+                    fontSize: '11px',
+                    fontWeight: 800,
+                    border: 'none',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}
+                  title="Sign in or register"
+                >
+                  <LogIn size={12} /> Sign In
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    soundFX.playClick();
+                    logout();
+                  }}
+                  style={{
+                    padding: '4px 6px',
+                    borderRadius: '6px',
+                    background: 'transparent',
+                    color: 'var(--quest-text-muted)',
+                    fontSize: '11px',
+                    border: 'none',
+                    cursor: 'pointer'
+                  }}
+                  title="Return to Welcome Screen"
+                >
+                  <LogOut size={14} />
+                </button>
+              </div>
             ) : (
               <button
                 type="button"
