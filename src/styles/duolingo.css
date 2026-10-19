@@ -40,8 +40,8 @@
   --duo-text-black: #111827;
   --duo-text-muted: #777777;
 
-  --duo-font-display: 'Bricolage Grotesque', 'Feather Bold', -apple-system, sans-serif;
-  --duo-font-body: 'DM Sans', -apple-system, sans-serif;
+  --duo-font-display: 'Newsreader', Georgia, 'Times New Roman', serif;
+  --duo-font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --duo-font-mono: 'Fira Code', monospace;
 }
 

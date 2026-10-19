@@ -10,8 +10,8 @@
    ========================================================================== */
 
 :root {
-  --quest-font-heading: 'Bricolage Grotesque', -apple-system, sans-serif;
-  --quest-font-body: 'DM Sans', -apple-system, sans-serif;
+  --quest-font-heading: 'Newsreader', Georgia, 'Times New Roman', serif;
+  --quest-font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
   /* Color Tokens - Light */
   --quest-bg: #F3F5EF;

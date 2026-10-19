@@ -8,13 +8,14 @@
     <meta name="theme-color" content="#090d16" />
     <link rel="manifest" href="./manifest.json" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..900;1,14..32,300..900&family=Newsreader:ital,opsz,wght@0,6..72,300..800;1,6..72,300..800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script>
-      // Service worker: only register in production builds; unregister on localhost to avoid stale cache
+      // Service worker management: update immediately to prevent stale caches
       if ('serviceWorker' in navigator) {
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
           navigator.serviceWorker.getRegistrations().then((registrations) => {
@@ -25,10 +26,19 @@
         } else {
           window.addEventListener('load', () => {
             navigator.serviceWorker.register('./sw.js').then((reg) => {
-              console.log('AIMA PWA Service Worker registered:', reg.scope);
+              reg.update();
             }).catch((err) => {
-              console.log('AIMA PWA Service Worker registration failed:', err);
+              console.warn('SW registration:', err);
             });
+          });
+
+          // Reload once when new service worker takes over
+          let refreshing = false;
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (!refreshing) {
+              refreshing = true;
+              window.location.reload();
+            }
           });
         }
       }
