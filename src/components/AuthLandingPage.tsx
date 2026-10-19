@@ -5,7 +5,8 @@ import {
   Sun,
   Moon,
   AlertCircle,
-  CheckCircle2
+  CheckCircle2,
+  GraduationCap
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -124,44 +125,79 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({ onContinueAsGu
         minHeight: '100vh',
         width: '100%',
         position: 'relative',
-        backgroundColor: isDark ? '#0D1612' : '#FAF8F2',
-        backgroundImage: isDark
-          ? 'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)'
-          : 'linear-gradient(#E8E4DA 1px, transparent 1px), linear-gradient(90deg, #E8E4DA 1px, transparent 1px)',
-        backgroundSize: '28px 28px',
-        color: isDark ? '#F3F5EF' : '#13211C',
-        fontFamily: "'Inter', sans-serif",
+        backgroundColor: 'var(--quest-bg, #F3F5EF)',
+        color: 'var(--quest-text-primary, #13211C)',
+        fontFamily: 'var(--quest-font-body, "Inter", sans-serif)',
         display: 'flex',
         flexDirection: 'column',
         boxSizing: 'border-box',
-        overflowX: 'hidden'
+        overflowX: 'hidden',
+        transition: 'background-color 0.25s ease, color 0.25s ease'
       }}
     >
-      {/* Notebook Red Margin Line */}
+      {/* Subtle App Watermark Pattern */}
       <div
         style={{
           position: 'absolute',
-          top: 0,
-          bottom: 0,
-          left: 'clamp(30px, 6vw, 90px)',
-          width: '2px',
-          backgroundColor: isDark ? 'rgba(226, 109, 85, 0.35)' : '#E26D55',
-          zIndex: 1,
-          pointerEvents: 'none'
+          inset: 0,
+          backgroundImage: isDark
+            ? 'radial-gradient(rgba(201, 242, 107, 0.04) 1px, transparent 1px)'
+            : 'radial-gradient(rgba(19, 33, 28, 0.05) 1px, transparent 1px)',
+          backgroundSize: '24px 24px',
+          pointerEvents: 'none',
+          zIndex: 1
         }}
       />
 
-      {/* Top Bar with working Theme Toggle */}
+      {/* Top Bar with Brand Badge & Theme Toggle */}
       <header
         style={{
           display: 'flex',
-          justifyContent: 'flex-end',
+          justifyContent: 'space-between',
           alignItems: 'center',
-          padding: '20px clamp(24px, 5vw, 48px)',
+          padding: '24px clamp(24px, 5vw, 60px)',
           position: 'relative',
           zIndex: 10
         }}
       >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div
+            style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: '12px',
+              background: 'var(--quest-accent, #C9F26B)',
+              color: '#13211C',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 900,
+              fontSize: '20px',
+              fontFamily: 'var(--quest-font-heading, "Newsreader", serif)',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
+            }}
+          >
+            M
+          </div>
+          <div>
+            <div
+              style={{
+                fontFamily: 'var(--quest-font-heading, "Newsreader", serif)',
+                fontSize: '19px',
+                fontWeight: 900,
+                lineHeight: 1.1,
+                letterSpacing: '-0.02em',
+                color: 'var(--quest-text-primary, #13211C)'
+              }}
+            >
+              Mantiq
+            </div>
+            <div style={{ fontSize: '11px', color: 'var(--quest-text-muted, #7E9084)', fontWeight: 600 }}>
+              Let's have some Mantiq about AI
+            </div>
+          </div>
+        </div>
+
         <button
           type="button"
           onClick={() => {
@@ -174,19 +210,19 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({ onContinueAsGu
             gap: '8px',
             padding: '8px 14px',
             borderRadius: '12px',
-            background: isDark ? '#18251F' : '#FFFFFF',
-            border: isDark ? '1px solid #2B3D34' : '1px solid #D8D4C8',
-            color: isDark ? '#C9F26B' : '#13211C',
+            background: 'var(--quest-card-bg, #FFFFFF)',
+            border: '1px solid var(--quest-border, #E2E6DD)',
+            color: isDark ? 'var(--quest-accent, #C9F26B)' : 'var(--quest-text-primary, #13211C)',
             fontSize: '13px',
             fontWeight: 700,
             cursor: 'pointer',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
             transition: 'all 0.15s ease'
           }}
           title={isDark ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
         >
           {isDark ? <Sun size={16} /> : <Moon size={16} />}
-          <span>{isDark ? 'Light Paper' : 'Dark Grid'}</span>
+          <span>{isDark ? 'Light Theme' : 'Dark Theme'}</span>
         </button>
       </header>
 
@@ -197,63 +233,62 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({ onContinueAsGu
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: '20px clamp(24px, 6vw, 72px) 60px',
+          padding: '16px clamp(24px, 5vw, 64px) 56px',
           position: 'relative',
           zIndex: 2
         }}
       >
         <div
           style={{
-            maxWidth: '1080px',
+            maxWidth: '1060px',
             width: '100%',
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
-            gap: 'clamp(36px, 6vw, 80px)',
+            gap: 'clamp(36px, 5vw, 72px)',
             flexWrap: 'wrap'
           }}
         >
-          {/* Left Column: Hand-drawn Book Illustration & Brand Notes */}
+          {/* Left Column: Hand-drawn Book Illustration & Brand Hero */}
           <div
             style={{
               flex: '1 1 420px',
-              maxWidth: '520px',
-              paddingLeft: 'clamp(10px, 2vw, 30px)'
+              maxWidth: '520px'
             }}
           >
-            {/* Hand-drawn Open Book Icon */}
-            <div style={{ marginBottom: '16px' }}>
-              <svg width="138" height="104" viewBox="0 0 138 104" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {/* Textbook Open Illustration with Citron Lime Highlighter & Emerald Checkmark */}
+            <div style={{ marginBottom: '20px' }}>
+              <svg width="140" height="104" viewBox="0 0 140 104" fill="none" xmlns="http://www.w3.org/2000/svg">
                 {/* Book Base / Pages */}
                 <path
-                  d="M14 26C14 26 36 21 69 26C102 21 124 26 124 26V82C124 82 102 77 69 82C36 77 14 82 14 82V26Z"
-                  fill={isDark ? '#15221B' : '#FFFFFF'}
-                  stroke={isDark ? '#E2E8F0' : '#1A202C'}
+                  d="M15 26C15 26 37 21 70 26C103 21 125 26 125 26V82C125 82 103 77 70 82C37 77 15 82 15 82V26Z"
+                  fill={isDark ? '#18231D' : '#FFFFFF'}
+                  stroke={isDark ? '#E2E6DD' : '#13211C'}
                   strokeWidth="3.5"
                   strokeLinejoin="round"
                 />
                 {/* Center Spine */}
                 <path
-                  d="M69 26V82"
-                  stroke={isDark ? '#E2E8F0' : '#1A202C'}
+                  d="M70 26V82"
+                  stroke={isDark ? '#E2E6DD' : '#13211C'}
                   strokeWidth="3.5"
                   strokeLinecap="round"
                 />
-                {/* Left Page Text Lines with Yellow Highlighter */}
-                <rect x="24" y="38" width="34" height="9" rx="2" fill="#FEE780" />
-                <line x1="26" y1="42.5" x2="56" y2="42.5" stroke={isDark ? '#A0AEC0' : '#4A5568'} strokeWidth="2.5" strokeLinecap="round" />
-                <line x1="26" y1="56" x2="56" y2="56" stroke={isDark ? '#A0AEC0' : '#4A5568'} strokeWidth="2.5" strokeLinecap="round" />
-                <line x1="26" y1="67" x2="48" y2="67" stroke={isDark ? '#A0AEC0' : '#4A5568'} strokeWidth="2.5" strokeLinecap="round" />
+                {/* Left Page Text Lines with Citron Lime Highlighter */}
+                <rect x="25" y="38" width="34" height="9" rx="2" fill={isDark ? '#C9F26B' : '#C9F26B'} opacity={isDark ? 0.85 : 0.9} />
+                <line x1="27" y1="42.5" x2="57" y2="42.5" stroke="#13211C" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1="27" y1="56" x2="57" y2="56" stroke={isDark ? '#9AA89F' : '#4D5F55'} strokeWidth="2.5" strokeLinecap="round" />
+                <line x1="27" y1="67" x2="49" y2="67" stroke={isDark ? '#9AA89F' : '#4D5F55'} strokeWidth="2.5" strokeLinecap="round" />
 
-                {/* Right Page Text Lines with Orange Checkmark */}
-                <line x1="80" y1="42.5" x2="112" y2="42.5" stroke={isDark ? '#A0AEC0' : '#4A5568'} strokeWidth="2.5" strokeLinecap="round" />
-                <line x1="80" y1="56" x2="112" y2="56" stroke={isDark ? '#A0AEC0' : '#4A5568'} strokeWidth="2.5" strokeLinecap="round" />
+                {/* Right Page Text Lines */}
+                <line x1="81" y1="42.5" x2="113" y2="42.5" stroke={isDark ? '#9AA89F' : '#4D5F55'} strokeWidth="2.5" strokeLinecap="round" />
+                <line x1="81" y1="56" x2="113" y2="56" stroke={isDark ? '#9AA89F' : '#4D5F55'} strokeWidth="2.5" strokeLinecap="round" />
 
-                {/* Orange Checkmark */}
+                {/* Accent Checkmark */}
                 <path
-                  d="M83 66L93 75L114 49"
-                  stroke="#D95C38"
+                  d="M84 66L94 75L115 49"
+                  stroke={isDark ? '#C9F26B' : '#13211C'}
                   strokeWidth="4"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -261,34 +296,54 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({ onContinueAsGu
               </svg>
             </div>
 
+            {/* Curriculum Pill */}
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '5px 12px',
+                borderRadius: '100px',
+                background: isDark ? 'rgba(201, 242, 107, 0.12)' : 'rgba(19, 33, 28, 0.06)',
+                color: isDark ? '#C9F26B' : '#13211C',
+                fontSize: '12px',
+                fontWeight: 800,
+                marginBottom: '12px'
+              }}
+            >
+              <GraduationCap size={14} />
+              <span>Russell & Norvig AIMA 4th Edition</span>
+            </div>
+
             {/* Brand Title */}
             <h1
               style={{
-                fontFamily: "'Newsreader', Georgia, serif",
-                fontSize: 'clamp(44px, 5.5vw, 58px)',
-                fontWeight: 800,
-                letterSpacing: '-0.025em',
+                fontFamily: 'var(--quest-font-heading, "Newsreader", Georgia, serif)',
+                fontSize: 'clamp(46px, 5.5vw, 62px)',
+                fontWeight: 900,
+                letterSpacing: '-0.03em',
                 lineHeight: 1.05,
-                margin: '0 0 6px 0',
-                color: isDark ? '#FFFFFF' : '#111827'
+                margin: '0 0 8px 0',
+                color: 'var(--quest-text-primary, #13211C)'
               }}
             >
               Mantiq
             </h1>
 
-            {/* Handwritten Subtitle */}
+            {/* User Slogan - Kept verbatim and styled with authentic elegance */}
             <div
               style={{
-                fontFamily: "'Caveat', cursive, sans-serif",
-                fontSize: 'clamp(24px, 3vw, 29px)',
+                fontFamily: "'Newsreader', Georgia, serif",
+                fontStyle: 'italic',
+                fontSize: 'clamp(24px, 3vw, 30px)',
                 fontWeight: 700,
-                color: '#D15C3D',
+                color: isDark ? '#C9F26B' : '#13211C',
                 marginBottom: '28px',
-                letterSpacing: '0.01em',
-                lineHeight: 1.2
+                letterSpacing: '-0.01em',
+                lineHeight: 1.25
               }}
             >
-              learn anything, in your own notes
+              Let's have some Mantiq about AI
             </div>
 
             {/* Feature Bullets with Arrows */}
@@ -299,49 +354,49 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({ onContinueAsGu
                 gap: '14px',
                 fontSize: '15px',
                 lineHeight: 1.5,
-                color: isDark ? '#A3B3AA' : '#4B5563'
+                color: 'var(--quest-text-secondary, #4D5F55)'
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                <span style={{ color: isDark ? '#E2E8F0' : '#1A202C', fontWeight: 800 }}>→</span>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                <span style={{ color: 'var(--quest-text-primary, #13211C)', fontWeight: 800, fontSize: '16px' }}>→</span>
                 <span>courses in Russell & Norvig AIMA 4th edition, written to be understood</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                <span style={{ color: isDark ? '#E2E8F0' : '#1A202C', fontWeight: 800 }}>→</span>
-                <span>quizzes, assignments and feedback that help you improve</span>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                <span style={{ color: 'var(--quest-text-primary, #13211C)', fontWeight: 800, fontSize: '16px' }}>→</span>
+                <span>interactive visual simulations, quizzes, and algorithmic feedback that help you improve</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                <span style={{ color: isDark ? '#E2E8F0' : '#1A202C', fontWeight: 800 }}>→</span>
-                <span>an AI tutor and a study group when you get stuck</span>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                <span style={{ color: 'var(--quest-text-primary, #13211C)', fontWeight: 800, fontSize: '16px' }}>→</span>
+                <span>an interactive AI study path and university exam preparation</span>
               </div>
             </div>
           </div>
 
-          {/* Right Column: Clean White Notebook Card */}
+          {/* Right Column: Clean Auth Card Cohesive with App Design */}
           <div
             style={{
               flex: '1 1 380px',
               maxWidth: '460px',
               width: '100%',
-              background: isDark ? '#14221C' : '#FFFFFF',
-              border: isDark ? '1.5px solid #283C32' : '1.5px solid #1A202C',
-              borderRadius: '18px',
+              background: 'var(--quest-card-bg, #FFFFFF)',
+              border: '1px solid var(--quest-border, #E2E6DD)',
+              borderRadius: 'var(--quest-radius-card, 24px)',
               padding: 'clamp(28px, 4vw, 40px)',
               boxShadow: isDark
-                ? '0 20px 50px rgba(0,0,0,0.5), 2px 4px 0px #09100C'
-                : '0 20px 50px rgba(0,0,0,0.06), 2px 4px 0px #1A202C',
+                ? '0 24px 60px rgba(0,0,0,0.5)'
+                : '0 20px 50px rgba(19, 33, 28, 0.08)',
               boxSizing: 'border-box'
             }}
           >
             {/* Card Header */}
-            <div style={{ marginBottom: '22px' }}>
+            <div style={{ marginBottom: '24px' }}>
               <h2
                 style={{
-                  fontFamily: "'Newsreader', Georgia, serif",
+                  fontFamily: 'var(--quest-font-heading, "Newsreader", Georgia, serif)',
                   fontSize: '28px',
-                  fontWeight: 800,
+                  fontWeight: 900,
                   margin: '0 0 6px 0',
-                  color: isDark ? '#F3F5EF' : '#111827',
+                  color: 'var(--quest-text-primary, #13211C)',
                   letterSpacing: '-0.02em'
                 }}
               >
@@ -351,7 +406,7 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({ onContinueAsGu
                 style={{
                   margin: 0,
                   fontSize: '14px',
-                  color: isDark ? '#8A9B91' : '#6B7280'
+                  color: 'var(--quest-text-muted, #7E9084)'
                 }}
               >
                 {mode === 'signin' ? 'pick up where you left off' : 'join the rational agent curriculum'}
@@ -362,9 +417,9 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({ onContinueAsGu
             {errorMessage && (
               <div
                 style={{
-                  padding: '10px 12px',
-                  borderRadius: '10px',
-                  background: 'rgba(239, 68, 68, 0.1)',
+                  padding: '11px 14px',
+                  borderRadius: '12px',
+                  background: 'rgba(239, 68, 68, 0.12)',
                   border: '1px solid rgba(239, 68, 68, 0.3)',
                   color: '#EF4444',
                   fontSize: '13px',
@@ -383,9 +438,9 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({ onContinueAsGu
             {successMessage && (
               <div
                 style={{
-                  padding: '10px 12px',
-                  borderRadius: '10px',
-                  background: 'rgba(34, 197, 94, 0.1)',
+                  padding: '11px 14px',
+                  borderRadius: '12px',
+                  background: 'rgba(34, 197, 94, 0.12)',
                   border: '1px solid rgba(34, 197, 94, 0.3)',
                   color: '#22C55E',
                   fontSize: '13px',
@@ -405,20 +460,23 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({ onContinueAsGu
             {mode === 'signin' ? (
               <form onSubmit={handleSignIn} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, marginBottom: '6px', color: 'var(--quest-text-secondary, #4D5F55)' }}>
+                    Email
+                  </label>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Email"
+                    placeholder="e.g. scholar@university.edu"
                     required
                     style={{
                       width: '100%',
-                      padding: '13px 14px',
-                      borderRadius: '10px',
-                      border: isDark ? '1.5px solid #2B3D34' : '1.5px solid #D1D5DB',
-                      background: isDark ? '#0D1612' : '#FFFFFF',
-                      color: isDark ? '#F3F5EF' : '#111827',
-                      fontSize: '15px',
+                      padding: '12px 14px',
+                      borderRadius: '12px',
+                      border: '1px solid var(--quest-border, #E2E6DD)',
+                      background: 'var(--quest-bg, #F3F5EF)',
+                      color: 'var(--quest-text-primary, #13211C)',
+                      fontSize: '14px',
                       outline: 'none',
                       boxSizing: 'border-box',
                       transition: 'border-color 0.15s ease'
@@ -426,40 +484,45 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({ onContinueAsGu
                   />
                 </div>
 
-                <div style={{ position: 'relative' }}>
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Password"
-                    style={{
-                      width: '100%',
-                      padding: '13px 42px 13px 14px',
-                      borderRadius: '10px',
-                      border: isDark ? '1.5px solid #2B3D34' : '1.5px solid #D1D5DB',
-                      background: isDark ? '#0D1612' : '#FFFFFF',
-                      color: isDark ? '#F3F5EF' : '#111827',
-                      fontSize: '15px',
-                      outline: 'none',
-                      boxSizing: 'border-box',
-                      transition: 'border-color 0.15s ease'
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    style={{
-                      position: 'absolute',
-                      right: '12px',
-                      top: '13px',
-                      background: 'none',
-                      border: 'none',
-                      color: isDark ? '#8A9B91' : '#6B7280',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, marginBottom: '6px', color: 'var(--quest-text-secondary, #4D5F55)' }}>
+                    Password
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Enter your password"
+                      style={{
+                        width: '100%',
+                        padding: '12px 42px 12px 14px',
+                        borderRadius: '12px',
+                        border: '1px solid var(--quest-border, #E2E6DD)',
+                        background: 'var(--quest-bg, #F3F5EF)',
+                        color: 'var(--quest-text-primary, #13211C)',
+                        fontSize: '14px',
+                        outline: 'none',
+                        boxSizing: 'border-box',
+                        transition: 'border-color 0.15s ease'
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      style={{
+                        position: 'absolute',
+                        right: '12px',
+                        top: '12px',
+                        background: 'none',
+                        border: 'none',
+                        color: 'var(--quest-text-muted, #7E9084)',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                 </div>
 
                 {/* Remember me & Forgot Password */}
@@ -477,7 +540,7 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({ onContinueAsGu
                       display: 'flex',
                       alignItems: 'center',
                       gap: '8px',
-                      color: isDark ? '#A3B3AA' : '#4B5563',
+                      color: 'var(--quest-text-secondary, #4D5F55)',
                       cursor: 'pointer'
                     }}
                   >
@@ -485,7 +548,7 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({ onContinueAsGu
                       type="checkbox"
                       checked={rememberMe}
                       onChange={(e) => setRememberMe(e.target.checked)}
-                      style={{ cursor: 'pointer', accentColor: '#1B314B' }}
+                      style={{ cursor: 'pointer', accentColor: '#13211C' }}
                     />
                     <span>Remember me</span>
                   </label>
@@ -495,9 +558,9 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({ onContinueAsGu
                     style={{
                       background: 'none',
                       border: 'none',
-                      color: isDark ? '#C9F26B' : '#1B314B',
+                      color: isDark ? 'var(--quest-accent, #C9F26B)' : '#13211C',
                       fontSize: '13px',
-                      fontWeight: 600,
+                      fontWeight: 700,
                       cursor: 'pointer',
                       padding: 0
                     }}
@@ -506,21 +569,22 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({ onContinueAsGu
                   </button>
                 </div>
 
-                {/* Submit Button */}
+                {/* Primary Submit Button matching App Accent */}
                 <button
                   type="submit"
                   disabled={isLoading}
                   style={{
                     padding: '13px',
-                    borderRadius: '10px',
-                    background: isDark ? '#C9F26B' : '#1B314B',
-                    color: isDark ? '#13211C' : '#FFFFFF',
+                    borderRadius: '14px',
+                    background: 'var(--quest-accent, #C9F26B)',
+                    color: '#13211C',
                     border: 'none',
                     fontSize: '15px',
-                    fontWeight: 800,
+                    fontWeight: 900,
+                    fontFamily: 'var(--quest-font-heading, "Newsreader", serif)',
                     cursor: isLoading ? 'wait' : 'pointer',
-                    boxShadow: isDark ? '0 4px 12px rgba(201, 242, 107, 0.3)' : '0 4px 12px rgba(27, 49, 75, 0.25)',
-                    transition: 'opacity 0.15s ease'
+                    boxShadow: '0 4px 14px rgba(201, 242, 107, 0.4)',
+                    transition: 'transform 0.1s ease, opacity 0.15s ease'
                   }}
                 >
                   {isLoading ? 'Signing In...' : 'Sign In'}
@@ -529,110 +593,139 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({ onContinueAsGu
             ) : (
               /* Register Form */
               <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: '13px' }}>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Full Name"
-                  required
-                  style={{
-                    width: '100%',
-                    padding: '12px 14px',
-                    borderRadius: '10px',
-                    border: isDark ? '1.5px solid #2B3D34' : '1.5px solid #D1D5DB',
-                    background: isDark ? '#0D1612' : '#FFFFFF',
-                    color: isDark ? '#F3F5EF' : '#111827',
-                    fontSize: '14px',
-                    outline: 'none',
-                    boxSizing: 'border-box'
-                  }}
-                />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Email Address"
-                  required
-                  style={{
-                    width: '100%',
-                    padding: '12px 14px',
-                    borderRadius: '10px',
-                    border: isDark ? '1.5px solid #2B3D34' : '1.5px solid #D1D5DB',
-                    background: isDark ? '#0D1612' : '#FFFFFF',
-                    color: isDark ? '#F3F5EF' : '#111827',
-                    fontSize: '14px',
-                    outline: 'none',
-                    boxSizing: 'border-box'
-                  }}
-                />
-                <input
-                  type="text"
-                  value={university}
-                  onChange={(e) => setUniversity(e.target.value)}
-                  placeholder="University / Organization"
-                  style={{
-                    width: '100%',
-                    padding: '12px 14px',
-                    borderRadius: '10px',
-                    border: isDark ? '1.5px solid #2B3D34' : '1.5px solid #D1D5DB',
-                    background: isDark ? '#0D1612' : '#FFFFFF',
-                    color: isDark ? '#F3F5EF' : '#111827',
-                    fontSize: '14px',
-                    outline: 'none',
-                    boxSizing: 'border-box'
-                  }}
-                />
-                <input
-                  type="text"
-                  value={degreeProgram}
-                  onChange={(e) => setDegreeProgram(e.target.value)}
-                  placeholder="Field of Study / Major"
-                  style={{
-                    width: '100%',
-                    padding: '12px 14px',
-                    borderRadius: '10px',
-                    border: isDark ? '1.5px solid #2B3D34' : '1.5px solid #D1D5DB',
-                    background: isDark ? '#0D1612' : '#FFFFFF',
-                    color: isDark ? '#F3F5EF' : '#111827',
-                    fontSize: '14px',
-                    outline: 'none',
-                    boxSizing: 'border-box'
-                  }}
-                />
-                <div style={{ position: 'relative' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, marginBottom: '5px', color: 'var(--quest-text-secondary, #4D5F55)' }}>
+                    Full Name
+                  </label>
                   <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Create Password (min 4 chars)"
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="e.g. Noor Tariq"
                     required
                     style={{
                       width: '100%',
-                      padding: '12px 42px 12px 14px',
-                      borderRadius: '10px',
-                      border: isDark ? '1.5px solid #2B3D34' : '1.5px solid #D1D5DB',
-                      background: isDark ? '#0D1612' : '#FFFFFF',
-                      color: isDark ? '#F3F5EF' : '#111827',
+                      padding: '11px 14px',
+                      borderRadius: '12px',
+                      border: '1px solid var(--quest-border, #E2E6DD)',
+                      background: 'var(--quest-bg, #F3F5EF)',
+                      color: 'var(--quest-text-primary, #13211C)',
                       fontSize: '14px',
                       outline: 'none',
                       boxSizing: 'border-box'
                     }}
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, marginBottom: '5px', color: 'var(--quest-text-secondary, #4D5F55)' }}>
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="e.g. noor@university.edu"
+                    required
                     style={{
-                      position: 'absolute',
-                      right: '12px',
-                      top: '12px',
-                      background: 'none',
-                      border: 'none',
-                      color: isDark ? '#8A9B91' : '#6B7280',
-                      cursor: 'pointer'
+                      width: '100%',
+                      padding: '11px 14px',
+                      borderRadius: '12px',
+                      border: '1px solid var(--quest-border, #E2E6DD)',
+                      background: 'var(--quest-bg, #F3F5EF)',
+                      color: 'var(--quest-text-primary, #13211C)',
+                      fontSize: '14px',
+                      outline: 'none',
+                      boxSizing: 'border-box'
                     }}
-                  >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, marginBottom: '5px', color: 'var(--quest-text-secondary, #4D5F55)' }}>
+                    University / Institution
+                  </label>
+                  <input
+                    type="text"
+                    value={university}
+                    onChange={(e) => setUniversity(e.target.value)}
+                    placeholder="e.g. FAST NUCES / Self-Taught"
+                    style={{
+                      width: '100%',
+                      padding: '11px 14px',
+                      borderRadius: '12px',
+                      border: '1px solid var(--quest-border, #E2E6DD)',
+                      background: 'var(--quest-bg, #F3F5EF)',
+                      color: 'var(--quest-text-primary, #13211C)',
+                      fontSize: '14px',
+                      outline: 'none',
+                      boxSizing: 'border-box'
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, marginBottom: '5px', color: 'var(--quest-text-secondary, #4D5F55)' }}>
+                    Field of Study / Major
+                  </label>
+                  <input
+                    type="text"
+                    value={degreeProgram}
+                    onChange={(e) => setDegreeProgram(e.target.value)}
+                    placeholder="e.g. BS Computer Science / AI"
+                    style={{
+                      width: '100%',
+                      padding: '11px 14px',
+                      borderRadius: '12px',
+                      border: '1px solid var(--quest-border, #E2E6DD)',
+                      background: 'var(--quest-bg, #F3F5EF)',
+                      color: 'var(--quest-text-primary, #13211C)',
+                      fontSize: '14px',
+                      outline: 'none',
+                      boxSizing: 'border-box'
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, marginBottom: '5px', color: 'var(--quest-text-secondary, #4D5F55)' }}>
+                    Password
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Create Password (min 4 chars)"
+                      required
+                      style={{
+                        width: '100%',
+                        padding: '11px 42px 11px 14px',
+                        borderRadius: '12px',
+                        border: '1px solid var(--quest-border, #E2E6DD)',
+                        background: 'var(--quest-bg, #F3F5EF)',
+                        color: 'var(--quest-text-primary, #13211C)',
+                        fontSize: '14px',
+                        outline: 'none',
+                        boxSizing: 'border-box'
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      style={{
+                        position: 'absolute',
+                        right: '12px',
+                        top: '11px',
+                        background: 'none',
+                        border: 'none',
+                        color: 'var(--quest-text-muted, #7E9084)',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                 </div>
 
                 <button
@@ -641,14 +734,15 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({ onContinueAsGu
                   style={{
                     marginTop: '4px',
                     padding: '13px',
-                    borderRadius: '10px',
-                    background: isDark ? '#C9F26B' : '#1B314B',
-                    color: isDark ? '#13211C' : '#FFFFFF',
+                    borderRadius: '14px',
+                    background: 'var(--quest-accent, #C9F26B)',
+                    color: '#13211C',
                     border: 'none',
                     fontSize: '15px',
-                    fontWeight: 800,
+                    fontWeight: 900,
+                    fontFamily: 'var(--quest-font-heading, "Newsreader", serif)',
                     cursor: isLoading ? 'wait' : 'pointer',
-                    boxShadow: isDark ? '0 4px 12px rgba(201, 242, 107, 0.3)' : '0 4px 12px rgba(27, 49, 75, 0.25)',
+                    boxShadow: '0 4px 14px rgba(201, 242, 107, 0.4)',
                     transition: 'opacity 0.15s ease'
                   }}
                 >
@@ -670,9 +764,9 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({ onContinueAsGu
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: isDark ? '#C9F26B' : '#1B314B',
+                  color: isDark ? 'var(--quest-accent, #C9F26B)' : '#13211C',
                   fontSize: '13px',
-                  fontWeight: 700,
+                  fontWeight: 800,
                   cursor: 'pointer'
                 }}
               >
@@ -685,7 +779,7 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({ onContinueAsGu
               style={{
                 marginTop: '16px',
                 paddingTop: '16px',
-                borderTop: isDark ? '1px solid #23352B' : '1px solid #E5E7EB',
+                borderTop: '1px solid var(--quest-border, #E2E6DD)',
                 textAlign: 'center'
               }}
             >
@@ -695,9 +789,9 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({ onContinueAsGu
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: isDark ? '#9AA89F' : '#6B7280',
+                  color: 'var(--quest-text-secondary, #4D5F55)',
                   fontSize: '13px',
-                  fontWeight: 600,
+                  fontWeight: 700,
                   cursor: 'pointer',
                   display: 'inline-flex',
                   alignItems: 'center',
