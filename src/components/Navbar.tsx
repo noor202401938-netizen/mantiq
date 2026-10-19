@@ -79,8 +79,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             setCurrentView('dashboard');
           }}
         >
-          <div className="brand-icon-wrapper">
-            <BookOpen size={20} className="brand-icon" />
+          <div className="brand-icon-wrapper" style={{ padding: 0, overflow: 'hidden' }}>
+            <img
+              src="./mantiq-logo.png"
+              alt="Mantiq Logo"
+              style={{ width: '28px', height: '28px', borderRadius: '8px', objectFit: 'cover' }}
+            />
           </div>
           <div className="brand-text">
             <span className="brand-title">Mantiq</span>
@@ -159,14 +163,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {!stats.dailyChallengeCompleted && <span className="notification-dot" />}
         </button>
 
-        {/* Sound FX Toggle */}
-        <button
-          className="btn-icon"
-          onClick={handleMuteToggle}
-          title={isMuted ? 'Unmute Sound FX' : 'Mute Sound FX'}
-        >
-          {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
-        </button>
+
 
         {/* Dark / Light Mode Toggle */}
         <button

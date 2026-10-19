@@ -161,24 +161,17 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({ onContinueAsGu
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div
+          <img
+            src="./mantiq-logo.png"
+            alt="Mantiq Logo"
             style={{
-              width: '40px',
-              height: '40px',
+              width: '42px',
+              height: '42px',
               borderRadius: '12px',
-              background: 'var(--quest-accent, #C9F26B)',
-              color: '#13211C',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: 900,
-              fontSize: '20px',
-              fontFamily: 'var(--quest-font-heading, "Newsreader", serif)',
+              objectFit: 'cover',
               boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
             }}
-          >
-            M
-          </div>
+          />
           <div>
             <div
               style={{

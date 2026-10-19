@@ -9,14 +9,11 @@ interface ProfileModalProps {
   onClose: () => void;
 }
 
-const AVATARS = ['AM', 'ER', 'MV', 'AK', 'HT', 'AI', 'RN', 'NN', 'RL', 'TA'];
-
 export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
   const { user, updateProfile, logout } = useAuth();
   const { stats, examReadinessScore } = useProgress();
 
   const [name, setName] = useState(user.name);
-  const [avatar, setAvatar] = useState(user.avatar);
   const [targetExamDate, setTargetExamDate] = useState(user.targetExamDate || '2026-12-15');
   const [targetScore, setTargetScore] = useState(user.targetScore || 95);
   const [savedSuccess, setSavedSuccess] = useState(false);
@@ -25,9 +22,14 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
 
   const handleSave = () => {
     soundFX.playCorrect();
+    const parts = name.trim().split(/\s+/).filter(Boolean);
+    const computedAvatar = parts.length > 0
+      ? (parts[0][0] + (parts[1] ? parts[1][0] : parts[0][1] || '')).toUpperCase()
+      : user.avatar || 'AS';
+
     updateProfile({
       name,
-      avatar,
+      avatar: computedAvatar,
       targetExamDate,
       targetScore
     });
@@ -52,25 +54,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
         </div>
 
         <div className="modal-body">
-          {/* Avatar Picker */}
-          <div className="form-group">
-            <label className="form-label">Select Avatar Icon</label>
-            <div className="avatar-picker-grid">
-              {AVATARS.map((av) => (
-                <button
-                  key={av}
-                  type="button"
-                  className={`avatar-option ${avatar === av ? 'selected' : ''}`}
-                  onClick={() => {
-                    soundFX.playClick();
-                    setAvatar(av);
-                  }}
-                >
-                  {av}
-                </button>
-              ))}
-            </div>
-          </div>
+
 
           {/* Full Name */}
           <div className="form-group">

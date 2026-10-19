@@ -50,8 +50,6 @@ interface YouProfileViewProps {
   onOpenSync: () => void;
 }
 
-const AVATAR_OPTIONS = ['AM', 'ER', 'MV', 'AK', 'HT', 'AI', 'RN', 'NN', 'RL', 'TA'];
-
 const AIMA_PARTS = [
   { id: 1, title: 'Part I: Artificial Intelligence', chapters: [1, 2], weight: 'Foundational' },
   { id: 2, title: 'Part II: Problem-Solving', chapters: [3, 4, 5, 6], weight: 'Essential' },
@@ -61,6 +59,13 @@ const AIMA_PARTS = [
   { id: 6, title: 'Part VI: Communicating, Perceiving, Acting', chapters: [22, 23, 24, 25], weight: 'Medium' },
   { id: 7, title: 'Part VII: Conclusions & Safety', chapters: [26, 27], weight: 'Medium' }
 ];
+
+const getComputedAvatar = (name: string, fallback: string = 'AS') => {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return fallback;
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + (parts[1] ? parts[1][0] : parts[0][1] || '')).toUpperCase();
+};
 
 const CHAPTER_OPTIONS = [
   { id: 1, title: 'Ch 1: Introduction to AI' },
@@ -109,10 +114,20 @@ export const YouProfileView: React.FC<YouProfileViewProps> = ({ onOpenSync }) =>
   const [editDegree, setEditDegree] = useState(user.degreeProgram || 'Computer Science & Artificial Intelligence');
   const [editRole, setEditRole] = useState(user.academicRole || 'undergraduate');
   const [editBio, setEditBio] = useState(user.bio || '');
-  const [editAvatar, setEditAvatar] = useState(user.avatar);
+  const [editExamName, setEditExamName] = useState<string>((user as any).examName || 'Russell & Norvig AIMA 4th Edition Final');
   const [editExamDate, setEditExamDate] = useState(user.targetExamDate || '2026-12-15');
   const [editScore, setEditScore] = useState(user.targetScore || 95);
+  const [editDailyGoalMinutes, setEditDailyGoalMinutes] = useState(user.dailyGoalMinutes || 30);
+  const [editFocusAreas, setEditFocusAreas] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('mantiq_exam_focus_areas');
+      return saved ? JSON.parse(saved) : ['Search & Problem-Solving', 'Logic & Knowledge Representation', 'Probabilistic Reasoning'];
+    } catch {
+      return ['Search & Problem-Solving', 'Logic & Knowledge Representation'];
+    }
+  });
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [examGoalSuccess, setExamGoalSuccess] = useState(false);
 
   // Notes Studio state
   const { notes, addNote, updateNote, deleteNote, togglePin, searchNotes, exportNotesMarkdown, loadNotes } = useNotes();
@@ -259,22 +274,38 @@ export const YouProfileView: React.FC<YouProfileViewProps> = ({ onOpenSync }) =>
   const handleSaveProfile = (e: React.FormEvent) => {
     e.preventDefault();
     soundFX.playCorrect();
+    const autoAvatar = getComputedAvatar(editName, user.avatar || 'AS');
     updateProfile({
       name: editName,
       university: editUniversity,
       degreeProgram: editDegree,
       academicRole: editRole as any,
       bio: editBio,
-      avatar: editAvatar,
-      targetExamDate: editExamDate,
-      targetScore: editScore,
+      avatar: autoAvatar,
       offlineReady: offlineSaved
     });
     setSaveSuccess(true);
     setTimeout(() => {
       setSaveSuccess(false);
-      setIsEditingProfile(false);
-    }, 600);
+    }, 2500);
+  };
+
+  const handleSaveExamGoals = (e: React.FormEvent) => {
+    e.preventDefault();
+    soundFX.playCorrect();
+    updateProfile({
+      targetExamDate: editExamDate,
+      targetScore: editScore,
+      dailyGoalMinutes: editDailyGoalMinutes,
+      ...({ examName: editExamName } as any)
+    });
+    try {
+      localStorage.setItem('mantiq_exam_focus_areas', JSON.stringify(editFocusAreas));
+    } catch {}
+    setExamGoalSuccess(true);
+    setTimeout(() => {
+      setExamGoalSuccess(false);
+    }, 2500);
   };
 
   const handleLogout = () => {
@@ -824,6 +855,28 @@ export const YouProfileView: React.FC<YouProfileViewProps> = ({ onOpenSync }) =>
               <div style={{ marginTop: '16px', fontSize: '14px', color: 'var(--quest-text-secondary)' }}>
                 Targeting Top 5th Percentile in CS Midterm Assessments.
               </div>
+
+              <div style={{ marginTop: '14px' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundFX.playClick();
+                    setActiveSubTab('settings');
+                  }}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: '10px',
+                    background: 'var(--quest-accent)',
+                    color: '#13211C',
+                    fontSize: '12px',
+                    fontWeight: 800,
+                    border: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Configure Exam Goals & Milestones →
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -1233,219 +1286,450 @@ export const YouProfileView: React.FC<YouProfileViewProps> = ({ onOpenSync }) =>
       {/* SUB-TAB 4: SETTINGS & EDIT PROFILE */}
       {activeSubTab === 'settings' && (
         <div className="quest-you-layout">
-          {/* Left Column: Edit Profile Form */}
-          <div className="quest-settings-card">
-            <span className="quest-stat-card-title">Scholar Identity & Credentials</span>
+          {/* Left Column: Edit Profile & Exam Goals */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            {/* 1. Scholar Identity & Credentials Card */}
+            <div className="quest-settings-card">
+              <span className="quest-stat-card-title">Scholar Identity & Credentials</span>
 
-            {saveSuccess && (
-              <div
-                style={{
-                  padding: '12px',
-                  borderRadius: '12px',
-                  background: 'rgba(34, 197, 94, 0.1)',
-                  color: '#22C55E',
-                  fontSize: '13px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}
-              >
-                <Check size={16} /> Profile changes saved to local academic repository!
-              </div>
-            )}
-
-            <form onSubmit={handleSaveProfile} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              {/* Avatar Selector */}
-              <div>
-                <label className="form-label" style={{ marginBottom: '6px', display: 'block' }}>
-                  Avatar Symbol
-                </label>
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                  {AVATAR_OPTIONS.map((av) => (
-                    <button
-                      key={av}
-                      type="button"
-                      onClick={() => {
-                        soundFX.playClick();
-                        setEditAvatar(av);
-                      }}
-                      style={{
-                        width: '38px',
-                        height: '38px',
-                        borderRadius: '10px',
-                        fontSize: '13px',
-                        fontWeight: 800,
-                        fontFamily: 'var(--quest-font-heading)',
-                        letterSpacing: '-0.02em',
-                        border: editAvatar === av ? '2px solid var(--quest-accent)' : '1px solid var(--quest-border)',
-                        background: editAvatar === av ? 'rgba(74, 222, 128, 0.15)' : 'var(--quest-bg)',
-                        color: editAvatar === av ? 'var(--quest-accent-text, #166534)' : 'var(--quest-text-primary)',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      {av}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Full Name */}
-              <div className="form-group">
-                <label className="form-label">Full Name</label>
-                <input
-                  type="text"
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  className="text-input"
+              {saveSuccess && (
+                <div
                   style={{
-                    width: '100%',
-                    padding: '10px 12px',
-                    borderRadius: '10px',
-                    background: 'var(--quest-bg)',
-                    border: '1px solid var(--quest-border)',
-                    color: 'var(--quest-text-primary)'
-                  }}
-                />
-              </div>
-
-              {/* University & Degree */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                <div className="form-group">
-                  <label className="form-label">University / Institution</label>
-                  <input
-                    type="text"
-                    value={editUniversity}
-                    onChange={(e) => setEditUniversity(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '10px 12px',
-                      borderRadius: '10px',
-                      background: 'var(--quest-bg)',
-                      border: '1px solid var(--quest-border)',
-                      color: 'var(--quest-text-primary)'
-                    }}
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Degree / Program</label>
-                  <input
-                    type="text"
-                    value={editDegree}
-                    onChange={(e) => setEditDegree(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '10px 12px',
-                      borderRadius: '10px',
-                      background: 'var(--quest-bg)',
-                      border: '1px solid var(--quest-border)',
-                      color: 'var(--quest-text-primary)'
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Academic Role */}
-              <div className="form-group">
-                <label className="form-label">Academic Role</label>
-                <select
-                  value={editRole}
-                  onChange={(e) => setEditRole(e.target.value as any)}
-                  style={{
-                    width: '100%',
-                    padding: '10px 12px',
-                    borderRadius: '10px',
-                    background: 'var(--quest-bg)',
-                    border: '1px solid var(--quest-border)',
-                    color: 'var(--quest-text-primary)'
+                    padding: '12px',
+                    borderRadius: '12px',
+                    background: 'rgba(34, 197, 94, 0.1)',
+                    color: '#22C55E',
+                    fontSize: '13px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    marginBottom: '12px'
                   }}
                 >
-                  <option value="undergraduate">Undergraduate Student</option>
-                  <option value="graduate">Graduate (M.S.) Student</option>
-                  <option value="phd">Ph.D. / Postdoc Fellow</option>
-                  <option value="faculty">Faculty / Instructor</option>
-                  <option value="independent">Independent Researcher</option>
-                </select>
-              </div>
+                  <Check size={16} /> Scholar identity credentials updated successfully!
+                </div>
+              )}
 
-              {/* Bio */}
-              <div className="form-group">
-                <label className="form-label">Research / Study Focus</label>
-                <textarea
-                  rows={2}
-                  value={editBio}
-                  onChange={(e) => setEditBio(e.target.value)}
-                  placeholder="e.g. Heuristic search and reinforcement learning safety"
+              <form onSubmit={handleSaveProfile} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                {/* Auto Scholar Monogram Indicator */}
+                <div
                   style={{
-                    width: '100%',
-                    padding: '10px 12px',
-                    borderRadius: '10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '14px',
+                    padding: '12px 14px',
+                    borderRadius: '14px',
                     background: 'var(--quest-bg)',
-                    border: '1px solid var(--quest-border)',
-                    color: 'var(--quest-text-primary)',
-                    resize: 'vertical'
+                    border: '1px solid var(--quest-border)'
                   }}
-                />
-              </div>
+                >
+                  <div
+                    style={{
+                      width: '46px',
+                      height: '46px',
+                      borderRadius: '14px',
+                      background: 'var(--quest-accent)',
+                      color: '#13211C',
+                      fontWeight: 900,
+                      fontSize: '18px',
+                      fontFamily: 'var(--quest-font-heading)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
+                    }}
+                  >
+                    {getComputedAvatar(editName, user.avatar || 'AS')}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--quest-text-primary)' }}>
+                      Academic Monogram
+                    </div>
+                    <div style={{ fontSize: '12px', color: 'var(--quest-text-muted)' }}>
+                      Automatically formatted from your scholar identity
+                    </div>
+                  </div>
+                </div>
 
-              {/* Exam Date & Target Score */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                {/* Full Name */}
                 <div className="form-group">
-                  <label className="form-label">Target Exam Date</label>
+                  <label className="form-label">Full Name</label>
                   <input
-                    type="date"
-                    value={editExamDate}
-                    onChange={(e) => setEditExamDate(e.target.value)}
+                    type="text"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className="text-input"
                     style={{
                       width: '100%',
                       padding: '10px 12px',
                       borderRadius: '10px',
                       background: 'var(--quest-bg)',
                       border: '1px solid var(--quest-border)',
-                      color: 'var(--quest-text-primary)'
+                      color: 'var(--quest-text-primary)',
+                      boxSizing: 'border-box'
                     }}
                   />
                 </div>
 
+                {/* University & Degree */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <div className="form-group">
+                    <label className="form-label">University / Institution</label>
+                    <input
+                      type="text"
+                      value={editUniversity}
+                      onChange={(e) => setEditUniversity(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        borderRadius: '10px',
+                        background: 'var(--quest-bg)',
+                        border: '1px solid var(--quest-border)',
+                        color: 'var(--quest-text-primary)',
+                        boxSizing: 'border-box'
+                      }}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Degree / Program</label>
+                    <input
+                      type="text"
+                      value={editDegree}
+                      onChange={(e) => setEditDegree(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        borderRadius: '10px',
+                        background: 'var(--quest-bg)',
+                        border: '1px solid var(--quest-border)',
+                        color: 'var(--quest-text-primary)',
+                        boxSizing: 'border-box'
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Academic Role */}
                 <div className="form-group">
-                  <label className="form-label">Target Score (%)</label>
+                  <label className="form-label">Academic Role</label>
+                  <select
+                    value={editRole}
+                    onChange={(e) => setEditRole(e.target.value as any)}
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      borderRadius: '10px',
+                      background: 'var(--quest-bg)',
+                      border: '1px solid var(--quest-border)',
+                      color: 'var(--quest-text-primary)',
+                      boxSizing: 'border-box'
+                    }}
+                  >
+                    <option value="undergraduate">Undergraduate Student</option>
+                    <option value="graduate">Graduate (M.S.) Student</option>
+                    <option value="phd">Ph.D. / Postdoc Fellow</option>
+                    <option value="faculty">Faculty / Instructor</option>
+                    <option value="independent">Independent Researcher</option>
+                  </select>
+                </div>
+
+                {/* Bio */}
+                <div className="form-group">
+                  <label className="form-label">Research / Study Focus</label>
+                  <textarea
+                    rows={2}
+                    value={editBio}
+                    onChange={(e) => setEditBio(e.target.value)}
+                    placeholder="e.g. Heuristic search and reinforcement learning safety"
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      borderRadius: '10px',
+                      background: 'var(--quest-bg)',
+                      border: '1px solid var(--quest-border)',
+                      color: 'var(--quest-text-primary)',
+                      resize: 'vertical',
+                      boxSizing: 'border-box'
+                    }}
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  style={{
+                    marginTop: '4px',
+                    padding: '12px',
+                    borderRadius: '12px',
+                    background: 'var(--quest-accent)',
+                    color: '#13211C',
+                    fontFamily: 'var(--quest-font-heading)',
+                    fontWeight: 800,
+                    fontSize: '15px',
+                    border: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Save Scholar Credentials
+                </button>
+              </form>
+            </div>
+
+            {/* 2. Dedicated Academic Exam Goals & Milestones Card */}
+            <div className="quest-settings-card">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Target size={20} color="var(--quest-accent)" />
+                  <span className="quest-stat-card-title" style={{ margin: 0 }}>Academic Exam Goals</span>
+                </div>
+                {daysUntilExam !== null && (
+                  <span
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                      padding: '4px 10px',
+                      borderRadius: '100px',
+                      background: 'rgba(201, 242, 107, 0.2)',
+                      color: isDark ? 'var(--quest-accent)' : '#13211C',
+                      fontSize: '12px',
+                      fontWeight: 800
+                    }}
+                  >
+                    <Clock size={13} /> {daysUntilExam} Days Left
+                  </span>
+                )}
+              </div>
+
+              {examGoalSuccess && (
+                <div
+                  style={{
+                    padding: '12px',
+                    borderRadius: '12px',
+                    background: 'rgba(34, 197, 94, 0.1)',
+                    color: '#22C55E',
+                    fontSize: '13px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    marginBottom: '16px'
+                  }}
+                >
+                  <Check size={16} /> Exam goals & target milestones successfully saved!
+                </div>
+              )}
+
+              <form onSubmit={handleSaveExamGoals} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {/* Target Examination Name with quick presets */}
+                <div>
+                  <label className="form-label" style={{ display: 'block', marginBottom: '6px' }}>
+                    Target Examination / Course
+                  </label>
                   <input
-                    type="number"
+                    type="text"
+                    value={editExamName}
+                    onChange={(e) => setEditExamName(e.target.value)}
+                    placeholder="e.g. Russell & Norvig AIMA 4th Edition Final"
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      borderRadius: '10px',
+                      background: 'var(--quest-bg)',
+                      border: '1px solid var(--quest-border)',
+                      color: 'var(--quest-text-primary)',
+                      fontSize: '14px',
+                      boxSizing: 'border-box'
+                    }}
+                  />
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '8px' }}>
+                    {[
+                      'Russell & Norvig AIMA 4th Edition Final',
+                      'CS AI Midterm Exam',
+                      'AI Qualifying Exam',
+                      'Self-Paced Mastery'
+                    ].map((preset) => (
+                      <button
+                        key={preset}
+                        type="button"
+                        onClick={() => setEditExamName(preset)}
+                        style={{
+                          padding: '4px 10px',
+                          borderRadius: '8px',
+                          fontSize: '11px',
+                          fontWeight: 700,
+                          background: editExamName === preset ? 'var(--quest-accent)' : 'var(--quest-bg)',
+                          color: editExamName === preset ? '#13211C' : 'var(--quest-text-muted)',
+                          border: '1px solid var(--quest-border)',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        {preset}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Exam Date & Target Score */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <div>
+                    <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '6px' }}>
+                      <Calendar size={14} /> Target Exam Date
+                    </label>
+                    <input
+                      type="date"
+                      value={editExamDate}
+                      onChange={(e) => setEditExamDate(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        borderRadius: '10px',
+                        background: 'var(--quest-bg)',
+                        border: '1px solid var(--quest-border)',
+                        color: 'var(--quest-text-primary)',
+                        fontSize: '14px',
+                        boxSizing: 'border-box'
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '6px' }}>
+                      <Award size={14} /> Target Score ({editScore}%)
+                    </label>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <input
+                        type="number"
+                        min="50"
+                        max="100"
+                        value={editScore}
+                        onChange={(e) => setEditScore(Number(e.target.value))}
+                        style={{
+                          width: '75px',
+                          padding: '10px 8px',
+                          borderRadius: '10px',
+                          background: 'var(--quest-bg)',
+                          border: '1px solid var(--quest-border)',
+                          color: 'var(--quest-text-primary)',
+                          fontSize: '14px',
+                          fontWeight: 700,
+                          textAlign: 'center',
+                          boxSizing: 'border-box'
+                        }}
+                      />
+                      <span style={{ fontSize: '11px', color: 'var(--quest-text-muted)', fontWeight: 700 }}>
+                        {editScore >= 95 ? 'Summa Cum Laude (A+)' : editScore >= 90 ? 'Magna Cum Laude (A)' : editScore >= 80 ? 'Dean\'s List (B+)' : 'Passing Goal'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Target Score Slider */}
+                <div>
+                  <input
+                    type="range"
                     min="50"
                     max="100"
                     value={editScore}
                     onChange={(e) => setEditScore(Number(e.target.value))}
-                    style={{
-                      width: '100%',
-                      padding: '10px 12px',
-                      borderRadius: '10px',
-                      background: 'var(--quest-bg)',
-                      border: '1px solid var(--quest-border)',
-                      color: 'var(--quest-text-primary)'
-                    }}
+                    style={{ width: '100%', accentColor: '#C9F26B', cursor: 'pointer' }}
                   />
                 </div>
-              </div>
 
-              <button
-                type="submit"
-                style={{
-                  marginTop: '8px',
-                  padding: '12px',
-                  borderRadius: '12px',
-                  background: 'var(--quest-accent)',
-                  color: '#13211C',
-                  fontFamily: 'var(--quest-font-heading)',
-                  fontWeight: 800,
-                  fontSize: '15px',
-                  border: 'none',
-                  cursor: 'pointer'
-                }}
-              >
-                Save Profile Changes
-              </button>
-            </form>
+                {/* Daily Study Commitment (Minutes) */}
+                <div>
+                  <label className="form-label" style={{ display: 'block', marginBottom: '6px' }}>
+                    Daily Study Commitment
+                  </label>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    {[15, 30, 45, 60, 90].map((mins) => (
+                      <button
+                        key={mins}
+                        type="button"
+                        onClick={() => setEditDailyGoalMinutes(mins)}
+                        style={{
+                          flex: 1,
+                          padding: '8px 4px',
+                          borderRadius: '10px',
+                          fontSize: '13px',
+                          fontWeight: 800,
+                          border: editDailyGoalMinutes === mins ? '2px solid var(--quest-accent)' : '1px solid var(--quest-border)',
+                          background: editDailyGoalMinutes === mins ? 'rgba(201, 242, 107, 0.2)' : 'var(--quest-bg)',
+                          color: editDailyGoalMinutes === mins ? (isDark ? 'var(--quest-accent)' : '#13211C') : 'var(--quest-text-primary)',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        {mins}m
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Priority Focus Areas */}
+                <div>
+                  <label className="form-label" style={{ display: 'block', marginBottom: '6px' }}>
+                    Priority Syllabus Focus
+                  </label>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                    {[
+                      'Search & Problem-Solving',
+                      'Logic & Knowledge Representation',
+                      'Probabilistic Reasoning',
+                      'Machine Learning & Deep Learning',
+                      'NLP & Natural Language Processing'
+                    ].map((area) => {
+                      const isSelected = editFocusAreas.includes(area);
+                      return (
+                        <button
+                          key={area}
+                          type="button"
+                          onClick={() => {
+                            if (isSelected) {
+                              setEditFocusAreas(editFocusAreas.filter((a) => a !== area));
+                            } else {
+                              setEditFocusAreas([...editFocusAreas, area]);
+                            }
+                          }}
+                          style={{
+                            padding: '6px 12px',
+                            borderRadius: '100px',
+                            fontSize: '12px',
+                            fontWeight: 700,
+                            border: isSelected ? '1px solid var(--quest-accent)' : '1px solid var(--quest-border)',
+                            background: isSelected ? 'rgba(201, 242, 107, 0.15)' : 'var(--quest-bg)',
+                            color: isSelected ? (isDark ? 'var(--quest-accent)' : '#13211C') : 'var(--quest-text-muted)',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          {isSelected ? '✓ ' : '+ '}
+                          {area}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  style={{
+                    marginTop: '6px',
+                    padding: '12px',
+                    borderRadius: '12px',
+                    background: 'var(--quest-accent)',
+                    color: '#13211C',
+                    fontFamily: 'var(--quest-font-heading)',
+                    fontWeight: 800,
+                    fontSize: '15px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 8px rgba(201, 242, 107, 0.3)'
+                  }}
+                >
+                  Save Exam Goals & Milestones
+                </button>
+              </form>
+            </div>
           </div>
+
 
           {/* Right Column: Preferences, Sync & Danger Zone */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>

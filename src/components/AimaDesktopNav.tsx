@@ -38,7 +38,17 @@ export const AimaDesktopNav: React.FC<AimaDesktopNavProps> = ({
         {/* Brand Lockup & Theme Switcher */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '28px' }}>
           <div className="quest-brand-lockup" onClick={() => onSelectTab('home')} style={{ margin: 0 }}>
-            <div className="quest-brand-badge">M</div>
+            <img
+              src="./mantiq-logo.png"
+              alt="Mantiq Logo"
+              style={{
+                width: '38px',
+                height: '38px',
+                borderRadius: '11px',
+                objectFit: 'cover',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+              }}
+            />
             <div>
               <h1 className="quest-brand-title" style={{ fontSize: '20px', lineHeight: 1.1 }}>Mantiq</h1>
               <div style={{ fontSize: '11px', color: 'var(--quest-text-muted)', fontWeight: 600, letterSpacing: '0.01em', marginTop: '2px' }}>
