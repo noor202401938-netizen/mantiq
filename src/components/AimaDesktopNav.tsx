@@ -1,8 +1,9 @@
 import React from 'react';
-import { Home, BookOpen, GraduationCap, Trophy, User, Flame, LogIn, LogOut } from 'lucide-react';
+import { Home, BookOpen, GraduationCap, Trophy, User, Flame, LogIn, LogOut, Sun, Moon } from 'lucide-react';
 import { soundFX } from '../utils/soundEffects';
 import { useProgress } from '../context/ProgressContext';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 export type QuestTab = 'home' | 'learn' | 'lesson' | 'ranks' | 'you';
 
@@ -19,6 +20,7 @@ export const AimaDesktopNav: React.FC<AimaDesktopNavProps> = ({
 }) => {
   const { stats } = useProgress();
   const { user, isGuest, openSignIn, logout } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
   const streakDays = stats.streakDays ?? 0;
 
   const navItems = [
@@ -33,15 +35,42 @@ export const AimaDesktopNav: React.FC<AimaDesktopNavProps> = ({
     <>
       {/* Desktop Sidebar (Pages 21-36) */}
       <aside className="quest-desktop-sidebar">
-        {/* Brand Lockup */}
-        <div className="quest-brand-lockup" onClick={() => onSelectTab('home')}>
-          <div className="quest-brand-badge">M</div>
-          <div>
-            <h1 className="quest-brand-title" style={{ fontSize: '20px', lineHeight: 1.1 }}>Mantiq</h1>
-            <div style={{ fontSize: '11px', color: 'var(--quest-text-muted)', fontWeight: 600, letterSpacing: '0.01em', marginTop: '2px' }}>
-              Let's have some Mantiq about AI
+        {/* Brand Lockup & Theme Switcher */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '28px' }}>
+          <div className="quest-brand-lockup" onClick={() => onSelectTab('home')} style={{ margin: 0 }}>
+            <div className="quest-brand-badge">M</div>
+            <div>
+              <h1 className="quest-brand-title" style={{ fontSize: '20px', lineHeight: 1.1 }}>Mantiq</h1>
+              <div style={{ fontSize: '11px', color: 'var(--quest-text-muted)', fontWeight: 600, letterSpacing: '0.01em', marginTop: '2px' }}>
+                Let's have some Mantiq about AI
+              </div>
             </div>
           </div>
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              soundFX.playClick();
+              toggleTheme();
+            }}
+            style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '8px',
+              background: 'var(--quest-bg)',
+              border: '1px solid var(--quest-border)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: isDark ? '#C9F26B' : 'var(--quest-text-secondary)',
+              cursor: 'pointer',
+              flexShrink: 0
+            }}
+            title={isDark ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
+          >
+            {isDark ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
         </div>
 
         {/* Nav Items Stack */}

@@ -39,7 +39,11 @@
 }
 
 /* Dark Theme Overrides */
-.quest-shell.dark {
+html.dark,
+html.dark-theme,
+body.dark,
+.quest-shell.dark,
+.quest-auth-landing.dark {
   --quest-bg: #0F1612;
   --quest-sidebar-bg: #141E18;
   --quest-card-bg: #18231D;

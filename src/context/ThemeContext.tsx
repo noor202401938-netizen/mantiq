@@ -17,11 +17,15 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     localStorage.setItem('aima_theme', isDark ? 'dark' : 'light');
     if (isDark) {
-      document.documentElement.classList.add('dark-theme');
-      document.documentElement.classList.remove('light-theme');
+      document.documentElement.classList.add('dark-theme', 'dark');
+      document.documentElement.classList.remove('light-theme', 'light');
+      document.body.classList.add('dark');
+      document.body.classList.remove('light');
     } else {
-      document.documentElement.classList.add('light-theme');
-      document.documentElement.classList.remove('dark-theme');
+      document.documentElement.classList.add('light-theme', 'light');
+      document.documentElement.classList.remove('dark-theme', 'dark');
+      document.body.classList.add('light');
+      document.body.classList.remove('dark');
     }
   }, [isDark]);
 

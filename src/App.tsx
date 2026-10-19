@@ -78,11 +78,14 @@ const AppContent: React.FC = () => {
     return saved === 'lab' ? 'lab' : 'chapters';
   });
 
-  // Modals & Active IDs
+  // Modals & Active IDs - All hooks must be called unconditionally at top of component
   const [activeLessonChapterId, setActiveLessonChapterId] = useState<number | null>(() => {
     const saved = localStorage.getItem('mantiq_active_lesson_chapter');
     return saved ? parseInt(saved, 10) : 1;
   });
+  const [activeQuizChapterId, setActiveQuizChapterId] = useState<number | null>(null);
+  const [isFlashcardOpen, setIsFlashcardOpen] = useState<boolean>(false);
+  const [isSyncOpen, setIsSyncOpen] = useState<boolean>(false);
 
   // Persist navigation states across browser refreshes
   useEffect(() => {
@@ -107,10 +110,6 @@ const AppContent: React.FC = () => {
   if (!hasStartedSession) {
     return <AuthLandingPage />;
   }
-
-  const [activeQuizChapterId, setActiveQuizChapterId] = useState<number | null>(null);
-  const [isFlashcardOpen, setIsFlashcardOpen] = useState<boolean>(false);
-  const [isSyncOpen, setIsSyncOpen] = useState<boolean>(false);
 
   const handleStartLesson = (chapterId: number) => {
     setActiveLessonChapterId(chapterId);
