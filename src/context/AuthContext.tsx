@@ -44,13 +44,17 @@ export const GUEST_PROFILE = DEFAULT_SCHOLAR_PROFILE;
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Session tracking: user must authenticate or explicitly continue as guest to start
+  // Session tracking: preserve session across page refreshes until explicit logout
   const [hasStartedSession, setHasStartedSession] = useState<boolean>(() => {
+    const sessionActive = localStorage.getItem('mantiq_session_active');
+    if (sessionActive === 'true') {
+      return true;
+    }
     const saved = localStorage.getItem('aima_user_profile');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (!parsed.isGuest && parsed.email) {
+        if (parsed && parsed.id) {
           return true;
         }
       } catch {
@@ -73,6 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           parsed.id === 'usr_berkeley_03'
         ) {
           localStorage.removeItem('aima_user_profile');
+          localStorage.removeItem('mantiq_session_active');
           return DEFAULT_SCHOLAR_PROFILE;
         }
         return parsed;
@@ -87,10 +92,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
   const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup'>('signin');
 
-  // Persistence
+  // Persistence: persist active session and profile
   useEffect(() => {
-    if (hasStartedSession && !user.isGuest) {
+    if (hasStartedSession && user && user.id) {
       localStorage.setItem('aima_user_profile', JSON.stringify(user));
+      localStorage.setItem('mantiq_session_active', 'true');
     }
   }, [user, hasStartedSession]);
 
@@ -112,11 +118,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const continueAsGuest = () => {
-    setUser({
+    const guestUser: UserProfile = {
       ...DEFAULT_SCHOLAR_PROFILE,
       id: `usr_guest_${Date.now()}`
-    });
+    };
+    setUser(guestUser);
     setHasStartedSession(true);
+    localStorage.setItem('aima_user_profile', JSON.stringify(guestUser));
+    localStorage.setItem('mantiq_session_active', 'true');
   };
 
   const login = async (email: string, password?: string): Promise<{ success: boolean; error?: string }> => {
@@ -134,12 +143,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (password && account.passwordHash && account.passwordHash !== password) {
           return { success: false, error: 'Incorrect password for this registered email.' };
         }
-        setUser({
+        const updatedProfile = {
           ...account.profile,
           lastSyncedAt: new Date().toISOString(),
           isGuest: false
-        });
+        };
+        setUser(updatedProfile);
         setHasStartedSession(true);
+        localStorage.setItem('aima_user_profile', JSON.stringify(updatedProfile));
+        localStorage.setItem('mantiq_session_active', 'true');
         setIsAuthModalOpen(false);
         return { success: true };
       }
@@ -189,6 +201,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       setUser(newProfile);
       setHasStartedSession(true);
+      localStorage.setItem('aima_user_profile', JSON.stringify(newProfile));
+      localStorage.setItem('mantiq_session_active', 'true');
       setIsAuthModalOpen(false);
       return { success: true };
     }
@@ -241,12 +255,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     setUser(newProfile);
     setHasStartedSession(true);
+    localStorage.setItem('aima_user_profile', JSON.stringify(newProfile));
+    localStorage.setItem('mantiq_session_active', 'true');
     setIsAuthModalOpen(false);
     return { success: true };
   };
 
   const logout = () => {
     localStorage.removeItem('aima_user_profile');
+    localStorage.removeItem('mantiq_session_active');
+    localStorage.removeItem('mantiq_active_tab');
+    localStorage.removeItem('mantiq_active_lesson_chapter');
+    localStorage.removeItem('mantiq_learn_subview');
     setUser(DEFAULT_SCHOLAR_PROFILE);
     setHasStartedSession(false);
   };

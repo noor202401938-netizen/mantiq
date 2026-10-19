@@ -1,4 +1,4 @@
-import React, { useState, Suspense, lazy } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ProgressProvider } from './context/ProgressContext';
 import { NotesProvider } from './context/NotesContext';
@@ -64,16 +64,50 @@ const ViewLoadingFallback: React.FC = () => (
 const AppContent: React.FC = () => {
   const { isDark } = useTheme();
   const { hasStartedSession } = useAuth();
-  const [currentTab, setCurrentTab] = useState<QuestTab>('home');
-  const [learnSubView, setLearnSubView] = useState<'chapters' | 'lab'>('chapters');
+
+  const [currentTab, setCurrentTab] = useState<QuestTab>(() => {
+    const saved = localStorage.getItem('mantiq_active_tab');
+    if (saved && ['home', 'learn', 'lesson', 'ranks', 'you'].includes(saved)) {
+      return saved as QuestTab;
+    }
+    return 'home';
+  });
+
+  const [learnSubView, setLearnSubView] = useState<'chapters' | 'lab'>(() => {
+    const saved = localStorage.getItem('mantiq_learn_subview');
+    return saved === 'lab' ? 'lab' : 'chapters';
+  });
+
+  // Modals & Active IDs
+  const [activeLessonChapterId, setActiveLessonChapterId] = useState<number | null>(() => {
+    const saved = localStorage.getItem('mantiq_active_lesson_chapter');
+    return saved ? parseInt(saved, 10) : 1;
+  });
+
+  // Persist navigation states across browser refreshes
+  useEffect(() => {
+    if (hasStartedSession) {
+      localStorage.setItem('mantiq_active_tab', currentTab);
+    }
+  }, [currentTab, hasStartedSession]);
+
+  useEffect(() => {
+    if (hasStartedSession) {
+      localStorage.setItem('mantiq_learn_subview', learnSubView);
+    }
+  }, [learnSubView, hasStartedSession]);
+
+  useEffect(() => {
+    if (hasStartedSession && activeLessonChapterId !== null) {
+      localStorage.setItem('mantiq_active_lesson_chapter', activeLessonChapterId.toString());
+    }
+  }, [activeLessonChapterId, hasStartedSession]);
 
   // If user hasn't authenticated or started session, first page is Sign-In / Register
   if (!hasStartedSession) {
     return <AuthLandingPage />;
   }
 
-  // Modals
-  const [activeLessonChapterId, setActiveLessonChapterId] = useState<number | null>(null);
   const [activeQuizChapterId, setActiveQuizChapterId] = useState<number | null>(null);
   const [isFlashcardOpen, setIsFlashcardOpen] = useState<boolean>(false);
   const [isSyncOpen, setIsSyncOpen] = useState<boolean>(false);
