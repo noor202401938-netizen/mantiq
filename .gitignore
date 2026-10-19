@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Production build outputs
+dist/
+
+# Local environment variables
+.env
+.env*.local
+
+# System & Editor files
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Scratch & development work directory
+scratch/
+
+# Root large reference source PDFs
+# (Note: the deployed in-app textbook PDFs are cleanly served from public/library/)
+/*.pdf
+/Learning App Design.html

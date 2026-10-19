@@ -1,0 +1,1292 @@
+/* ==========================================================================
+   AI AIMA QUEST — EXACT "LEARNING APP DESIGN.PDF" SPECIFICATION
+   Typography: Bricolage Grotesque (Headings & Numerals) + DM Sans (Body)
+   Palette:
+     - Ivory Canvas: #F3F5EF (Dark: #111814)
+     - Pitch Onyx:   #13211C (Dark: #1A2822)
+     - Citron Lime:  #C9F26B (Accent & Focus)
+     - Light Tint:   #EAF6C9
+     - Muted Sage:   #4D5F55 / #9AA89F
+   ========================================================================== */
+
+:root {
+  --quest-font-heading: 'Bricolage Grotesque', -apple-system, sans-serif;
+  --quest-font-body: 'DM Sans', -apple-system, sans-serif;
+
+  /* Color Tokens - Light */
+  --quest-bg: #F3F5EF;
+  --quest-sidebar-bg: #F3F5EF;
+  --quest-card-bg: #FFFFFF;
+  --quest-card-dark: #13211C;
+  --quest-card-dark-text: #F3F5EF;
+  --quest-text-primary: #13211C;
+  --quest-text-secondary: #4D5F55;
+  --quest-text-muted: #7E9084;
+  --quest-accent: #C9F26B;
+  --quest-accent-hover: #bced55;
+  --quest-accent-text: #13211C;
+  --quest-border: #E2E6DD;
+  --quest-border-dark: #273830;
+  --quest-border-focus: #13211C;
+  --quest-podium-silver: #CBD5CD;
+  --quest-podium-gold: #C9F26B;
+  --quest-podium-bronze: #DFE4DC;
+
+  --quest-radius-pill: 28px;
+  --quest-radius-card: 24px;
+  --quest-radius-sm: 16px;
+  --quest-radius-xs: 12px;
+}
+
+/* Dark Theme Overrides */
+.quest-shell.dark {
+  --quest-bg: #0F1612;
+  --quest-sidebar-bg: #141E18;
+  --quest-card-bg: #18231D;
+  --quest-card-dark: #111914;
+  --quest-card-dark-text: #F3F5EF;
+  --quest-text-primary: #F3F5EF;
+  --quest-text-secondary: #9AA89F;
+  --quest-text-muted: #6C7D73;
+  --quest-accent: #C9F26B;
+  --quest-accent-hover: #d2f57c;
+  --quest-accent-text: #13211C;
+  --quest-border: #233129;
+  --quest-border-dark: #32443A;
+  --quest-border-focus: #C9F26B;
+  --quest-podium-silver: #293830;
+  --quest-podium-gold: #C9F26B;
+  --quest-podium-bronze: #233128;
+}
+
+/* Base Shell */
+.quest-shell {
+  min-height: 100vh;
+  background-color: var(--quest-bg);
+  color: var(--quest-text-primary);
+  font-family: var(--quest-font-body);
+  display: flex;
+  transition: background-color 0.25s ease, color 0.25s ease;
+  position: relative;
+}
+
+/* ==========================================================================
+   DESKTOP SIDEBAR NAVIGATION (Pages 21-36)
+   ========================================================================== */
+.quest-desktop-sidebar {
+  width: 250px;
+  min-width: 250px;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  background-color: var(--quest-sidebar-bg);
+  border-right: 1px solid var(--quest-border);
+  display: flex;
+  flex-direction: column;
+  padding: 32px 20px 24px 20px;
+  box-sizing: border-box;
+  z-index: 50;
+}
+
+.quest-brand-lockup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 36px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.quest-brand-badge {
+  width: 36px;
+  height: 36px;
+  background: var(--quest-card-dark);
+  color: var(--quest-accent);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--quest-font-heading);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.quest-brand-title {
+  font-family: var(--quest-font-heading);
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--quest-text-primary);
+  margin: 0;
+}
+
+.quest-nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.quest-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 18px;
+  border-radius: var(--quest-radius-pill);
+  border: 0;
+  background: transparent;
+  color: var(--quest-text-secondary);
+  font-family: var(--quest-font-body);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.quest-nav-item:hover {
+  background: rgba(201, 242, 107, 0.18);
+  color: var(--quest-text-primary);
+}
+
+.quest-nav-item.active {
+  background: var(--quest-accent);
+  color: #13211C !important;
+  font-weight: 700;
+}
+
+.quest-nav-item.active svg {
+  stroke: #13211C;
+}
+
+.quest-sidebar-footer {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 16px;
+  border-top: 1px solid var(--quest-border);
+}
+
+.quest-streak-pill-bottom {
+  background: var(--quest-card-bg);
+  border: 1px solid var(--quest-border);
+  border-radius: var(--quest-radius-sm);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.quest-streak-pill-text {
+  font-family: var(--quest-font-heading);
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--quest-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.quest-streak-sync-sub {
+  font-size: 12px;
+  color: var(--quest-text-muted);
+}
+
+/* ==========================================================================
+   MAIN CONTENT AREA
+   ========================================================================== */
+.quest-main-viewport {
+  flex: 1;
+  padding: 32px 48px 60px 48px;
+  max-width: 1300px;
+  box-sizing: border-box;
+  margin: 0 auto;
+  width: calc(100% - 250px);
+}
+
+.quest-main-viewport.lesson-viewport {
+  padding: 0;
+  max-width: 100vw;
+  width: 100%;
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+@media (max-width: 1024px) {
+  .quest-main-viewport.lesson-viewport {
+    width: 100%;
+    height: calc(100vh - 64px);
+  }
+}
+
+.quest-view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 24px;
+}
+
+.quest-greeting-sub {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--quest-text-secondary);
+  margin-bottom: 4px;
+}
+
+.quest-view-title {
+  font-family: var(--quest-font-heading);
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--quest-text-primary);
+  margin: 0;
+  line-height: 1.1;
+}
+
+.quest-header-level-badge {
+  background: var(--quest-card-bg);
+  border: 1px solid var(--quest-border);
+  color: var(--quest-text-primary);
+  font-family: var(--quest-font-body);
+  font-size: 14px;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: var(--quest-radius-pill);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ==========================================================================
+   PAGE 21 & 1: TODAY'S FOCUS (HOME VIEW)
+   ========================================================================== */
+.quest-home-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 1024px) {
+  .quest-home-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.quest-hero-card {
+  background: var(--quest-card-dark);
+  color: var(--quest-card-dark-text);
+  border-radius: var(--quest-radius-card);
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 8px 24px rgba(19, 33, 28, 0.08);
+}
+
+.quest-hero-kicker {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--quest-accent);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.quest-hero-title {
+  font-family: var(--quest-font-heading);
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.2;
+  margin: 0;
+  color: #F3F5EF;
+}
+
+.quest-hero-subtitle {
+  font-size: 14px;
+  color: #C9D3CC;
+}
+
+.quest-hero-progress-track {
+  height: 8px;
+  background: #273830;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.quest-hero-progress-fill {
+  height: 100%;
+  background: var(--quest-accent);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.quest-hero-btn {
+  margin-top: 10px;
+  align-self: flex-start;
+  min-height: 48px;
+  padding: 0 28px;
+  background: var(--quest-accent);
+  color: #13211C;
+  border: 0;
+  border-radius: var(--quest-radius-pill);
+  font-family: var(--quest-font-body);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.quest-hero-btn:hover {
+  background: var(--quest-accent-hover);
+  transform: translateY(-1px);
+}
+
+.quest-daily-card {
+  background: var(--quest-accent);
+  color: #13211C;
+  border-radius: var(--quest-radius-card);
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.quest-daily-tag {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.quest-daily-title {
+  font-family: var(--quest-font-heading);
+  font-size: 34px;
+  font-weight: 800;
+  margin: 0;
+  line-height: 1;
+}
+
+.quest-daily-sub {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.quest-daily-btn {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0 24px;
+  background: transparent;
+  color: #13211C;
+  border: 2px solid #13211C;
+  border-radius: var(--quest-radius-pill);
+  font-family: var(--quest-font-body);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.quest-daily-btn:hover {
+  background: #13211C;
+  color: var(--quest-accent);
+}
+
+.quest-sub-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+@media (max-width: 1024px) {
+  .quest-sub-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.quest-stat-card {
+  background: var(--quest-card-bg);
+  border: 1px solid var(--quest-border);
+  border-radius: var(--quest-radius-card);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.quest-stat-card-title {
+  font-family: var(--quest-font-heading);
+  font-size: 16px;
+  font-weight: 800;
+  margin: 0 0 16px 0;
+  color: var(--quest-text-primary);
+}
+
+.quest-bar-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px;
+  height: 120px;
+  padding-top: 8px;
+}
+
+.quest-chart-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.quest-chart-bar {
+  width: 100%;
+  max-width: 26px;
+  border-radius: 8px;
+  background: #CBD5CD;
+  transition: height 0.3s ease;
+}
+
+.quest-chart-bar.highlight {
+  background: var(--quest-card-dark);
+}
+
+.quest-chart-day {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--quest-text-secondary);
+}
+
+.quest-exam-header {
+  font-family: var(--quest-font-heading);
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--quest-text-primary);
+  margin-bottom: 4px;
+}
+
+.quest-weak-item {
+  margin-top: 10px;
+}
+
+.quest-weak-name {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.quest-snippet-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: 12px;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.quest-snippet-row.active {
+  background: var(--quest-accent);
+  color: #13211C;
+  font-weight: 700;
+}
+
+.quest-section-title {
+  font-family: var(--quest-font-heading);
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--quest-text-primary);
+  margin: 0 0 16px 0;
+}
+
+.quest-plan-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.quest-plan-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--quest-card-bg);
+  border: 1px solid var(--quest-border);
+  border-radius: 18px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.quest-plan-card:hover {
+  transform: translateX(4px);
+  border-color: var(--quest-border-focus);
+}
+
+.quest-plan-circle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--quest-text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.quest-plan-circle.done {
+  background: var(--quest-text-primary);
+  color: var(--quest-accent);
+}
+
+.quest-plan-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--quest-text-primary);
+  flex: 1;
+}
+
+.quest-plan-pill {
+  padding: 4px 12px;
+  border-radius: var(--quest-radius-pill);
+  font-size: 12px;
+  font-weight: 700;
+  background: #EAF6C9;
+  color: #13211C;
+}
+
+/* ==========================================================================
+   PAGE 25 & 10: LEARN / CHAPTERS VIEW
+   ========================================================================== */
+.quest-learn-layout {
+  display: grid;
+  grid-template-columns: 1.3fr 1.7fr;
+  gap: 32px;
+}
+
+@media (max-width: 960px) {
+  .quest-learn-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.quest-search-bar {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 22px;
+  background: var(--quest-card-bg);
+  border: 1px solid var(--quest-border);
+  border-radius: var(--quest-radius-pill);
+  font-family: var(--quest-font-body);
+  font-size: 15px;
+  color: var(--quest-text-primary);
+  margin-bottom: 24px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.quest-search-bar:focus {
+  border-color: var(--quest-border-focus);
+}
+
+.quest-part-header {
+  font-family: var(--quest-font-heading);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--quest-text-muted);
+  text-transform: uppercase;
+  margin: 20px 0 10px 0;
+}
+
+.quest-chapter-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--quest-card-bg);
+  border: 1px solid var(--quest-border);
+  border-radius: 18px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.quest-chapter-card:hover {
+  border-color: var(--quest-border-focus);
+}
+
+.quest-chapter-card.active {
+  background: var(--quest-card-dark);
+  color: #F3F5EF;
+  border-color: var(--quest-card-dark);
+}
+
+.quest-chapter-card.active .quest-ch-title {
+  color: #F3F5EF;
+}
+
+.quest-chapter-card.active .quest-ch-sub {
+  color: #C9D3CC;
+}
+
+.quest-ch-num {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #E8EBDD;
+  color: #13211C;
+  font-family: var(--quest-font-heading);
+  font-size: 16px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.quest-ch-num.done {
+  background: var(--quest-accent);
+  color: #13211C;
+}
+
+.quest-ch-title {
+  font-family: var(--quest-font-heading);
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--quest-text-primary);
+  margin-bottom: 2px;
+}
+
+.quest-ch-sub {
+  font-size: 13px;
+  color: var(--quest-text-secondary);
+}
+
+.quest-detail-pane {
+  background: var(--quest-card-bg);
+  border: 1px solid var(--quest-border);
+  border-radius: var(--quest-radius-card);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.quest-detail-kicker {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--quest-text-muted);
+}
+
+.quest-detail-title {
+  font-family: var(--quest-font-heading);
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0;
+  line-height: 1.15;
+}
+
+.quest-topic-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  border-radius: 18px;
+  background: var(--quest-bg);
+  border: 1px solid var(--quest-border);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.quest-topic-item.active {
+  background: var(--quest-card-dark);
+  color: #F3F5EF;
+  border-color: var(--quest-card-dark);
+}
+
+.quest-topic-item.active .quest-topic-title {
+  color: #F3F5EF;
+}
+
+.quest-topic-item.active .quest-topic-sub {
+  color: #C9D3CC;
+}
+
+.quest-topic-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--quest-accent);
+  color: #13211C;
+  font-family: var(--quest-font-heading);
+  font-size: 14px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.quest-topic-title {
+  font-family: var(--quest-font-heading);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--quest-text-primary);
+}
+
+.quest-topic-sub {
+  font-size: 13px;
+  color: var(--quest-text-secondary);
+}
+
+/* ==========================================================================
+   PAGE 22 & 6: INTERACTIVE VISUALIZER LAB (Breadth-first search)
+   ========================================================================== */
+.quest-lab-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 32px;
+}
+
+@media (max-width: 960px) {
+  .quest-lab-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.quest-lab-main-card {
+  background: var(--quest-card-bg);
+  border: 1px solid var(--quest-border);
+  border-radius: var(--quest-radius-card);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.quest-mode-toggle {
+  display: inline-flex;
+  background: #E8EBDD;
+  border-radius: var(--quest-radius-pill);
+  padding: 4px;
+  align-self: flex-start;
+  gap: 4px;
+}
+
+.quest-mode-btn {
+  padding: 8px 24px;
+  border-radius: 20px;
+  border: 0;
+  background: transparent;
+  font-family: var(--quest-font-heading);
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  color: var(--quest-text-secondary);
+  transition: all 0.15s ease;
+}
+
+.quest-mode-btn.active {
+  background: var(--quest-card-dark);
+  color: var(--quest-accent);
+}
+
+.quest-tree-canvas-box {
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--quest-bg);
+  border-radius: 20px;
+  padding: 24px;
+}
+
+.quest-step-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16px;
+  border-top: 1px solid var(--quest-border);
+}
+
+.quest-btn-outline {
+  min-height: 44px;
+  padding: 0 24px;
+  border-radius: var(--quest-radius-pill);
+  border: 2px solid var(--quest-text-primary);
+  background: transparent;
+  color: var(--quest-text-primary);
+  font-family: var(--quest-font-body);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.quest-btn-outline:hover {
+  background: var(--quest-text-primary);
+  color: var(--quest-bg);
+}
+
+.quest-btn-lime {
+  min-height: 44px;
+  padding: 0 24px;
+  border-radius: var(--quest-radius-pill);
+  border: 0;
+  background: var(--quest-accent);
+  color: #13211C;
+  font-family: var(--quest-font-body);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.quest-btn-lime:hover {
+  background: var(--quest-accent-hover);
+}
+
+/* ==========================================================================
+   PAGE 26 & 8: RANKS / LEADERBOARD VIEW
+   ========================================================================== */
+.quest-ranks-layout {
+  display: grid;
+  grid-template-columns: 1.4fr 1.6fr;
+  gap: 36px;
+}
+
+@media (max-width: 960px) {
+  .quest-ranks-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.quest-ranks-filter-pills {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+
+.quest-filter-pill {
+  padding: 8px 20px;
+  border-radius: var(--quest-radius-pill);
+  border: 0;
+  background: transparent;
+  font-family: var(--quest-font-body);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--quest-text-secondary);
+}
+
+.quest-filter-pill.active {
+  background: var(--quest-card-dark);
+  color: #F3F5EF;
+  font-weight: 700;
+}
+
+.quest-podium-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 16px;
+  height: 260px;
+  margin-bottom: 32px;
+}
+
+.quest-podium-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  max-width: 110px;
+}
+
+.quest-podium-name {
+  font-family: var(--quest-font-heading);
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--quest-text-primary);
+  text-align: center;
+}
+
+.quest-podium-pillar {
+  width: 100%;
+  border-radius: 18px 18px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--quest-font-heading);
+  font-size: 32px;
+  font-weight: 800;
+  color: #13211C;
+}
+
+.quest-podium-pillar.rank-1 {
+  height: 190px;
+  background: var(--quest-podium-gold);
+}
+
+.quest-podium-pillar.rank-2 {
+  height: 140px;
+  background: var(--quest-podium-silver);
+}
+
+.quest-podium-pillar.rank-3 {
+  height: 105px;
+  background: var(--quest-podium-bronze);
+}
+
+.quest-ranks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.quest-rank-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-radius: 18px;
+  background: var(--quest-card-bg);
+  border: 1px solid var(--quest-border);
+  font-family: var(--quest-font-body);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.quest-rank-row.user-highlight {
+  background: var(--quest-accent);
+  color: #13211C;
+  font-weight: 700;
+  border-color: var(--quest-accent);
+}
+
+.quest-rank-user-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.quest-rank-pos {
+  font-family: var(--quest-font-heading);
+  font-size: 16px;
+  font-weight: 800;
+  width: 24px;
+}
+
+/* ==========================================================================
+   PAGE 30 & 9: YOU / PROFILE & SETTINGS
+   ========================================================================== */
+.quest-you-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+@media (max-width: 960px) {
+  .quest-you-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.quest-settings-card {
+  background: var(--quest-card-bg);
+  border: 1px solid var(--quest-border);
+  border-radius: var(--quest-radius-card);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.quest-level-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.quest-level-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--quest-card-dark);
+  color: var(--quest-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--quest-font-heading);
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.quest-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--quest-border);
+}
+
+.quest-toggle-label {
+  font-family: var(--quest-font-heading);
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--quest-text-primary);
+  margin-bottom: 2px;
+}
+
+.quest-toggle-sub {
+  font-size: 13px;
+  color: var(--quest-text-secondary);
+}
+
+.quest-badges-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.quest-badge-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+}
+
+.quest-badge-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #CBD5CD;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  transition: transform 0.2s ease;
+}
+
+.quest-badge-circle.unlocked {
+  background: var(--quest-accent);
+  border: 2px solid var(--quest-card-dark);
+}
+
+.quest-badge-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--quest-text-primary);
+}
+
+/* ==========================================================================
+   PAGE 23 & 7: FULLSCREEN QUIZ MODAL
+   ========================================================================== */
+.quest-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(19, 33, 28, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.quest-quiz-container {
+  width: 100%;
+  max-width: 680px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--quest-bg);
+  border: 1px solid var(--quest-border);
+  border-radius: var(--quest-radius-card);
+  padding: 28px 32px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 16px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+
+  animation: questPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  margin: auto;
+}
+
+@keyframes questPopIn {
+  from { opacity: 0; transform: scale(0.96) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.quest-quiz-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.quest-quiz-progress-track {
+  flex: 1;
+  height: 10px;
+  background: #CBD5CD;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.quest-quiz-progress-fill {
+  height: 100%;
+  background: var(--quest-accent);
+  border-radius: 5px;
+  transition: width 0.3s ease;
+}
+
+.quest-quiz-xp-tag {
+  background: var(--quest-accent);
+  color: #13211C;
+  font-family: var(--quest-font-heading);
+  font-size: 14px;
+  font-weight: 800;
+  padding: 6px 14px;
+  border-radius: var(--quest-radius-pill);
+}
+
+.quest-quiz-question-title {
+  font-family: var(--quest-font-heading);
+  font-size: clamp(17px, 2vw, 22px);
+  font-weight: 800;
+  color: var(--quest-text-primary);
+  line-height: 1.35;
+  margin: 0 0 14px 0;
+  word-break: break-word;
+}
+
+.quest-options-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.quest-option-btn {
+  padding: 12px 18px;
+  background: var(--quest-card-bg);
+  border: 2px solid var(--quest-border);
+  border-radius: 14px;
+
+  font-family: var(--quest-font-body);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--quest-text-primary);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.quest-option-btn:hover {
+  border-color: var(--quest-border-focus);
+}
+
+.quest-option-btn.selected {
+  background: #EAF6C9;
+  border-color: #13211C;
+  color: #13211C;
+}
+
+.quest-option-btn.correct {
+  background: var(--quest-accent);
+  border-color: #13211C;
+  color: #13211C;
+}
+
+.quest-option-btn.incorrect {
+  background: #FFD6D6;
+  border-color: #FF4B4B;
+  color: #900;
+}
+
+.quest-feedback-banner {
+  background: var(--quest-card-dark);
+  color: #F3F5EF;
+  border-radius: 18px;
+  padding: 18px 24px;
+  font-size: 15px;
+  line-height: 1.4;
+  margin-bottom: 20px;
+}
+
+/* ==========================================================================
+   MOBILE FLOATING NAVIGATION BAR (Pages 1-20)
+   ========================================================================== */
+.quest-mobile-nav-bar {
+  display: none;
+  position: fixed;
+  bottom: 16px;
+  left: 20px;
+  right: 20px;
+  background: #13211C;
+  border-radius: 28px;
+  padding: 6px;
+  gap: 6px;
+  z-index: 999;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+  .quest-desktop-sidebar {
+    display: none;
+  }
+  .quest-main-viewport {
+    width: 100%;
+    padding: 24px 16px 96px 16px;
+  }
+  .quest-mobile-nav-bar {
+    display: flex;
+  }
+}
+
+.quest-mobile-nav-btn {
+  flex: 1;
+  min-height: 48px;
+  border: 0;
+  border-radius: 22px;
+  background: transparent;
+  color: #C9D3CC;
+  font-family: var(--quest-font-body);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.quest-mobile-nav-btn.active {
+  background: var(--quest-accent);
+  color: #13211C;
+  font-weight: 700;
+}
