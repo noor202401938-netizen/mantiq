@@ -5,43 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Mantiq — Let's have some Mantiq about AI</title>
     <meta name="description" content="Mantiq — Let's have some Mantiq about AI. Master Russell & Norvig's Artificial Intelligence with interactive visual simulations, mathematical proofs, and university exam preparation." />
-    <meta name="theme-color" content="#090d16" />
+    <meta name="theme-color" content="#13211C" />
     <link rel="manifest" href="./manifest.json" />
+
+    <!-- Cache Purge & Service Worker Unregistration Script (Runs before modules load) -->
+    <script>
+      (function() {
+        // Purge service workers
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(function(regs) {
+            for (var i = 0; i < regs.length; i++) {
+              regs[i].unregister();
+            }
+          });
+        }
+        // Purge cache storage
+        if ('caches' in window) {
+          caches.keys().then(function(names) {
+            for (var i = 0; i < names.length; i++) {
+              caches.delete(names[i]);
+            }
+          });
+        }
+        // Handle Vite chunk preload errors when new commits deploy
+        window.addEventListener('vite:preloadError', function() {
+          window.location.reload();
+        });
+      })();
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..900;1,14..32,300..900&family=Newsreader:ital,opsz,wght@0,6..72,300..800;1,6..72,300..800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
   </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-    <script>
-      // Service worker management: update immediately to prevent stale caches
-      if ('serviceWorker' in navigator) {
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-          navigator.serviceWorker.getRegistrations().then((registrations) => {
-            for (const registration of registrations) {
-              registration.unregister();
-            }
-          });
-        } else {
-          window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js').then((reg) => {
-              reg.update();
-            }).catch((err) => {
-              console.warn('SW registration:', err);
-            });
-          });
-
-          // Reload once when new service worker takes over
-          let refreshing = false;
-          navigator.serviceWorker.addEventListener('controllerchange', () => {
-            if (!refreshing) {
-              refreshing = true;
-              window.location.reload();
-            }
-          });
+  <body style="margin: 0; background-color: #13211C; color: #F3F5EF;">
+    <div id="root">
+      <div style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Inter', -apple-system, sans-serif; gap: 16px;">
+        <div style="width: 44px; height: 44px; border: 3px solid rgba(255,255,255,0.15); border-top-color: #C9F26B; border-radius: 50%; animation: mantiqSpin 0.8s linear infinite;"></div>
+        <div style="font-size: 15px; font-weight: 700; letter-spacing: 0.2px; color: #E2E6DD;">Loading Mantiq...</div>
+      </div>
+      <style>
+        @keyframes mantiqSpin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
         }
-      }
-    </script>
+      </style>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
