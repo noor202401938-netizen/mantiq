@@ -1,52 +1,44 @@
 import React, { useState } from 'react';
-import { Trophy, Medal, Flame, Zap, Sparkles, GraduationCap } from 'lucide-react';
+import { Trophy, Medal, Flame, Zap, Sparkles, GraduationCap, Users } from 'lucide-react';
 import { useProgress } from '../context/ProgressContext';
+import { useAuth } from '../context/AuthContext';
 import { soundFX } from '../utils/soundEffects';
 
 export const RanksView: React.FC = () => {
   const { stats } = useProgress();
+  const { user } = useAuth();
   const [filter, setFilter] = useState<'Weekly' | 'All time'>('Weekly');
 
   // Compute realistic user XP per filter
   const userTotalXP = stats.xp;
-  const userWeeklyXP = Math.min(userTotalXP, Math.max(80, Math.round(userTotalXP * 0.35) + (stats.streakDays * 50)));
-
+  const userWeeklyXP = Math.min(userTotalXP, Math.round(userTotalXP * 0.4) + (stats.streakDays * 50));
   const currentDisplayXP = filter === 'Weekly' ? userWeeklyXP : userTotalXP;
 
-  const peersByFilter: Record<'Weekly' | 'All time', Array<{ name: string; xp: number; role?: string; isUser: boolean }>> = {
-    Weekly: [
-      { name: 'Ayesha Khan', xp: 820, role: 'Stanford CS221', isUser: false },
-      { name: 'Hamza Tariq', xp: 740, role: 'Oxford Robotics', isUser: false },
-      { name: 'Dr. Elena Rostova', xp: 690, role: 'MIT CSAIL', isUser: false },
-      { name: 'Sana Malik', xp: 580, role: 'Berkeley EECS', isUser: false },
-      { name: 'Bilal Ahmed', xp: 460, role: 'CMU LTI', isUser: false },
-      { name: 'Zara Noor', xp: 390, role: 'Imperial College', isUser: false },
-      { name: 'Chen Wei', xp: 280, role: 'Tsinghua AI', isUser: false },
-      { name: 'Marcus Vance', xp: 210, role: 'Berkeley EECS', isUser: false },
-      { name: 'Elena Popova', xp: 140, role: 'ETH Zürich', isUser: false }
-    ],
-    'All time': [
-      { name: 'Dr. Elena Rostova', xp: 4850, role: 'MIT CSAIL', isUser: false },
-      { name: 'Ayesha Khan', xp: 3920, role: 'Stanford CS221', isUser: false },
-      { name: 'Marcus Vance', xp: 3410, role: 'Berkeley EECS', isUser: false },
-      { name: 'Hamza Tariq', xp: 2950, role: 'Oxford Robotics', isUser: false },
-      { name: 'Sana Malik', xp: 2480, role: 'Berkeley EECS', isUser: false },
-      { name: 'Bilal Ahmed', xp: 1890, role: 'CMU LTI', isUser: false },
-      { name: 'Zara Noor', xp: 1540, role: 'Imperial College', isUser: false },
-      { name: 'Chen Wei', xp: 1120, role: 'Tsinghua AI', isUser: false },
-      { name: 'Alex Mercer', xp: 980, role: 'Stanford TA', isUser: false }
-    ]
-  };
+  let registeredPeers: Array<{ name: string; xp: number; role?: string; isUser: boolean }> = [];
+  try {
+    const raw = localStorage.getItem('aima_registered_users');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      registeredPeers = parsed
+        .map((a: any) => ({
+          name: a.profile?.name || 'Scholar',
+          xp: 0,
+          role: a.profile?.university || 'Academic Scholar',
+          isUser: a.profile?.email?.toLowerCase() === user.email?.toLowerCase()
+        }))
+        .filter((p: any) => !p.isUser);
+    }
+  } catch {
+    // ignore
+  }
 
-  const activePeers = peersByFilter[filter];
-
-  const allRankings = [...activePeers, { name: 'You', xp: currentDisplayXP, role: 'Your Profile', isUser: true }]
+  const allRankings = [...registeredPeers, { name: user.name || 'You', xp: currentDisplayXP, role: user.university || 'Independent Scholar', isUser: true }]
     .sort((a, b) => b.xp - a.xp)
     .map((u, idx) => ({ ...u, rank: idx + 1 }));
 
-  const rank1 = allRankings[0];
-  const rank2 = allRankings[1] || allRankings[0];
-  const rank3 = allRankings[2] || allRankings[1] || allRankings[0];
+  const rank1 = allRankings[0] || { name: user.name || 'You', xp: currentDisplayXP, isUser: true, rank: 1 };
+  const rank2 = allRankings[1] || { name: 'Open Slot', xp: 0, isUser: false, rank: 2 };
+  const rank3 = allRankings[2] || { name: 'Open Slot', xp: 0, isUser: false, rank: 3 };
 
   return (
     <div className="quest-ranks-flow">
@@ -56,7 +48,7 @@ export const RanksView: React.FC = () => {
           <h1 className="quest-view-title">Leaderboard</h1>
           <div style={{ fontSize: '13px', color: 'var(--quest-text-muted)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <GraduationCap size={15} color="var(--quest-accent-dark, #13211C)" />
-            <span>Academic Global Cohort · {filter === 'Weekly' ? 'Current 7-Day Sprint' : 'All-Time Mastery'}</span>
+            <span>Academic Cohort · {filter === 'Weekly' ? 'Current 7-Day Sprint' : 'All-Time Mastery'}</span>
           </div>
         </div>
 

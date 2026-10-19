@@ -5,11 +5,13 @@ export interface AuthContextType {
   user: UserProfile;
   isAuthenticated: boolean;
   isGuest: boolean;
+  hasStartedSession: boolean;
   isAuthModalOpen: boolean;
   authModalMode: 'signin' | 'signup';
   openSignIn: () => void;
   openSignUp: () => void;
   closeAuthModal: () => void;
+  continueAsGuest: () => void;
   login: (email: string, password?: string) => Promise<{ success: boolean; error?: string }>;
   register: (data: Partial<UserProfile> & { password?: string }) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
@@ -19,17 +21,17 @@ export interface AuthContextType {
 }
 
 export const DEFAULT_SCHOLAR_PROFILE: UserProfile = {
-  id: 'usr_scholar',
-  name: 'AI Scholar',
+  id: 'usr_guest',
+  name: 'Auditing Scholar',
   email: '',
   avatar: 'AS',
-  university: 'Academic AI Lab',
-  degreeProgram: 'Computer Science & Artificial Intelligence',
+  university: 'Independent Scholar',
+  degreeProgram: 'Artificial Intelligence',
   academicRole: 'undergraduate',
-  bio: 'Studying Russell & Norvig 4th Edition (AIMA).',
+  bio: 'Auditing Russell & Norvig 4th Edition (AIMA).',
   currentTitle: 'Apprentice Agent',
   targetExamDate: '2026-12-15',
-  targetScore: 95,
+  targetScore: 90,
   dailyGoalMinutes: 30,
   joinedDate: new Date().toISOString().slice(0, 10),
   offlineReady: true,
@@ -42,13 +44,28 @@ export const GUEST_PROFILE = DEFAULT_SCHOLAR_PROFILE;
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Active User Profile - Initialize with saved user or clean scholar profile
+  // Session tracking: user must authenticate or explicitly continue as guest to start
+  const [hasStartedSession, setHasStartedSession] = useState<boolean>(() => {
+    const saved = localStorage.getItem('aima_user_profile');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (!parsed.isGuest && parsed.email) {
+          return true;
+        }
+      } catch {
+        return false;
+      }
+    }
+    return false;
+  });
+
+  // Active User Profile
   const [user, setUser] = useState<UserProfile>(() => {
     const saved = localStorage.getItem('aima_user_profile');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // Wipe legacy demo profiles if found in local storage
         if (
           parsed.id === 'usr_stanford_01' ||
           parsed.email === 'alex.mercer@stanford.edu' ||
@@ -72,10 +89,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Persistence
   useEffect(() => {
-    localStorage.setItem('aima_user_profile', JSON.stringify(user));
-  }, [user]);
+    if (hasStartedSession && !user.isGuest) {
+      localStorage.setItem('aima_user_profile', JSON.stringify(user));
+    }
+  }, [user, hasStartedSession]);
 
-  const isAuthenticated = !user.isGuest;
+  const isAuthenticated = !user.isGuest && Boolean(user.email);
   const isGuest = !!user.isGuest;
 
   const openSignIn = () => {
@@ -92,6 +111,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsAuthModalOpen(false);
   };
 
+  const continueAsGuest = () => {
+    setUser({
+      ...DEFAULT_SCHOLAR_PROFILE,
+      id: `usr_guest_${Date.now()}`
+    });
+    setHasStartedSession(true);
+  };
+
   const login = async (email: string, password?: string): Promise<{ success: boolean; error?: string }> => {
     const cleanEmail = email.trim().toLowerCase();
 
@@ -104,11 +131,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const account = accounts.find((a) => a.profile.email.toLowerCase() === cleanEmail);
       if (account) {
+        if (password && account.passwordHash && account.passwordHash !== password) {
+          return { success: false, error: 'Incorrect password for this registered email.' };
+        }
         setUser({
           ...account.profile,
           lastSyncedAt: new Date().toISOString(),
           isGuest: false
         });
+        setHasStartedSession(true);
         setIsAuthModalOpen(false);
         return { success: true };
       }
@@ -116,7 +147,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Fallback
     }
 
-    // If new academic email, automatically provision a profile
+    // If new institutional/personal email, automatically provision a profile
     if (cleanEmail.includes('@') && cleanEmail.includes('.')) {
       const parts = cleanEmail.split('@');
       const namePart = parts[0]
@@ -126,18 +157,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const domain = parts[1];
       const guessedUni = domain.includes('edu') ? domain.replace('.edu', '').toUpperCase() + ' University' : 'Academic Scholar';
 
+      const initials = namePart ? namePart.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase() : 'AS';
+
       const newProfile: UserProfile = {
         id: `usr_${Date.now()}`,
         name: namePart || 'AI Scholar',
         email: cleanEmail,
-        avatar: 'AS',
+        avatar: initials,
         university: guessedUni,
         degreeProgram: 'Computer Science & Artificial Intelligence',
         academicRole: 'graduate',
         bio: 'Studying Russell & Norvig 4th Edition.',
         currentTitle: 'Rational Agent Scholar',
         targetExamDate: '2026-12-15',
-        targetScore: 95,
+        targetScore: 90,
         dailyGoalMinutes: 30,
         joinedDate: new Date().toISOString().slice(0, 10),
         offlineReady: true,
@@ -145,17 +178,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isGuest: false
       };
 
-      // Save to registered accounts
       try {
         const savedAccountsRaw = localStorage.getItem('aima_registered_users');
         const accounts = savedAccountsRaw ? JSON.parse(savedAccountsRaw) : [];
-        accounts.push({ profile: newProfile });
+        accounts.push({ profile: newProfile, passwordHash: password });
         localStorage.setItem('aima_registered_users', JSON.stringify(accounts));
       } catch {
         // ignore
       }
 
       setUser(newProfile);
+      setHasStartedSession(true);
       setIsAuthModalOpen(false);
       return { success: true };
     }
@@ -168,18 +201,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { success: false, error: 'A valid email address is required.' };
     }
 
+    const initials = data.name
+      ? data.name.trim().split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase()
+      : 'NS';
+
     const newProfile: UserProfile = {
       id: `usr_${Date.now()}`,
       name: data.name?.trim() || 'New Scholar',
       email: data.email.trim().toLowerCase(),
-      avatar: data.avatar || 'NS',
-      university: data.university?.trim() || 'University AI Institute',
-      degreeProgram: data.degreeProgram?.trim() || 'Computer Science / Machine Learning',
+      avatar: data.avatar || initials,
+      university: data.university?.trim() || 'Independent Scholar',
+      degreeProgram: data.degreeProgram?.trim() || 'Computer Science & AI',
       academicRole: data.academicRole || 'undergraduate',
-      bio: data.bio?.trim() || 'Engaged in comprehensive study of Russell & Norvig.',
-      currentTitle: 'Rational Agent Apprentice',
+      bio: data.bio?.trim() || 'Engaged in comprehensive study of Russell & Norvig (AIMA).',
+      currentTitle: 'Apprentice Agent',
       targetExamDate: data.targetExamDate || '2026-12-20',
-      targetScore: data.targetScore || 95,
+      targetScore: data.targetScore || 90,
       dailyGoalMinutes: data.dailyGoalMinutes || 30,
       joinedDate: new Date().toISOString().slice(0, 10),
       offlineReady: true,
@@ -190,26 +227,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const savedAccountsRaw = localStorage.getItem('aima_registered_users');
       const accounts = savedAccountsRaw ? JSON.parse(savedAccountsRaw) : [];
-      accounts.push({ profile: newProfile, passwordHash: data.password });
+      // Replace if account exists, otherwise push
+      const existingIdx = accounts.findIndex((a: any) => a.profile.email.toLowerCase() === newProfile.email);
+      if (existingIdx >= 0) {
+        accounts[existingIdx] = { profile: newProfile, passwordHash: data.password };
+      } else {
+        accounts.push({ profile: newProfile, passwordHash: data.password });
+      }
       localStorage.setItem('aima_registered_users', JSON.stringify(accounts));
     } catch {
       // ignore
     }
 
     setUser(newProfile);
+    setHasStartedSession(true);
     setIsAuthModalOpen(false);
     return { success: true };
   };
 
   const logout = () => {
-    setUser({
-      ...GUEST_PROFILE,
-      id: `usr_guest_${Date.now()}`
-    });
+    localStorage.removeItem('aima_user_profile');
+    setUser(DEFAULT_SCHOLAR_PROFILE);
+    setHasStartedSession(false);
   };
 
   const switchProfile = (profile: UserProfile) => {
     setUser(profile);
+    setHasStartedSession(true);
   };
 
   const updateProfile = (updates: Partial<UserProfile>) => {
@@ -226,11 +270,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         user,
         isAuthenticated,
         isGuest,
+        hasStartedSession,
         isAuthModalOpen,
         authModalMode,
         openSignIn,
         openSignUp,
         closeAuthModal,
+        continueAsGuest,
         login,
         register,
         logout,

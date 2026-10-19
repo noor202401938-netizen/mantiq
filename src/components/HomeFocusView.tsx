@@ -71,7 +71,7 @@ export const HomeFocusView: React.FC<HomeFocusViewProps> = ({
           <div className="quest-hero-subtitle">{resumeChapter.subtitle} · ~12 min</div>
 
           <div className="quest-hero-progress-track">
-            <div className="quest-hero-progress-fill" style={{ width: `${Math.max(20, Math.min(90, coveragePercent + 15))}%` }} />
+            <div className="quest-hero-progress-fill" style={{ width: `${coveragePercent}%` }} />
           </div>
 
           <button
@@ -164,29 +164,47 @@ export const HomeFocusView: React.FC<HomeFocusViewProps> = ({
             {coveragePercent}% covered ({completedChaptersCount}/{totalChapters} chapters)
           </div>
 
-          <div style={{ marginTop: '12px', fontSize: '13px', fontWeight: 700, color: 'var(--quest-text-muted)', textTransform: 'uppercase' }}>
-            Focus priority concepts
-          </div>
+          {quizScores.length === 0 ? (
+            <div
+              style={{
+                marginTop: '14px',
+                padding: '12px 14px',
+                background: 'var(--quest-bg)',
+                borderRadius: '12px',
+                fontSize: '12px',
+                color: 'var(--quest-text-muted)',
+                lineHeight: 1.4
+              }}
+            >
+              Complete chapter quizzes to diagnose your priority focus areas.
+            </div>
+          ) : (
+            <>
+              <div style={{ marginTop: '12px', fontSize: '13px', fontWeight: 700, color: 'var(--quest-text-muted)', textTransform: 'uppercase' }}>
+                Focus priority concepts
+              </div>
 
-          <div className="quest-weak-item">
-            <div className="quest-weak-name">
-              <span title={weakConcept1}>{weakConcept1.length > 22 ? weakConcept1.slice(0, 22) + '...' : weakConcept1}</span>
-              <span>{weakPct1}%</span>
-            </div>
-            <div className="quest-hero-progress-track" style={{ height: '6px' }}>
-              <div className="quest-hero-progress-fill" style={{ width: `${weakPct1}%` }} />
-            </div>
-          </div>
+              <div className="quest-weak-item">
+                <div className="quest-weak-name">
+                  <span title={weakConcept1}>{weakConcept1.length > 22 ? weakConcept1.slice(0, 22) + '...' : weakConcept1}</span>
+                  <span>{weakPct1}%</span>
+                </div>
+                <div className="quest-hero-progress-track" style={{ height: '6px' }}>
+                  <div className="quest-hero-progress-fill" style={{ width: `${weakPct1}%` }} />
+                </div>
+              </div>
 
-          <div className="quest-weak-item">
-            <div className="quest-weak-name">
-              <span title={weakConcept2}>{weakConcept2.length > 22 ? weakConcept2.slice(0, 22) + '...' : weakConcept2}</span>
-              <span>{weakPct2}%</span>
-            </div>
-            <div className="quest-hero-progress-track" style={{ height: '6px' }}>
-              <div className="quest-hero-progress-fill" style={{ width: `${weakPct2}%` }} />
-            </div>
-          </div>
+              <div className="quest-weak-item">
+                <div className="quest-weak-name">
+                  <span title={weakConcept2}>{weakConcept2.length > 22 ? weakConcept2.slice(0, 22) + '...' : weakConcept2}</span>
+                  <span>{weakPct2}%</span>
+                </div>
+                <div className="quest-hero-progress-track" style={{ height: '6px' }}>
+                  <div className="quest-hero-progress-fill" style={{ width: `${weakPct2}%` }} />
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Leaderboard Snippet */}
@@ -197,32 +215,56 @@ export const HomeFocusView: React.FC<HomeFocusViewProps> = ({
           </div>
 
           {(() => {
-            const peers = [
-              { name: 'Ayesha', xp: 1320, isUser: false },
-              { name: 'Hamza', xp: 1210, isUser: false },
-              { name: 'Sana', xp: 1140, isUser: false },
-              { name: 'Bilal', xp: 980, isUser: false },
-              { name: 'Zara', xp: 760, isUser: false },
-            ];
-            const sorted = [...peers, { name: 'You', xp: userXP, isUser: true }]
+            let registeredPeers: Array<{ name: string; xp: number; isUser: boolean }> = [];
+            try {
+              const raw = localStorage.getItem('aima_registered_users');
+              if (raw) {
+                const parsed = JSON.parse(raw);
+                registeredPeers = parsed
+                  .map((a: any) => ({
+                    name: a.profile?.name || 'Scholar',
+                    xp: 0,
+                    isUser: a.profile?.email?.toLowerCase() === user.email?.toLowerCase()
+                  }))
+                  .filter((p: any) => !p.isUser);
+              }
+            } catch {
+              // ignore
+            }
+
+            const sorted = [...registeredPeers, { name: user.name || 'You', xp: userXP, isUser: true }]
               .sort((a, b) => b.xp - a.xp)
               .map((u, i) => ({ ...u, rank: i + 1 }));
 
-            const userEntry = sorted.find((u) => u.isUser) || { rank: 6, name: 'You', xp: userXP };
-            const top2 = sorted.filter((u) => !u.isUser).slice(0, 2);
+            const userEntry = sorted.find((u) => u.isUser) || { rank: 1, name: user.name || 'You', xp: userXP };
+            const others = sorted.filter((u) => !u.isUser).slice(0, 2);
 
             return (
               <>
-                {top2.map((p) => (
-                  <div key={p.rank} className="quest-snippet-row">
-                    <span>{p.rank} {p.name}</span>
-                    <span>{p.xp.toLocaleString()} XP</span>
+                {others.length === 0 ? (
+                  <div style={{ marginTop: '8px' }}>
+                    <div className="quest-snippet-row active">
+                      <span>1 {user.name || 'You'}</span>
+                      <span>{userXP.toLocaleString()} XP</span>
+                    </div>
+                    <div style={{ fontSize: '11px', color: 'var(--quest-accent-text)', marginTop: '8px', fontWeight: 600 }}>
+                      ★ Enrolled Scholar · Rank #1 in Local Cohort
+                    </div>
                   </div>
-                ))}
-                <div className="quest-snippet-row active">
-                  <span>{userEntry.rank} You</span>
-                  <span>{userXP.toLocaleString()} XP</span>
-                </div>
+                ) : (
+                  <>
+                    {others.map((p) => (
+                      <div key={p.rank} className="quest-snippet-row">
+                        <span>{p.rank} {p.name}</span>
+                        <span>{p.xp.toLocaleString()} XP</span>
+                      </div>
+                    ))}
+                    <div className="quest-snippet-row active">
+                      <span>{userEntry.rank} {user.name || 'You'}</span>
+                      <span>{userXP.toLocaleString()} XP</span>
+                    </div>
+                  </>
+                )}
               </>
             );
           })()}
@@ -240,8 +282,8 @@ export const HomeFocusView: React.FC<HomeFocusViewProps> = ({
             onOpenFlashcards();
           }}
         >
-          <div className="quest-plan-circle done">
-            <Check size={14} strokeWidth={3} />
+          <div className={`quest-plan-circle ${stats.xp >= 20 ? 'done' : ''}`}>
+            {stats.xp >= 20 ? <Check size={14} strokeWidth={3} /> : null}
           </div>
           <span className="quest-plan-text">Review 10 flashcards</span>
           <span className="quest-plan-pill" style={{ background: '#EAF6C9' }}>Review</span>

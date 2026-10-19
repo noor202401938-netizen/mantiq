@@ -1,5 +1,5 @@
 import React, { useState, Suspense, lazy } from 'react';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { ProgressProvider } from './context/ProgressContext';
 import { NotesProvider } from './context/NotesContext';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
@@ -8,6 +8,7 @@ import { HomeFocusView } from './components/HomeFocusView';
 import { LearnChaptersView } from './components/LearnChaptersView';
 import { RanksView } from './components/RanksView';
 import { AuthModal } from './components/AuthModal';
+import { AuthLandingPage } from './components/AuthLandingPage';
 import './styles/index.css';
 import './styles/learningAppDesign.css';
 import 'katex/dist/katex.min.css';
@@ -62,8 +63,14 @@ const ViewLoadingFallback: React.FC = () => (
 
 const AppContent: React.FC = () => {
   const { isDark } = useTheme();
+  const { hasStartedSession } = useAuth();
   const [currentTab, setCurrentTab] = useState<QuestTab>('home');
   const [learnSubView, setLearnSubView] = useState<'chapters' | 'lab'>('chapters');
+
+  // If user hasn't authenticated or started session, first page is Sign-In / Register
+  if (!hasStartedSession) {
+    return <AuthLandingPage />;
+  }
 
   // Modals
   const [activeLessonChapterId, setActiveLessonChapterId] = useState<number | null>(null);

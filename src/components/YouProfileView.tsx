@@ -430,11 +430,11 @@ export const YouProfileView: React.FC<YouProfileViewProps> = ({ onOpenSync }) =>
               }}
             >
               <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <Building2 size={14} color="var(--quest-accent-text)" /> {user.university || 'Stanford University'}
+                <Building2 size={14} color="var(--quest-accent-text)" /> {user.university || 'Independent Scholar'}
               </span>
               <span>•</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <GraduationCap size={14} /> {user.degreeProgram || 'Computer Science & AI'}
+                <GraduationCap size={14} /> {user.degreeProgram || 'Artificial Intelligence'}
               </span>
             </div>
 
@@ -532,7 +532,16 @@ export const YouProfileView: React.FC<YouProfileViewProps> = ({ onOpenSync }) =>
                     borderRadius: '100px'
                   }}
                 >
-                  Projected Grade: {examReadinessScore >= 90 ? 'A+' : examReadinessScore >= 80 ? 'A' : 'B+'}
+                  Projected Grade:{' '}
+                  {examReadinessScore === 0
+                    ? 'Pending (0%)'
+                    : examReadinessScore >= 90
+                    ? 'A+'
+                    : examReadinessScore >= 80
+                    ? 'A'
+                    : examReadinessScore >= 70
+                    ? 'B+'
+                    : 'In Progress'}
                 </span>
               </div>
 
@@ -656,28 +665,34 @@ export const YouProfileView: React.FC<YouProfileViewProps> = ({ onOpenSync }) =>
 
               {/* Day circles */}
               <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
-                {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, idx) => (
-                  <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-                    <div
-                      style={{
-                        width: '34px',
-                        height: '34px',
-                        borderRadius: '50%',
-                        background: idx < 6 ? 'var(--quest-card-dark)' : 'transparent',
-                        border: '2px solid var(--quest-card-dark)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: 'var(--quest-accent)',
-                        fontSize: '12px',
-                        fontWeight: 700
-                      }}
-                    >
-                      {idx < 6 ? <Check size={14} strokeWidth={2.5} /> : ''}
+                {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, idx) => {
+                  const todayIdx = (new Date().getDay() + 6) % 7;
+                  const isPastOrToday = idx <= todayIdx;
+                  const isDayDone = streakDays > 0 && isPastOrToday && (todayIdx - idx < streakDays);
+
+                  return (
+                    <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                      <div
+                        style={{
+                          width: '34px',
+                          height: '34px',
+                          borderRadius: '50%',
+                          background: isDayDone ? 'var(--quest-card-dark)' : 'transparent',
+                          border: `2px solid ${isDayDone ? 'var(--quest-card-dark)' : 'var(--quest-border)'}`,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: 'var(--quest-accent)',
+                          fontSize: '12px',
+                          fontWeight: 700
+                        }}
+                      >
+                        {isDayDone ? <Check size={14} strokeWidth={2.5} /> : ''}
+                      </div>
+                      <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--quest-text-muted)' }}>{day}</span>
                     </div>
-                    <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--quest-text-muted)' }}>{day}</span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
