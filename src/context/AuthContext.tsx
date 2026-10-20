@@ -128,8 +128,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem('mantiq_session_active', 'true');
   };
 
+const hashPassword = async (pwd?: string): Promise<string | undefined> => {
+  if (!pwd) return undefined;
+  try {
+    if (typeof crypto !== 'undefined' && crypto.subtle) {
+      const msgBuffer = new TextEncoder().encode(pwd + '_mantiq_scholar_salt');
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+    }
+  } catch {
+    // Fallback if Web Crypto is unavailable
+  }
+  return 'h_' + btoa(pwd).slice(0, 32);
+};
+
   const login = async (email: string, password?: string): Promise<{ success: boolean; error?: string }> => {
     const cleanEmail = email.trim().toLowerCase();
+    const computedHash = password ? await hashPassword(password) : undefined;
 
     // Check saved accounts
     try {
@@ -140,8 +156,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const account = accounts.find((a) => a.profile.email.toLowerCase() === cleanEmail);
       if (account) {
-        if (password && account.passwordHash && account.passwordHash !== password) {
-          return { success: false, error: 'Incorrect password for this registered email.' };
+        if (password && account.passwordHash) {
+          const matches = account.passwordHash === computedHash || account.passwordHash === password;
+          if (!matches) {
+            return { success: false, error: 'Incorrect password for this registered email.' };
+          }
+          // Upgrade legacy unhashed password to SHA-256 hash
+          if (account.passwordHash === password && computedHash) {
+            account.passwordHash = computedHash;
+            localStorage.setItem('aima_registered_users', JSON.stringify(accounts));
+          }
         }
         const updatedProfile = {
           ...account.profile,
@@ -193,7 +217,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const savedAccountsRaw = localStorage.getItem('aima_registered_users');
         const accounts = savedAccountsRaw ? JSON.parse(savedAccountsRaw) : [];
-        accounts.push({ profile: newProfile, passwordHash: password });
+        accounts.push({ profile: newProfile, passwordHash: computedHash });
         localStorage.setItem('aima_registered_users', JSON.stringify(accounts));
       } catch {
         // ignore
@@ -238,15 +262,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       isGuest: false
     };
 
+    const hashedPassword = data.password ? await hashPassword(data.password) : undefined;
+
     try {
       const savedAccountsRaw = localStorage.getItem('aima_registered_users');
       const accounts = savedAccountsRaw ? JSON.parse(savedAccountsRaw) : [];
       // Replace if account exists, otherwise push
       const existingIdx = accounts.findIndex((a: any) => a.profile.email.toLowerCase() === newProfile.email);
       if (existingIdx >= 0) {
-        accounts[existingIdx] = { profile: newProfile, passwordHash: data.password };
+        accounts[existingIdx] = { profile: newProfile, passwordHash: hashedPassword };
       } else {
-        accounts.push({ profile: newProfile, passwordHash: data.password });
+        accounts.push({ profile: newProfile, passwordHash: hashedPassword });
       }
       localStorage.setItem('aima_registered_users', JSON.stringify(accounts));
     } catch {

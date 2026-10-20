@@ -68,8 +68,32 @@ export interface LeaderboardEntry {
   rank?: number;
 }
 
+const sanitizeText = (input: string | undefined | null, maxLen: number, fallback: string): string => {
+  if (!input) return fallback;
+  const clean = input
+    .replace(/<[^>]*>?/gm, '')
+    .replace(/[\x00-\x1F\x7F]/g, '')
+    .trim();
+  return clean.slice(0, maxLen) || fallback;
+};
+
+const getSecureScholarId = (user: UserProfile): string => {
+  if (user.id && user.id.startsWith('usr_')) {
+    return user.id.slice(0, 40);
+  }
+  let localStoredId = typeof window !== 'undefined' ? localStorage.getItem('mantiq_scholar_uuid') : null;
+  if (!localStoredId) {
+    localStoredId = 'usr_' + (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID().replace(/-/g, '').slice(0, 16) : Math.random().toString(36).slice(2, 14));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('mantiq_scholar_uuid', localStoredId);
+    }
+  }
+  return localStoredId;
+};
+
 /**
  * Upsert the current scholar's progress to the global Supabase leaderboard.
+ * Sanitized to ensure zero private data leaks (no emails, passwords, or personal dates).
  */
 export const syncScholarToSupabase = async (
   user: UserProfile,
@@ -80,16 +104,16 @@ export const syncScholarToSupabase = async (
     return { success: false, error: 'Supabase not configured' };
   }
 
-  // Generate stable ID from email or unique ID
-  const scholarId = user.id || (user.email ? `usr_${btoa(user.email).slice(0, 16)}` : 'usr_local');
+  // Strictly sanitized public payload only
+  const scholarId = getSecureScholarId(user);
   const payload = {
     id: scholarId,
-    name: user.name || 'Scholar',
-    university: user.university || 'Academic Scholar',
-    avatar: user.avatar || (user.name ? user.name.slice(0, 2).toUpperCase() : 'AS'),
-    xp: stats.xp || 0,
-    streak: stats.streakDays || 0,
-    level: stats.level || 1,
+    name: sanitizeText(user.name, 50, 'Scholar'),
+    university: sanitizeText(user.university, 80, 'Academic Scholar'),
+    avatar: sanitizeText(user.avatar || (user.name ? user.name.slice(0, 2).toUpperCase() : 'AS'), 4, 'AS'),
+    xp: Math.max(0, Math.min(Math.round(Number(stats.xp) || 0), 500000)),
+    streak: Math.max(0, Math.min(Math.round(Number(stats.streakDays) || 0), 1000)),
+    level: Math.max(1, Math.min(Math.round(Number(stats.level) || 1), 100)),
     updated_at: new Date().toISOString()
   };
 
