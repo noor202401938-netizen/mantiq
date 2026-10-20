@@ -2,27 +2,18 @@ import React, { useState, useEffect } from 'react';
 import {
   Trophy,
   Medal,
-  Flame,
   Zap,
   Sparkles,
   GraduationCap,
-  Users,
   Cloud,
-  CloudOff,
-  RefreshCw,
-  ExternalLink,
-  Check,
-  X,
-  Code
+  RefreshCw
 } from 'lucide-react';
 import { useProgress } from '../context/ProgressContext';
 import { useAuth } from '../context/AuthContext';
-import { soundFX } from '../utils/soundEffects';
 import {
   fetchGlobalLeaderboard,
   syncScholarToSupabase,
   isSupabaseConfigured,
-  setSupabaseCredentials,
   LeaderboardEntry
 } from '../utils/supabaseClient';
 
@@ -35,14 +26,6 @@ export const RanksView: React.FC = () => {
   const [isCloudReady, setIsCloudReady] = useState<boolean>(isSupabaseConfigured());
   const [cloudRankings, setCloudRankings] = useState<LeaderboardEntry[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [showConfigModal, setShowConfigModal] = useState<boolean>(false);
-  const [inputUrl, setInputUrl] = useState<string>(
-    localStorage.getItem('mantiq_supabase_url') || import.meta.env.VITE_SUPABASE_URL || ''
-  );
-  const [inputKey, setInputKey] = useState<string>(
-    localStorage.getItem('mantiq_supabase_anon_key') || import.meta.env.VITE_SUPABASE_ANON_KEY || ''
-  );
-  const [saveStatus, setSaveStatus] = useState<string | null>(null);
 
   // Compute realistic user XP per filter
   const userTotalXP = stats.xp;
@@ -73,17 +56,7 @@ export const RanksView: React.FC = () => {
     refreshCloudLeaderboard();
   }, [user.id, stats.xp, isCloudReady]);
 
-  // Fallback realistic cohort peers (when Supabase has no other peers yet or is offline)
-  const defaultCohortPeers = [
-    { name: 'Dr. Tariq Vance', xp: Math.max(1200, currentDisplayXP + 340), role: 'Oxford University · AI Fellow', isUser: false },
-    { name: 'Chen Wei', xp: Math.max(980, currentDisplayXP + 110), role: 'Tsinghua University · CS Graduate', isUser: false },
-    { name: 'Sarah Jenkins', xp: Math.max(820, Math.max(250, currentDisplayXP - 90)), role: 'MIT EECS · AI Safety Lab', isUser: false },
-    { name: 'Omar Al-Mansoor', xp: Math.max(650, Math.max(150, currentDisplayXP - 180)), role: 'KAUST · Autonomous Agents', isUser: false },
-    { name: 'Elena Rostova', xp: Math.max(490, Math.max(80, currentDisplayXP - 270)), role: 'ETH Zürich · Robotics & Planning', isUser: false },
-    { name: 'Marcus Bell', xp: Math.max(340, Math.max(50, currentDisplayXP - 360)), role: 'Stanford AI · Undergrad Scholar', isUser: false }
-  ];
-
-  // Merge rankings
+  // Real scholars only (no mock / demo cohort peers)
   let allRankings: Array<{ name: string; xp: number; role?: string; isUser: boolean; rank?: number; avatar?: string }> = [];
 
   if (cloudRankings && cloudRankings.length > 0) {
@@ -91,55 +64,41 @@ export const RanksView: React.FC = () => {
       name: c.name,
       xp: filter === 'Weekly' ? Math.round(c.xp * 0.4) + (c.streak * 50) : c.xp,
       role: c.university,
-      isUser: c.isUser || c.name.toLowerCase() === user.name?.toLowerCase(),
+      isUser: c.isUser || c.name.toLowerCase() === (user.name || '').toLowerCase(),
       avatar: c.avatar
     }));
 
-    // If cloud has fewer than 5 members, supplement with cohort peers to keep podium and leaderboard engaging
-    const existingNames = new Set(cloudMapped.map(item => item.name.toLowerCase()));
-    const supplemental = defaultCohortPeers.filter(p => !existingNames.has(p.name.toLowerCase()));
-    
-    allRankings = [...cloudMapped, ...(cloudMapped.length < 5 ? supplemental : [])]
+    // If current scholar isn't listed yet, include them
+    const userFound = cloudMapped.some(item => item.isUser);
+    if (!userFound && user.name) {
+      cloudMapped.push({
+        name: user.name,
+        xp: currentDisplayXP,
+        role: user.university || 'Independent Scholar',
+        isUser: true,
+        avatar: undefined
+      });
+    }
+
+    allRankings = cloudMapped
       .sort((a, b) => b.xp - a.xp)
       .map((u, idx) => ({ ...u, rank: idx + 1 }));
   } else {
-    // Local / Default Cohort Benchmark
+    // Current scholar only when cloud hasn't populated
     allRankings = [
-      ...defaultCohortPeers,
       {
         name: user.name || 'You',
         xp: currentDisplayXP,
         role: user.university || 'Independent Scholar',
-        isUser: true
+        isUser: true,
+        rank: 1
       }
-    ]
-      .sort((a, b) => b.xp - a.xp)
-      .map((u, idx) => ({ ...u, rank: idx + 1 }));
+    ];
   }
 
   const rank1 = allRankings[0] || { name: user.name || 'You', xp: currentDisplayXP, isUser: true, rank: 1 };
-  const rank2 = allRankings[1] || { name: 'Open Slot', xp: 0, isUser: false, rank: 2 };
-  const rank3 = allRankings[2] || { name: 'Open Slot', xp: 0, isUser: false, rank: 3 };
-
-  const handleSaveCredentials = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inputUrl.trim() || !inputKey.trim()) {
-      setSaveStatus('Please provide both Project URL and Anon Key.');
-      return;
-    }
-    const success = setSupabaseCredentials(inputUrl, inputKey);
-    if (success) {
-      setIsCloudReady(true);
-      setSaveStatus('Supabase connected! Refreshing live leaderboard...');
-      setTimeout(() => {
-        refreshCloudLeaderboard();
-        setShowConfigModal(false);
-        setSaveStatus(null);
-      }, 1000);
-    } else {
-      setSaveStatus('Failed to save credentials.');
-    }
-  };
+  const rank2 = allRankings[1];
+  const rank3 = allRankings[2];
 
   return (
     <div className="quest-ranks-flow">
@@ -148,7 +107,7 @@ export const RanksView: React.FC = () => {
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <h1 className="quest-view-title" style={{ margin: 0 }}>Leaderboard</h1>
-            {isCloudReady ? (
+            {isCloudReady && (
               <span
                 style={{
                   display: 'inline-flex',
@@ -165,32 +124,12 @@ export const RanksView: React.FC = () => {
               >
                 <Cloud size={13} /> Live Cloud
               </span>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setShowConfigModal(true)}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  padding: '3px 10px',
-                  borderRadius: '100px',
-                  background: 'var(--quest-accent, #C9F26B)',
-                  color: '#13211C',
-                  fontSize: '11px',
-                  fontWeight: 800,
-                  border: 'none',
-                  cursor: 'pointer'
-                }}
-              >
-                <Zap size={12} /> Connect Supabase
-              </button>
             )}
           </div>
 
           <div style={{ fontSize: '13px', color: 'var(--quest-text-muted)', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <GraduationCap size={15} color="var(--quest-accent-dark, #13211C)" />
-            <span>Academic Cohort · {filter === 'Weekly' ? 'Current 7-Day Sprint' : 'All-Time Mastery'}</span>
+            <span>Global AI Scholars · {filter === 'Weekly' ? 'Current 7-Day Sprint' : 'All-Time Mastery'}</span>
           </div>
         </div>
 
@@ -222,17 +161,19 @@ export const RanksView: React.FC = () => {
       </div>
 
       <div className="quest-ranks-layout">
-        {/* Left: 1-2-3 Podium with Aesthetic Badges */}
+        {/* Left: 1-2-3 Podium with Real Scholars */}
         <div className="quest-stat-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <div className="quest-podium-container">
             {/* Rank 2 */}
             <div className="quest-podium-slot">
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', marginBottom: '6px' }}>
                 <Medal size={20} color="#6B7280" />
-                <div className="quest-podium-name" style={rank2.isUser ? { color: 'var(--quest-accent-text)', fontWeight: 800 } : {}}>
-                  {rank2.name} {rank2.isUser && '(You)'}
+                <div className="quest-podium-name" style={rank2?.isUser ? { color: 'var(--quest-accent-text)', fontWeight: 800 } : {}}>
+                  {rank2 ? `${rank2.name} ${rank2.isUser ? '(You)' : ''}` : '—'}
                 </div>
-                <span style={{ fontSize: '11px', color: 'var(--quest-text-muted)' }}>{rank2.xp.toLocaleString()} XP</span>
+                <span style={{ fontSize: '11px', color: 'var(--quest-text-muted)' }}>
+                  {rank2 ? `${rank2.xp.toLocaleString()} XP` : 'Awaiting Scholar'}
+                </span>
               </div>
               <div className="quest-podium-pillar rank-2">2</div>
             </div>
@@ -253,10 +194,12 @@ export const RanksView: React.FC = () => {
             <div className="quest-podium-slot">
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', marginBottom: '6px' }}>
                 <Medal size={20} color="#B45309" />
-                <div className="quest-podium-name" style={rank3.isUser ? { color: 'var(--quest-accent-text)', fontWeight: 800 } : {}}>
-                  {rank3.name} {rank3.isUser && '(You)'}
+                <div className="quest-podium-name" style={rank3?.isUser ? { color: 'var(--quest-accent-text)', fontWeight: 800 } : {}}>
+                  {rank3 ? `${rank3.name} ${rank3.isUser ? '(You)' : ''}` : '—'}
                 </div>
-                <span style={{ fontSize: '11px', color: 'var(--quest-text-muted)' }}>{rank3.xp.toLocaleString()} XP</span>
+                <span style={{ fontSize: '11px', color: 'var(--quest-text-muted)' }}>
+                  {rank3 ? `${rank3.xp.toLocaleString()} XP` : 'Awaiting Scholar'}
+                </span>
               </div>
               <div className="quest-podium-pillar rank-3">3</div>
             </div>
@@ -274,26 +217,8 @@ export const RanksView: React.FC = () => {
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
             <h2 className="quest-section-title" style={{ margin: 0 }}>
-              {isCloudReady ? 'Global Scholars' : 'Cohort Standings'}
+              Global Scholars
             </h2>
-            <button
-              type="button"
-              onClick={() => setShowConfigModal(true)}
-              style={{
-                background: 'none',
-                border: 'none',
-                fontSize: '12px',
-                color: 'var(--quest-text-muted)',
-                fontWeight: 700,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px'
-              }}
-            >
-              <span>{isCloudReady ? 'Cloud Settings' : 'Configure Cloud'}</span>
-              <span>⚙️</span>
-            </button>
           </div>
 
           <div className="quest-ranks-list">
@@ -369,172 +294,6 @@ export const RanksView: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* Supabase Connection Modal */}
-      {showConfigModal && (
-        <div className="modal-backdrop" onClick={() => setShowConfigModal(false)}>
-          <div
-            className="modal-card"
-            onClick={(e) => e.stopPropagation()}
-            style={{ maxWidth: '520px', width: '100%' }}
-          >
-            <div className="modal-header">
-              <div className="modal-title-row">
-                <Cloud size={20} className="text-accent" />
-                <h3 style={{ margin: 0 }}>Connect Supabase Cloud Leaderboard</h3>
-              </div>
-              <button className="btn-icon" onClick={() => setShowConfigModal(false)}>
-                <X size={18} />
-              </button>
-            </div>
-
-            <div className="modal-body">
-              <p style={{ fontSize: '13.5px', color: 'var(--quest-text-secondary)', lineHeight: 1.5, margin: '0 0 16px' }}>
-                Connect a free Supabase database to let scholars from around the world compete on the same global leaderboard!
-              </p>
-
-              {saveStatus && (
-                <div
-                  style={{
-                    padding: '10px 14px',
-                    borderRadius: '10px',
-                    background: 'rgba(34, 197, 94, 0.12)',
-                    color: '#22C55E',
-                    fontSize: '13px',
-                    fontWeight: 600,
-                    marginBottom: '14px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px'
-                  }}
-                >
-                  <Check size={15} /> {saveStatus}
-                </div>
-              )}
-
-              <form onSubmit={handleSaveCredentials} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                <div>
-                  <label className="form-label" style={{ display: 'block', marginBottom: '5px' }}>
-                    Supabase Project URL
-                  </label>
-                  <input
-                    type="url"
-                    value={inputUrl}
-                    onChange={(e) => setInputUrl(e.target.value)}
-                    placeholder="https://xyzproject.supabase.co"
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '10px 12px',
-                      borderRadius: '10px',
-                      background: 'var(--quest-bg)',
-                      border: '1px solid var(--quest-border)',
-                      color: 'var(--quest-text-primary)',
-                      fontSize: '13px',
-                      boxSizing: 'border-box'
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label className="form-label" style={{ display: 'block', marginBottom: '5px' }}>
-                    Supabase Public Anon Key
-                  </label>
-                  <input
-                    type="password"
-                    value={inputKey}
-                    onChange={(e) => setInputKey(e.target.value)}
-                    placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '10px 12px',
-                      borderRadius: '10px',
-                      background: 'var(--quest-bg)',
-                      border: '1px solid var(--quest-border)',
-                      color: 'var(--quest-text-primary)',
-                      fontSize: '13px',
-                      boxSizing: 'border-box'
-                    }}
-                  />
-                </div>
-
-                {/* SQL Table Instruction Box */}
-                <div
-                  style={{
-                    background: 'var(--quest-bg)',
-                    border: '1px solid var(--quest-border)',
-                    borderRadius: '12px',
-                    padding: '12px',
-                    fontSize: '12px'
-                  }}
-                >
-                  <div style={{ fontWeight: 800, marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--quest-text-primary)' }}>
-                    <Code size={14} /> 1-Click SQL Setup (Run in Supabase SQL Editor)
-                  </div>
-                  <pre
-                    style={{
-                      background: 'var(--quest-card-bg)',
-                      padding: '8px',
-                      borderRadius: '8px',
-                      overflowX: 'auto',
-                      fontSize: '11px',
-                      fontFamily: 'monospace',
-                      margin: 0,
-                      border: '1px solid var(--quest-border)',
-                      color: 'var(--quest-text-secondary)'
-                    }}
-                  >
-{`create table mantiq_leaderboard (
-  id text primary key,
-  name text not null,
-  university text,
-  avatar text,
-  xp integer default 0,
-  streak integer default 0,
-  level integer default 1,
-  updated_at timestamp with time zone default now()
-);
-
-alter table mantiq_leaderboard enable row level security;
-create policy "Public Read" on mantiq_leaderboard for select using (true);
-create policy "Public Upsert" on mantiq_leaderboard for all using (true);`}
-                  </pre>
-                </div>
-
-                <div style={{ display: 'flex', gap: '10px', marginTop: '6px' }}>
-                  <button
-                    type="submit"
-                    style={{
-                      flex: 1,
-                      padding: '12px',
-                      borderRadius: '12px',
-                      background: 'var(--quest-accent, #C9F26B)',
-                      color: '#13211C',
-                      fontFamily: 'var(--quest-font-heading)',
-                      fontWeight: 900,
-                      fontSize: '14px',
-                      border: 'none',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Save & Sync Cloud Leaderboard
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setShowConfigModal(false)}
-                    className="quest-btn-outline"
-                    style={{ padding: '12px 18px', borderRadius: '12px', fontSize: '13px' }}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
