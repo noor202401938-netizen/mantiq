@@ -113,110 +113,65 @@ export const AimaDesktopNav: React.FC<AimaDesktopNavProps> = ({
               onSelectTab('you');
             }}
             style={{
-              padding: '12px',
+              padding: '10px 12px',
               borderRadius: '16px',
               background: currentTab === 'you' ? 'rgba(74, 222, 128, 0.1)' : 'var(--quest-bg)',
               border: currentTab === 'you' ? '1px solid var(--quest-accent)' : '1px solid var(--quest-border)',
               display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
+              flexDirection: 'column',
+              gap: '8px',
               cursor: 'pointer',
               transition: 'all 0.2s ease'
             }}
           >
-            <div
-              style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '10px',
-                background: '#13211C',
-                color: '#C9F26B',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '13px',
-                fontWeight: 800,
-                fontFamily: 'var(--quest-font-heading)',
-                flexShrink: 0
-              }}
-            >
-              {user.name ? user.name.charAt(0).toUpperCase() : 'S'}
-            </div>
-
-            <div style={{ flex: 1, minWidth: 0 }}>
+            {/* Top Row: Avatar, Name & Role, and Logout button */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%' }}>
               <div
                 style={{
+                  width: '34px',
+                  height: '34px',
+                  borderRadius: '10px',
+                  background: '#13211C',
+                  color: '#C9F26B',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                   fontSize: '13px',
                   fontWeight: 800,
-                  color: 'var(--quest-text-primary)',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
+                  fontFamily: 'var(--quest-font-heading)',
+                  flexShrink: 0
                 }}
               >
-                {user.name}
+                {user.name ? user.name.charAt(0).toUpperCase() : 'S'}
               </div>
-              <div
-                style={{
-                  fontSize: '11px',
-                  color: 'var(--quest-text-muted)',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
-                }}
-              >
-                {isGuest ? 'Auditing Scholar' : user.university || 'Scholar'}
-              </div>
-            </div>
 
-            {isGuest ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    soundFX.playClick();
-                    openSignIn();
-                  }}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div
                   style={{
-                    padding: '4px 8px',
-                    borderRadius: '8px',
-                    background: 'var(--quest-accent)',
-                    color: '#13211C',
-                    fontSize: '11px',
+                    fontSize: '13px',
                     fontWeight: 800,
-                    border: 'none',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px'
+                    color: 'var(--quest-text-primary)',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
                   }}
-                  title="Sign in or register"
+                  title={user.name}
                 >
-                  <LogIn size={12} /> Sign In
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    soundFX.playClick();
-                    logout();
-                  }}
+                  {user.name}
+                </div>
+                <div
                   style={{
-                    padding: '4px 6px',
-                    borderRadius: '6px',
-                    background: 'transparent',
-                    color: 'var(--quest-text-muted)',
                     fontSize: '11px',
-                    border: 'none',
-                    cursor: 'pointer'
+                    color: 'var(--quest-text-muted)',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
                   }}
-                  title="Return to Welcome Screen"
                 >
-                  <LogOut size={14} />
-                </button>
+                  {isGuest ? 'Auditing Scholar' : user.university || 'Scholar'}
+                </div>
               </div>
-            ) : (
+
               <button
                 type="button"
                 onClick={(e) => {
@@ -225,17 +180,50 @@ export const AimaDesktopNav: React.FC<AimaDesktopNavProps> = ({
                   logout();
                 }}
                 style={{
-                  padding: '4px 6px',
+                  padding: '5px',
                   borderRadius: '6px',
                   background: 'transparent',
                   color: 'var(--quest-text-muted)',
-                  fontSize: '11px',
                   border: 'none',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0
                 }}
-                title="Sign out"
+                title={isGuest ? 'Return to Welcome Screen' : 'Sign out'}
               >
                 <LogOut size={14} />
+              </button>
+            </div>
+
+            {/* Bottom Row: Full-width Sign In button for guest */}
+            {isGuest && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  soundFX.playClick();
+                  openSignIn();
+                }}
+                style={{
+                  width: '100%',
+                  padding: '6px 10px',
+                  borderRadius: '8px',
+                  background: 'var(--quest-accent, #C9F26B)',
+                  color: '#13211C',
+                  fontSize: '11.5px',
+                  fontWeight: 800,
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '5px'
+                }}
+                title="Sign in or register"
+              >
+                <LogIn size={12} /> Sign In
               </button>
             )}
           </div>

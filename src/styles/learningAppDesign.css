@@ -892,25 +892,26 @@ body.dark,
 .quest-ranks-filter-pills {
   display: flex;
   gap: 8px;
-  margin-bottom: 28px;
+  margin-bottom: 0;
 }
 
 .quest-filter-pill {
-  padding: 8px 20px;
+  padding: 8px 18px;
   border-radius: var(--quest-radius-pill);
   border: 0;
   background: transparent;
   font-family: var(--quest-font-body);
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
   cursor: pointer;
   color: var(--quest-text-secondary);
+  transition: all 0.15s ease;
 }
 
 .quest-filter-pill.active {
   background: var(--quest-card-dark);
   color: #F3F5EF;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .quest-podium-container {
@@ -918,52 +919,59 @@ body.dark,
   align-items: flex-end;
   justify-content: center;
   gap: 16px;
-  height: 260px;
-  margin-bottom: 32px;
+  height: 240px;
+  margin-top: 10px;
+  margin-bottom: 18px;
+  width: 100%;
 }
 
 .quest-podium-slot {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
   flex: 1;
-  max-width: 110px;
+  max-width: 130px;
+  min-width: 90px;
 }
 
 .quest-podium-name {
   font-family: var(--quest-font-heading);
-  font-size: 16px;
+  font-size: 13.5px;
   font-weight: 800;
   color: var(--quest-text-primary);
   text-align: center;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .quest-podium-pillar {
   width: 100%;
-  border-radius: 18px 18px 0 0;
+  border-radius: 16px 16px 0 0;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--quest-font-heading);
-  font-size: 32px;
+  font-size: 26px;
   font-weight: 800;
   color: #13211C;
 }
 
 .quest-podium-pillar.rank-1 {
-  height: 190px;
+  height: 125px;
   background: var(--quest-podium-gold);
   color: #13211C;
 }
 
 .quest-podium-pillar.rank-2 {
-  height: 140px;
+  height: 90px;
   background: var(--quest-podium-silver);
 }
 
 .quest-podium-pillar.rank-3 {
-  height: 105px;
+  height: 65px;
   background: var(--quest-podium-bronze);
 }
 

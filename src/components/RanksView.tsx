@@ -162,15 +162,24 @@ export const RanksView: React.FC = () => {
 
       <div className="quest-ranks-layout">
         {/* Left: 1-2-3 Podium with Real Scholars */}
-        <div className="quest-stat-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div className="quest-stat-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
           <div className="quest-podium-container">
             {/* Rank 2 */}
             <div className="quest-podium-slot">
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', marginBottom: '6px' }}>
-                <Medal size={20} color="#6B7280" />
-                <div className="quest-podium-name" style={rank2?.isUser ? { color: 'var(--quest-accent-text)', fontWeight: 800 } : {}}>
-                  {rank2 ? `${rank2.name} ${rank2.isUser ? '(You)' : ''}` : '—'}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', marginBottom: '4px' }}>
+                <Medal size={18} color="#6B7280" />
+                <div
+                  className="quest-podium-name"
+                  title={rank2 ? rank2.name : undefined}
+                  style={rank2?.isUser ? { color: 'var(--quest-accent-text)', fontWeight: 800 } : {}}
+                >
+                  {rank2 ? rank2.name : '—'}
                 </div>
+                {rank2?.isUser && (
+                  <span style={{ fontSize: '9px', background: 'var(--quest-accent, #C9F26B)', color: '#13211C', padding: '1px 5px', borderRadius: '4px', fontWeight: 800, lineHeight: 1.2 }}>
+                    YOU
+                  </span>
+                )}
                 <span style={{ fontSize: '11px', color: 'var(--quest-text-muted)' }}>
                   {rank2 ? `${rank2.xp.toLocaleString()} XP` : 'Awaiting Scholar'}
                 </span>
@@ -180,23 +189,45 @@ export const RanksView: React.FC = () => {
 
             {/* Rank 1 */}
             <div className="quest-podium-slot">
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', marginBottom: '6px' }}>
-                <Trophy size={24} color="#D97706" />
-                <div className="quest-podium-name" style={{ fontSize: '17px', ...(rank1.isUser ? { color: 'var(--quest-accent-text)', fontWeight: 800 } : {}) }}>
-                  {rank1.name} {rank1.isUser && '(You)'}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', marginBottom: '4px' }}>
+                <Trophy size={22} color="#D97706" />
+                <div
+                  className="quest-podium-name"
+                  title={rank1.name}
+                  style={{
+                    fontSize: '14.5px',
+                    fontWeight: 800,
+                    ...(rank1.isUser ? { color: 'var(--quest-accent-text)' } : {})
+                  }}
+                >
+                  {rank1.name}
                 </div>
-                <span style={{ fontSize: '12px', color: '#D97706', fontWeight: 700 }}>{rank1.xp.toLocaleString()} XP</span>
+                {rank1.isUser && (
+                  <span style={{ fontSize: '9px', background: 'var(--quest-accent, #C9F26B)', color: '#13211C', padding: '1px 5px', borderRadius: '4px', fontWeight: 800, lineHeight: 1.2 }}>
+                    YOU
+                  </span>
+                )}
+                <span style={{ fontSize: '11.5px', color: '#D97706', fontWeight: 700 }}>{rank1.xp.toLocaleString()} XP</span>
               </div>
               <div className="quest-podium-pillar rank-1">1</div>
             </div>
 
             {/* Rank 3 */}
             <div className="quest-podium-slot">
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', marginBottom: '6px' }}>
-                <Medal size={20} color="#B45309" />
-                <div className="quest-podium-name" style={rank3?.isUser ? { color: 'var(--quest-accent-text)', fontWeight: 800 } : {}}>
-                  {rank3 ? `${rank3.name} ${rank3.isUser ? '(You)' : ''}` : '—'}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', marginBottom: '4px' }}>
+                <Medal size={18} color="#B45309" />
+                <div
+                  className="quest-podium-name"
+                  title={rank3 ? rank3.name : undefined}
+                  style={rank3?.isUser ? { color: 'var(--quest-accent-text)', fontWeight: 800 } : {}}
+                >
+                  {rank3 ? rank3.name : '—'}
                 </div>
+                {rank3?.isUser && (
+                  <span style={{ fontSize: '9px', background: 'var(--quest-accent, #C9F26B)', color: '#13211C', padding: '1px 5px', borderRadius: '4px', fontWeight: 800, lineHeight: 1.2 }}>
+                    YOU
+                  </span>
+                )}
                 <span style={{ fontSize: '11px', color: 'var(--quest-text-muted)' }}>
                   {rank3 ? `${rank3.xp.toLocaleString()} XP` : 'Awaiting Scholar'}
                 </span>
