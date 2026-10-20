@@ -29,16 +29,17 @@ export class SyncManager {
     progress: Record<number, ChapterProgress>,
     notes: StudyNote[] = []
   ): SyncPayload {
-    const rawData = JSON.stringify({ profile, stats, progress, notes });
+    const updatedProfile: UserProfile = {
+      ...profile,
+      lastSyncedAt: new Date().toISOString()
+    };
+    const rawData = JSON.stringify({ profile: updatedProfile, stats, progress, notes });
     const checksum = this.computeChecksum(rawData);
 
     return {
       version: '1.1.0',
       timestamp: new Date().toISOString(),
-      profile: {
-        ...profile,
-        lastSyncedAt: new Date().toISOString()
-      },
+      profile: updatedProfile,
       stats,
       progress,
       notes,
@@ -66,6 +67,21 @@ export class SyncManager {
       if (!data.profile || !data.stats || !data.progress) {
         throw new Error('Invalid AIMA backup structure: missing core sections.');
       }
+
+      // Verify payload integrity checksum if provided
+      if (data.checksum) {
+        const rawData = JSON.stringify({
+          profile: data.profile,
+          stats: data.stats,
+          progress: data.progress,
+          notes: data.notes || []
+        });
+        const expectedChecksum = this.computeChecksum(rawData);
+        if (data.checksum !== expectedChecksum) {
+          throw new Error('Backup integrity check failed: checksum mismatch (data may be corrupted or modified).');
+        }
+      }
+
       return data;
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Unknown parsing error';
