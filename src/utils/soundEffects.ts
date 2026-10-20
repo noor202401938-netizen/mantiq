@@ -30,6 +30,10 @@ class SoundFXManager {
     // Silenced
   }
 
+  public playWrong(): void {
+    // Silenced
+  }
+
   public playFanfare(): void {
     // Silenced
   }

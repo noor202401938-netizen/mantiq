@@ -3,6 +3,8 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { ProgressProvider } from './context/ProgressContext';
 import { NotesProvider } from './context/NotesContext';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
+import { useProgress } from './context/ProgressContext';
+import { soundFX } from './utils/soundEffects';
 import { AimaDesktopNav, QuestTab } from './components/AimaDesktopNav';
 import { HomeFocusView } from './components/HomeFocusView';
 import { LearnChaptersView } from './components/LearnChaptersView';
@@ -64,6 +66,15 @@ const ViewLoadingFallback: React.FC = () => (
 const AppContent: React.FC = () => {
   const { isDark } = useTheme();
   const { hasStartedSession } = useAuth();
+  const { stats } = useProgress();
+
+  const isChapterUnlocked = (chId: number): boolean => {
+    if (chId <= 1) return true;
+    return (
+      stats.completedChapterIds?.includes(chId) ||
+      stats.completedChapterIds?.includes(chId - 1)
+    );
+  };
 
   const [currentTab, setCurrentTab] = useState<QuestTab>(() => {
     const saved = localStorage.getItem('mantiq_active_tab');
@@ -112,6 +123,10 @@ const AppContent: React.FC = () => {
   }
 
   const handleStartLesson = (chapterId: number) => {
+    if (!isChapterUnlocked(chapterId)) {
+      soundFX.playWrong();
+      return;
+    }
     setActiveLessonChapterId(chapterId);
     setCurrentTab('lesson');
   };
@@ -165,9 +180,15 @@ const AppContent: React.FC = () => {
 
           {currentTab === 'lesson' && (
             <AimaLessonViewer
-              chapterId={activeLessonChapterId || 1}
+              chapterId={activeLessonChapterId && isChapterUnlocked(activeLessonChapterId) ? activeLessonChapterId : 1}
               onClose={() => setCurrentTab('learn')}
-              onSelectChapter={(chId) => setActiveLessonChapterId(chId)}
+              onSelectChapter={(chId) => {
+                if (isChapterUnlocked(chId)) {
+                  setActiveLessonChapterId(chId);
+                } else {
+                  soundFX.playWrong();
+                }
+              }}
               onStartQuiz={(chId) => {
                 setActiveQuizChapterId(chId);
               }}

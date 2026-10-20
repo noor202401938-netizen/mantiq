@@ -68,23 +68,27 @@ export const LearnChaptersView: React.FC<LearnChaptersViewProps> = ({
               {part.chapters.map((ch) => {
                 const isSelected = selectedChapterId === ch.id;
                 const isCompleted = stats.completedChapterIds?.includes(ch.id);
-                const isUnlocked = ch.id === 1 || stats.completedChapterIds?.includes(ch.id - 1);
-                const isLocked = !isUnlocked && !isCompleted;
+                const isUnlocked = ch.id === 1 || stats.completedChapterIds?.includes(ch.id - 1) || isCompleted;
+                const isLocked = !isUnlocked;
 
                 return (
                   <div
                     key={ch.id}
-                    className={`quest-chapter-card ${isSelected ? 'active' : ''}`}
+                    className={`quest-chapter-card ${isSelected ? 'active' : ''} ${isLocked ? 'locked' : ''}`}
+                    style={{
+                      opacity: isLocked ? 0.6 : 1,
+                      cursor: 'pointer'
+                    }}
                     onClick={() => {
                       soundFX.playClick();
                       setSelectedChapterId(ch.id);
                     }}
                   >
-                    <div className={`quest-ch-num ${isCompleted ? 'done' : ''}`}>
-                      {isCompleted ? <Check size={16} strokeWidth={2.5} /> : isLocked ? <Lock size={16} /> : ch.id}
+                    <div className={`quest-ch-num ${isCompleted ? 'done' : ''}`} style={isLocked ? { background: '#E2E8E4', color: '#6B7280' } : {}}>
+                      {isCompleted ? <Check size={16} strokeWidth={2.5} /> : isLocked ? <Lock size={15} /> : ch.id}
                     </div>
 
-                    <div style={{ flex: 1 }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
                       <div className="quest-ch-title">{ch.title}</div>
                       <div className="quest-ch-sub">
                         {isCompleted
@@ -95,7 +99,11 @@ export const LearnChaptersView: React.FC<LearnChaptersViewProps> = ({
                       </div>
                     </div>
 
-                    <ArrowRight size={18} color={isSelected ? '#C9F26B' : 'var(--quest-text-muted)'} />
+                    {isLocked ? (
+                      <Lock size={16} color="var(--quest-text-muted)" />
+                    ) : (
+                      <ArrowRight size={18} color={isSelected ? '#C9F26B' : 'var(--quest-text-muted)'} />
+                    )}
                   </div>
                 );
               })}
@@ -105,93 +113,205 @@ export const LearnChaptersView: React.FC<LearnChaptersViewProps> = ({
 
         {/* Right Chapter Detail Pane (Page 25 specification) */}
         <div className="quest-detail-pane">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <div className="quest-detail-kicker">CHAPTER {selectedChapter.id}</div>
-              <h2 className="quest-detail-title">{selectedChapter.title}</h2>
-              <div style={{ fontSize: '14px', color: 'var(--quest-text-muted)', marginTop: '4px' }}>
-                {selectedChapter.sections ? selectedChapter.sections.length : 4} topics · {selectedChapter.pageRange}
-              </div>
-            </div>
+          {(() => {
+            const isSelectedCompleted = stats.completedChapterIds?.includes(selectedChapter.id);
+            const isSelectedUnlocked = selectedChapter.id === 1 || stats.completedChapterIds?.includes(selectedChapter.id - 1) || isSelectedCompleted;
+            const isSelectedLocked = !isSelectedUnlocked;
 
-            {selectedChapter.hasSimulation && (
-              <button
-                className="quest-btn-outline"
-                style={{ padding: '8px 18px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}
-                onClick={() => {
-                  soundFX.playClick();
-                  onOpenLab(selectedChapter.id);
-                }}
-              >
-                <FlaskConical size={16} /> Interactive Lab
-              </button>
-            )}
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '12px' }}>
-            {(selectedChapter.sections || ['Core Formalism & Intuition', 'Algorithmic Methods', 'Theoretical Bounds & Proofs', 'Empirical Benchmarks']).map((sectionTitle, idx) => {
-              const topicNum = `${selectedChapter.id}.${idx + 1}`;
-              const isChapterDone = stats.completedChapterIds?.includes(selectedChapter.id);
-              const isTopicDone = isChapterDone;
-              const isTopicActive = !isChapterDone && idx === 0;
-
-              return (
-                <div
-                  key={idx}
-                  className={`quest-topic-item ${isTopicActive ? 'active' : ''}`}
-                  onClick={() => {
-                    soundFX.playClick();
-                    onStartLesson(selectedChapter.id);
-                  }}
-                >
-                  <div className="quest-topic-badge" style={isTopicDone ? { background: 'var(--quest-accent)' } : { background: '#CBD5CD' }}>
-                    {isTopicDone ? <Check size={16} strokeWidth={3} /> : topicNum}
-                  </div>
-
-                  <div style={{ flex: 1 }}>
-                    <div className="quest-topic-title">{sectionTitle}</div>
-                    <div className="quest-topic-sub">
-                      {isTopicDone ? 'Topic completed' : 'AIMA curriculum coverage · ~10 min'}
+            return (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div>
+                    <div className="quest-detail-kicker">CHAPTER {selectedChapter.id}</div>
+                    <h2 className="quest-detail-title">{selectedChapter.title}</h2>
+                    <div style={{ fontSize: '14px', color: 'var(--quest-text-muted)', marginTop: '4px' }}>
+                      {selectedChapter.sections ? selectedChapter.sections.length : 4} topics · {selectedChapter.pageRange}
                     </div>
                   </div>
 
-                  <ArrowRight size={16} color={isTopicActive ? '#C9F26B' : 'var(--quest-text-muted)'} />
+                  {selectedChapter.hasSimulation && (
+                    <button
+                      className="quest-btn-outline"
+                      disabled={isSelectedLocked}
+                      style={{
+                        padding: '8px 18px',
+                        fontSize: '13px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        opacity: isSelectedLocked ? 0.45 : 1,
+                        cursor: isSelectedLocked ? 'not-allowed' : 'pointer'
+                      }}
+                      onClick={() => {
+                        if (isSelectedLocked) {
+                          soundFX.playWrong();
+                          return;
+                        }
+                        soundFX.playClick();
+                        onOpenLab(selectedChapter.id);
+                      }}
+                      title={isSelectedLocked ? `Complete Chapter ${selectedChapter.id - 1} first to unlock interactive lab` : 'Launch Interactive Lab'}
+                    >
+                      <FlaskConical size={16} /> Interactive Lab
+                    </button>
+                  )}
                 </div>
-              );
-            })}
 
-            {/* Chapter Quiz Trigger */}
-            <div
-              className="quest-topic-item"
-              style={{ background: 'var(--quest-card-bg)', borderStyle: 'dashed' }}
-              onClick={() => {
-                soundFX.playClick();
-                onStartLesson(selectedChapter.id);
-              }}
-            >
-              <div className="quest-topic-badge" style={{ background: '#13211C', color: '#C9F26B' }}>
-                Q
-              </div>
-              <div style={{ flex: 1 }}>
-                <div className="quest-topic-title">Chapter assessment</div>
-                <div className="quest-topic-sub">Midterm exam questions · +35 XP</div>
-              </div>
-              <Play size={16} fill="var(--quest-text-primary)" />
-            </div>
-          </div>
+                {/* Prominent Prerequisite Banner for Locked Chapters */}
+                {isSelectedLocked && (
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      padding: '12px 16px',
+                      borderRadius: '12px',
+                      background: 'rgba(239, 68, 68, 0.08)',
+                      border: '1px solid rgba(239, 68, 68, 0.25)',
+                      color: '#B91C1C',
+                      fontSize: '13px',
+                      fontWeight: 700,
+                      marginTop: '16px'
+                    }}
+                  >
+                    <Lock size={16} style={{ flexShrink: 0 }} />
+                    <span>
+                      Chapter {selectedChapter.id} is locked. Complete Chapter {selectedChapter.id - 1} to unlock this curriculum and its exam quizzes.
+                    </span>
+                  </div>
+                )}
 
-          <button
-            className="quest-btn-lime"
-            style={{ width: '100%', minHeight: '52px', marginTop: '16px', fontSize: '16px' }}
-            onClick={() => {
-              soundFX.playClick();
-              onStartLesson(selectedChapter.id);
-            }}
-          >
-            {stats.completedChapterIds?.includes(selectedChapter.id)
-              ? `Review Chapter ${selectedChapter.id}`
-              : `Study Chapter ${selectedChapter.id}`}
-          </button>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '16px' }}>
+                  {(selectedChapter.sections || ['Core Formalism & Intuition', 'Algorithmic Methods', 'Theoretical Bounds & Proofs', 'Empirical Benchmarks']).map((sectionTitle, idx) => {
+                    const topicNum = `${selectedChapter.id}.${idx + 1}`;
+                    const isChapterDone = stats.completedChapterIds?.includes(selectedChapter.id);
+                    const isTopicDone = isChapterDone;
+                    const isTopicActive = !isChapterDone && idx === 0 && !isSelectedLocked;
+
+                    return (
+                      <div
+                        key={idx}
+                        className={`quest-topic-item ${isTopicActive ? 'active' : ''}`}
+                        style={isSelectedLocked ? { opacity: 0.55, cursor: 'not-allowed' } : {}}
+                        onClick={() => {
+                          if (isSelectedLocked) {
+                            soundFX.playWrong();
+                            return;
+                          }
+                          soundFX.playClick();
+                          onStartLesson(selectedChapter.id);
+                        }}
+                      >
+                        <div
+                          className="quest-topic-badge"
+                          style={
+                            isTopicDone
+                              ? { background: 'var(--quest-accent)' }
+                              : isSelectedLocked
+                              ? { background: '#E2E8E4', color: '#6B7280' }
+                              : { background: '#CBD5CD' }
+                          }
+                        >
+                          {isTopicDone ? <Check size={16} strokeWidth={3} /> : isSelectedLocked ? <Lock size={13} /> : topicNum}
+                        </div>
+
+                        <div style={{ flex: 1 }}>
+                          <div className="quest-topic-title">{sectionTitle}</div>
+                          <div className="quest-topic-sub">
+                            {isTopicDone
+                              ? 'Topic completed'
+                              : isSelectedLocked
+                              ? `Locked · Complete Chapter ${selectedChapter.id - 1} first`
+                              : 'AIMA curriculum coverage · ~10 min'}
+                          </div>
+                        </div>
+
+                        {isSelectedLocked ? (
+                          <Lock size={14} color="var(--quest-text-muted)" />
+                        ) : (
+                          <ArrowRight size={16} color={isTopicActive ? '#C9F26B' : 'var(--quest-text-muted)'} />
+                        )}
+                      </div>
+                    );
+                  })}
+
+                  {/* Chapter Quiz Trigger */}
+                  <div
+                    className="quest-topic-item"
+                    style={{
+                      background: 'var(--quest-card-bg)',
+                      borderStyle: 'dashed',
+                      opacity: isSelectedLocked ? 0.5 : 1,
+                      cursor: isSelectedLocked ? 'not-allowed' : 'pointer'
+                    }}
+                    onClick={() => {
+                      if (isSelectedLocked) {
+                        soundFX.playWrong();
+                        return;
+                      }
+                      soundFX.playClick();
+                      onStartLesson(selectedChapter.id);
+                    }}
+                  >
+                    <div className="quest-topic-badge" style={{ background: isSelectedLocked ? '#E2E8E4' : '#13211C', color: isSelectedLocked ? '#6B7280' : '#C9F26B' }}>
+                      {isSelectedLocked ? <Lock size={13} /> : 'Q'}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div className="quest-topic-title">Chapter assessment</div>
+                      <div className="quest-topic-sub">
+                        {isSelectedLocked
+                          ? `Locked · Complete Chapter ${selectedChapter.id - 1} first`
+                          : 'Midterm exam questions · +35 XP'}
+                      </div>
+                    </div>
+                    {isSelectedLocked ? (
+                      <Lock size={14} color="var(--quest-text-muted)" />
+                    ) : (
+                      <Play size={16} fill="var(--quest-text-primary)" />
+                    )}
+                  </div>
+                </div>
+
+                {/* Primary Action Button */}
+                {isSelectedLocked ? (
+                  <button
+                    disabled
+                    style={{
+                      width: '100%',
+                      minHeight: '52px',
+                      marginTop: '16px',
+                      fontSize: '15px',
+                      fontWeight: 800,
+                      borderRadius: '16px',
+                      border: '1px solid var(--quest-border)',
+                      background: 'var(--quest-card-bg)',
+                      color: 'var(--quest-text-muted)',
+                      cursor: 'not-allowed',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px'
+                    }}
+                  >
+                    <Lock size={17} /> Locked · Complete Chapter {selectedChapter.id - 1} to Unlock
+                  </button>
+                ) : (
+                  <button
+                    className="quest-btn-lime"
+                    style={{ width: '100%', minHeight: '52px', marginTop: '16px', fontSize: '16px' }}
+                    onClick={() => {
+                      soundFX.playClick();
+                      onStartLesson(selectedChapter.id);
+                    }}
+                  >
+                    {isSelectedCompleted
+                      ? `Review Chapter ${selectedChapter.id}`
+                      : `Study Chapter ${selectedChapter.id}`}
+                  </button>
+                )}
+              </>
+            );
+          })()}
         </div>
       </div>
     </div>

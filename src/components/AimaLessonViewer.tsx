@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, ArrowRight, ArrowLeft, BookOpen, Lightbulb, Link2, Sparkles, AlertCircle, Play, Check, ChevronRight, ChevronDown, Info, Compass, HelpCircle, ArrowLeftCircle, Award, Maximize2, Minimize2, Layers, BookmarkCheck, Code2, Copy, CheckCheck, Scale, GraduationCap, Pin, Plus, Trash2, Edit3, StickyNote, Bookmark, RefreshCw, Terminal, PlayCircle, Sliders, ExternalLink, CheckCircle2, XCircle } from 'lucide-react';
+import { X, ArrowRight, ArrowLeft, BookOpen, Lightbulb, Link2, Sparkles, AlertCircle, Play, Check, Lock, ChevronRight, ChevronDown, Info, Compass, HelpCircle, ArrowLeftCircle, Award, Maximize2, Minimize2, Layers, BookmarkCheck, Code2, Copy, CheckCheck, Scale, GraduationCap, Pin, Plus, Trash2, Edit3, StickyNote, Bookmark, RefreshCw, Terminal, PlayCircle, Sliders, ExternalLink, CheckCircle2, XCircle } from 'lucide-react';
 import { AIMA_DETAILED_LESSONS, LessonStep } from '../data/aimaLessonsData';
 import { AIMA_PARTS } from '../data/aimaBookData';
 import { getCanonicalLesson, UNIVERSITY_ENRICHMENTS, FormalProof, WorkedProblem, PythonImplementation } from '../data/universityLessonsSupplement';
@@ -698,10 +698,15 @@ export const AimaLessonViewer: React.FC<AimaLessonViewerProps> = ({
                     </div>
                     {part.chapters.map((ch) => {
                       const isCurrent = ch.id === lesson.chapterId;
+                      const isUnlocked = ch.id <= 1 || stats.completedChapterIds?.includes(ch.id) || stats.completedChapterIds?.includes(ch.id - 1);
                       return (
                         <div
                           key={ch.id}
                           onClick={() => {
+                            if (!isUnlocked) {
+                              soundFX.playWrong();
+                              return;
+                            }
                             soundFX.playClick();
                             setIsChapterMenuOpen(false);
                             if (onSelectChapter) {
@@ -713,7 +718,8 @@ export const AimaLessonViewer: React.FC<AimaLessonViewerProps> = ({
                           style={{
                             padding: '6px 10px',
                             borderRadius: '6px',
-                            cursor: 'pointer',
+                            cursor: isUnlocked ? 'pointer' : 'not-allowed',
+                            opacity: isUnlocked ? 1 : 0.45,
                             background: isCurrent ? '#F0F4EC' : 'transparent',
                             color: isCurrent ? '#13211C' : 'var(--quest-text-primary)',
                             fontSize: '12.5px',
@@ -723,8 +729,12 @@ export const AimaLessonViewer: React.FC<AimaLessonViewerProps> = ({
                             justifyContent: 'space-between',
                           }}
                         >
-                          <span>{ch.id}. {ch.title}</span>
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            {!isUnlocked && <Lock size={12} color="var(--quest-text-muted)" />}
+                            {ch.id}. {ch.title}
+                          </span>
                           {isCurrent && <Check size={12} color="#13211C" />}
+                          {!isUnlocked && <span style={{ fontSize: '10px', color: 'var(--quest-text-muted)', fontWeight: 600 }}>Locked</span>}
                         </div>
                       );
                     })}

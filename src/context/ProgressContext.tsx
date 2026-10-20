@@ -276,12 +276,17 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         newBadges.push('perfect_quiz');
       }
 
+      const newCompleted = passed && !prev.completedChapterIds.includes(chapterId)
+        ? [...prev.completedChapterIds, chapterId]
+        : prev.completedChapterIds;
+
       return {
         ...prev,
         xp: newXP,
         level: newLevel,
         totalQuizzesTaken: newQuizzesTaken,
         totalCorrectAnswers: newCorrectAnswers,
+        completedChapterIds: newCompleted,
         unlockedBadgeIds: newBadges
       };
     });
