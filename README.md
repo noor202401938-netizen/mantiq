@@ -6,7 +6,7 @@
 
 <p align="center">
   <em>"Let's have some Mantiq about AI."</em><br />
-  <strong>A rigorous, active-recall interactive study platform for Stuart Russell & Peter Norvig's <em>Artificial Intelligence: A Modern Approach (AIMA 4th Edition)</em>.</strong>
+  <strong>Built by a student, for my fellow students mastering Stuart Russell & Peter Norvig's <em>Artificial Intelligence: A Modern Approach (AIMA 4th Edition)</em>.</strong>
 </p>
 
 <p align="center">
@@ -21,145 +21,118 @@
 
 ---
 
-## 🌟 Overview
+## 💡 Why I Made This For My Fellow Students
 
-**Mantiq** (Arabic: **منطق**, meaning *"Logic"* or *"Rational Reasoning"*) transforms textbook learning into a tactile, active-recall experience. Engineered specifically for undergraduate and graduate computer science students preparing for rigorous university examinations in Artificial Intelligence.
+If you've ever stared at Russell & Norvig's 1,100+ page textbook at 2:00 AM before an AI midterm, you probably know the feeling:
+- *"Wait, why does graph search require consistency while tree search only needs admissibility?"*
+- *"How does alpha-beta pruning move ordering drop complexity from $O(b^d)$ to $O(b^{d/2})$?"*
+- *"Why do textbook summaries skip the exact derivations professors ask on exams?"*
 
-Instead of passive PDF reading, Mantiq bridges theoretical mathematical rigor with active recall, live algorithm walkthroughs, and exam trap mitigation.
+I built **Mantiq** (Arabic: **منطق**, meaning *"Logic"* or *"Rational Reasoning"*) for myself and my classmates so we didn't have to struggle through passive PDF reading alone. 
 
-### 🚀 Key Capabilities
-
-- **📚 27 Chapters Across All 7 Parts:** Complete alignment with Russell & Norvig's *AIMA 4th Edition* (from Rational Agents and $A^*$ Search to POMDPs, Transformers, and AI Safety).
-- **🃏 43+ Active Recall Flashcards:** Chapter-grouped deck navigation with quick filters for Part I–VII, topic pills, and a dedicated **⚠️ Traps Only (11 Cards)** filter for common exam pitfalls.
-- **📐 Crystal-Clear KaTeX Math:** Mathematical equations and theorem proofs rendered in high-contrast Citron Lime (`#C9F26B`) on Pitch Onyx (`#13211C`).
-- **🎯 3-Tier Exam Quizzes:** Tier 1 (Foundation), Tier 2 (Midterm Calculation), and Tier 3 (Graduate Invariants) with detailed derivation rationales.
-- **💾 100% Offline-First with Checksum Verification:** Fully functional without internet connectivity. Export and import portable backup snapshots protected by cryptographic checksum validation.
-- **⚡ Superpowers & TDD Engineering:** Developed following strict Test-Driven Development (Red-Green-Refactor) and automated verification gates.
+Our goal was simple: **build the exact tool we needed to actually understand the math, remember the algorithms, and crush our exams.**
 
 ---
 
-## 📖 Curriculum Map (Parts I – VII)
+## 🎯 What Makes Mantiq Different For Students
 
-| Part | Chapters | Focus Areas | Key Theorems & Algorithms |
+- **🧠 Active Recall Over Passive Skimming:** Reading dense chapters doesn't guarantee you'll remember them in the exam hall. Mantiq tests your memory with interactive chapter-by-chapter drills.
+- **🃏 43+ Chapter-Grouped Flashcards:** Every single chapter from 1 to 27 has dedicated cards with formulas and derivations.
+- **⚠️ 11 Sneaky Exam Traps Filter:** A dedicated toggle just for the trick questions university professors love to throw at you.
+- **📐 Crystal-Clear KaTeX Math:** No blurry screenshots or hand-wavy prose. Every equation and proof is rendered crisply in high-contrast Citron Lime (`#C9F26B`) on Pitch Onyx (`#13211C`).
+- **🏆 3-Tier Multi-Level Quizzes:**
+  - **Tier 1 (Foundation):** Terminology & PEAS framework basics.
+  - **Tier 2 (Midterm Calculations):** Tree search step counting, Bayes factorizations, and heuristic admissibility proofs.
+  - **Tier 3 (Graduate Rigor):** Completeness proofs, Bellman invariants, and convergence bounds.
+- **🔌 100% Offline & Private:** Campus Wi-Fi down in the basement lecture hall? No problem. Mantiq stores everything locally in your browser with zero mandatory sign-ins and full cryptographic backup export.
+
+---
+
+## 📖 The Complete 27-Chapter Curriculum
+
+| Part | Chapters | What You Master | Key Exam Concepts |
 | :--- | :--- | :--- | :--- |
-| **Part I: Artificial Intelligence** | Ch. 1–2 | Foundations & Rational Agents | PEAS Framework, Rationality Criteria, Environment Dimensions |
-| **Part II: Problem-Solving** | Ch. 3–6 | Search & Games | $A^*$, Admissibility vs. Consistency, Minimax, $\alpha$-$\beta$ Pruning, AC-3 |
-| **Part III: Knowledge & Reasoning** | Ch. 7–11 | Logic & Planning | Propositional Resolution, Horn Clauses, FOL Unification, PDDL |
-| **Part IV: Uncertain Knowledge** | Ch. 12–17 | Probability, MDPs & RL | Bayes' Rule, D-Separation, HMM Forward-Backward, Bellman Optimality |
-| **Part V: Machine Learning** | Ch. 18–21 | Learning & Neural Nets | PAC Bounds, Backpropagation, CNN Convolutions, Q-Learning vs. SARSA |
+| **Part I: Artificial Intelligence** | Ch. 1–2 | Rationality & Agents | PEAS Framework, Rationality vs Omniscience, Environment Types |
+| **Part II: Problem-Solving** | Ch. 3–6 | Search, Heuristics & Games | $A^*$, Admissibility vs Consistency, Minimax, $\alpha$-$\beta$ Pruning, AC-3 |
+| **Part III: Knowledge & Reasoning** | Ch. 7–11 | Logic, Resolution & Planning | CNF Conversion, Resolution, First-Order Logic Unification, PDDL |
+| **Part IV: Uncertain Knowledge** | Ch. 12–17 | Probability, Bayes & MDPs | Bayes' Rule, D-Separation, HMM Forward-Backward, Bellman Optimality |
+| **Part V: Machine Learning** | Ch. 18–21 | Supervised, Deep & RL | PAC Bounds, Backpropagation, CNN Convolutions, Q-Learning vs SARSA |
 | **Part VI: Communicating & Acting** | Ch. 22–25 | NLP, Vision & Robotics | Multi-Head Self-Attention, Epipolar Geometry, SLAM Filtering |
-| **Part VII: Philosophy & Ethics** | Ch. 26–27 | Safety & Philosophy | Chinese Room, Strong vs. Weak AI, Value Alignment, Existential Risk |
+| **Part VII: Philosophy & Ethics** | Ch. 26–27 | Limits & Future of AI | Chinese Room, Strong vs Weak AI, Value Alignment, Existential Safety |
 
 ---
 
-## 🎨 Design System
+## 🎓 Recommended Study Workflow
 
-Mantiq is built with custom tokens tailored for distraction-free, long-duration reading and dark-room study sessions:
+Here is how my friends and I use Mantiq to prep for exams:
 
-| Token Name | Hex Code | Swatch | Application |
-| :--- | :--- | :--- | :--- |
-| **Pitch Onyx** | `#13211C` | `■` | Primary dark surface, code blocks, modal backgrounds |
-| **Citron Lime** | `#C9F26B` | `■` | Active accents, formula highlights, primary CTA buttons |
-| **Ivory** | `#F3F5EF` | `■` | Text typography, reading backgrounds in Zen mode |
-| **Card Surface** | `#1A2F27` | `■` | Elevated cards, quiz options, flashcard reverse face |
-
----
-
-## 🛠️ Architecture & Tech Stack
-
-```text
-src/
-├── components/          # UI Views & Interactive Modals
-│   ├── AimaDesktopNav.tsx       # Desktop & Mobile responsive navigation
-│   ├── AimaFlashcardModal.tsx   # 43+ Chapter-grouped flashcard deck
-│   ├── AimaLessonViewer.tsx     # In-depth 27-chapter reading & rigor view
-│   ├── AimaQuizModal.tsx        # 3-Tier examination testing module
-│   ├── HomeFocusView.tsx        # Daily focus, streak, and quick drills
-│   ├── LearnChaptersView.tsx    # Complete syllabus directory
-│   ├── SyncModal.tsx            # Cryptographic backup export/import
-│   └── YouProfileView.tsx       # Scholar stats, XP, and badges
-├── context/             # Global State Management
-│   ├── AuthContext.tsx          # Scholar profile & local session
-│   ├── ProgressContext.tsx      # XP, streak tracking, chapter unlock gates
-│   ├── NotesContext.tsx         # Margin annotations & pinned chapter notes
-│   └── ThemeContext.tsx         # Pitch Onyx Dark / Ivory Light switching
-├── data/                # Authoritative Curriculum Data
-│   ├── aimaBookData.ts          # Parts, chapters, section definitions
-│   ├── aimaExamFlashcardsData.ts# 43+ rigorous flashcards with KaTeX
-│   ├── aimaLessonsData.ts       # Detailed lecture content & proofs
-│   └── quizzesData.ts           # Tiered chapter exam questions
-└── utils/               # Helpers & Engines
-    ├── mathRenderer.tsx         # KaTeX rendering & inline markdown parser
-    ├── soundEffects.ts          # Tactile audio feedback (click, success, error)
-    ├── supabaseClient.ts        # Optional cloud synchronization
-    └── syncManager.ts           # Backup generation with checksum validation
+```mermaid
+graph TD
+    A["1. Read Chapter Summary<br/>(Reading Mode)"] --> B["2. Trace Worked Problems<br/>(Practice Mode)"]
+    B --> C["3. Review Proofs & Invariants<br/>(Graduate Rigor Mode)"]
+    C --> D["4. Drill Chapter Flashcards<br/>(Focus on ⚠️ Traps)"]
+    D --> E["5. Take 3-Tier Chapter Quiz<br/>(Tier 1 ➔ 2 ➔ 3)"]
+    E --> F["6. Export Safe Offline Backup<br/>(One-click .json snapshot)"]
 ```
 
 ---
 
-## 💻 Developer Quickstart
+## 🎨 Design Tokens
 
-### Prerequisites
-- **Node.js** `v20.x` or higher
-- **npm** `v10.x` or higher
+Mantiq is styled specifically for late-night, distraction-free study sessions without eye strain:
 
-### 1. Clone the Repository
+| Color | Hex | Swatch | Purpose |
+| :--- | :--- | :--- | :--- |
+| **Pitch Onyx** | `#13211C` | `■` | Primary dark surface, code blocks, deep contrast |
+| **Citron Lime** | `#C9F26B` | `■` | Active accents, math formula highlights, success indicators |
+| **Ivory** | `#F3F5EF` | `■` | Clean reading typography and Zen mode background |
+| **Deep Card** | `#1A2F27` | `■` | Elevated cards, quiz options, and flashcard reverse |
+
+---
+
+## 💻 Developer & Contributor Quickstart
+
+Want to contribute new flashcards, worked examples, or help a fellow student? We'd love your help!
+
+### Setup
 ```bash
+# Clone the repository
 git clone https://github.com/noor202401938-netizen/mantiq.git
 cd mantiq
-```
 
-### 2. Install Dependencies
-```bash
+# Install dependencies
 npm install
-```
 
-### 3. Run Development Server
-```bash
+# Start local development server
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### 4. Run Automated Tests
+### Running Tests (Superpowers TDD)
 ```bash
-npm test            # Runs all Vitest test suites
+npm test            # Run all Vitest automated test suites
 npm run test:watch  # Interactive TDD watch mode
-```
-
-### 5. Production Build
-```bash
-npm run build       # Compiles TypeScript types and produces ./dist bundle
-npm run preview     # Preview production build locally
+npm run build       # Verify TypeScript types and production bundle
 ```
 
 ---
 
-## 🛡️ Engineering Disciplines (`Superpowers`)
+## 📚 Student & Developer Documentation
 
-This codebase enforces disciplined agent workflows via the [**obra/superpowers**](https://github.com/obra/superpowers) engineering framework:
-
-1. **Test-Driven Development (TDD):** The Iron Law — *No production code without a failing test first*. Every business logic fix (e.g., checksum verification in `SyncManager`) begins with a failing test in `tests/`.
-2. **Verification Before Completion:** No feature or bugfix is marked complete without fresh, checkable command evidence (`npm test` and `npm run build`).
-3. **Automated CI Test Gate:** Every push to `main` triggers [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml), running Vitest prior to publishing to GitHub Pages.
-
----
-
-## 📚 Documentation Index
-
-- **[Learner / User Guide](docs/USER_GUIDE.md):** Complete walkthrough of active recall flashcards, study tips, and offline backup.
-- **[Developer & Architecture Guide](docs/DEVELOPER_GUIDE.md):** Coding conventions, state management patterns, and math rendering details.
-- **[Contributing Guidelines](CONTRIBUTING.md):** How to submit issues, add flashcards, or contribute new chapter lessons.
-- **[Code of Conduct](CODE_OF_CONDUCT.md):** Community standards and expectations.
-- **[LLM Summary for AI Assistants](public/llms.txt):** Machine-readable curriculum summary for AI search engines.
+- **[Learner Guide](docs/USER_GUIDE.md):** Complete study tips, exam strategies, and backup walkthrough.
+- **[Developer & Architecture Guide](docs/DEVELOPER_GUIDE.md):** Technical design, state context layout, and KaTeX rendering engine.
+- **[Contributing Guidelines](CONTRIBUTING.md):** How to submit exam flashcards, report typos, or improve explanations.
+- **[Code of Conduct](CODE_OF_CONDUCT.md):** Community standards.
+- **[LLM Machine-Readable Index](public/llms.txt):** Summary file for AI assistants (Perplexity, ChatGPT, Claude) to cite Mantiq.
 
 ---
 
 ## 📄 License
 
-Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for details.
+Distributed under the **MIT License**. Free for all students and educators everywhere.
 
 ---
 
 <p align="center">
-  Crafted with care for university scholars mastering Artificial Intelligence.
+  <strong>Built with ❤️ for my fellow students everywhere studying Artificial Intelligence.</strong><br />
+  <em>If Mantiq helped you ace your exam, share it with a classmate!</em>
 </p>
