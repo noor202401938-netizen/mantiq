@@ -229,7 +229,7 @@ export const RanksView: React.FC = () => {
             <div className="quest-podium-slot">
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', marginBottom: '6px' }}>
                 <Medal size={20} color="#6B7280" />
-                <div className="quest-podium-name" style={rank2.isUser ? { color: '#166534', fontWeight: 800 } : {}}>
+                <div className="quest-podium-name" style={rank2.isUser ? { color: 'var(--quest-accent-text)', fontWeight: 800 } : {}}>
                   {rank2.name} {rank2.isUser && '(You)'}
                 </div>
                 <span style={{ fontSize: '11px', color: 'var(--quest-text-muted)' }}>{rank2.xp.toLocaleString()} XP</span>
@@ -241,10 +241,10 @@ export const RanksView: React.FC = () => {
             <div className="quest-podium-slot">
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', marginBottom: '6px' }}>
                 <Trophy size={24} color="#D97706" />
-                <div className="quest-podium-name" style={{ fontSize: '17px', ...(rank1.isUser ? { color: '#166534', fontWeight: 800 } : {}) }}>
+                <div className="quest-podium-name" style={{ fontSize: '17px', ...(rank1.isUser ? { color: 'var(--quest-accent-text)', fontWeight: 800 } : {}) }}>
                   {rank1.name} {rank1.isUser && '(You)'}
                 </div>
-                <span style={{ fontSize: '12px', color: '#B45309', fontWeight: 700 }}>{rank1.xp.toLocaleString()} XP</span>
+                <span style={{ fontSize: '12px', color: '#D97706', fontWeight: 700 }}>{rank1.xp.toLocaleString()} XP</span>
               </div>
               <div className="quest-podium-pillar rank-1">1</div>
             </div>
@@ -253,7 +253,7 @@ export const RanksView: React.FC = () => {
             <div className="quest-podium-slot">
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', marginBottom: '6px' }}>
                 <Medal size={20} color="#B45309" />
-                <div className="quest-podium-name" style={rank3.isUser ? { color: '#166534', fontWeight: 800 } : {}}>
+                <div className="quest-podium-name" style={rank3.isUser ? { color: 'var(--quest-accent-text)', fontWeight: 800 } : {}}>
                   {rank3.name} {rank3.isUser && '(You)'}
                 </div>
                 <span style={{ fontSize: '11px', color: 'var(--quest-text-muted)' }}>{rank3.xp.toLocaleString()} XP</span>
@@ -334,7 +334,7 @@ export const RanksView: React.FC = () => {
                         height: '30px',
                         borderRadius: '50%',
                         background: u.isUser ? 'var(--quest-accent, #C9F26B)' : 'var(--quest-bg)',
-                        color: '#13211C',
+                        color: u.isUser ? '#13211C' : 'var(--quest-text-primary)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',

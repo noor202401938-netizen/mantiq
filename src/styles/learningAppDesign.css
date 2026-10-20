@@ -21,13 +21,17 @@
   --quest-card-dark-text: #F3F5EF;
   --quest-text-primary: #13211C;
   --quest-text-secondary: #4D5F55;
-  --quest-text-muted: #7E9084;
+  --quest-text-muted: #5C7063;
   --quest-accent: #C9F26B;
   --quest-accent-hover: #bced55;
-  --quest-accent-text: #13211C;
+  --quest-accent-text: #1B4332;
+  --quest-on-accent: #13211C;
   --quest-border: #E2E6DD;
   --quest-border-dark: #273830;
   --quest-border-focus: #13211C;
+  --quest-light-tint: #EAF6C9;
+  --quest-light-tint-text: #13211C;
+  --quest-surface-subtle: #F8FAF6;
   --quest-podium-silver: #CBD5CD;
   --quest-podium-gold: #C9F26B;
   --quest-podium-bronze: #DFE4DC;
@@ -44,23 +48,27 @@ html.dark-theme,
 body.dark,
 .quest-shell.dark,
 .quest-auth-landing.dark {
-  --quest-bg: #0F1612;
-  --quest-sidebar-bg: #141E18;
-  --quest-card-bg: #18231D;
-  --quest-card-dark: #111914;
+  --quest-bg: #0C1411;
+  --quest-sidebar-bg: #111A15;
+  --quest-card-bg: #16221C;
+  --quest-card-dark: #0F1612;
   --quest-card-dark-text: #F3F5EF;
   --quest-text-primary: #F3F5EF;
-  --quest-text-secondary: #9AA89F;
-  --quest-text-muted: #6C7D73;
+  --quest-text-secondary: #B4C4B9;
+  --quest-text-muted: #8FA395;
   --quest-accent: #C9F26B;
   --quest-accent-hover: #d2f57c;
-  --quest-accent-text: #13211C;
-  --quest-border: #233129;
-  --quest-border-dark: #32443A;
+  --quest-accent-text: #C9F26B;
+  --quest-on-accent: #13211C;
+  --quest-border: #23332A;
+  --quest-border-dark: #32473C;
   --quest-border-focus: #C9F26B;
-  --quest-podium-silver: #293830;
+  --quest-light-tint: rgba(201, 242, 107, 0.14);
+  --quest-light-tint-text: #C9F26B;
+  --quest-surface-subtle: #1C2B23;
+  --quest-podium-silver: #2D3D34;
   --quest-podium-gold: #C9F26B;
-  --quest-podium-bronze: #233128;
+  --quest-podium-bronze: #25332B;
 }
 
 /* Base Shell */
@@ -946,6 +954,7 @@ body.dark,
 .quest-podium-pillar.rank-1 {
   height: 190px;
   background: var(--quest-podium-gold);
+  color: #13211C;
 }
 
 .quest-podium-pillar.rank-2 {
@@ -956,6 +965,18 @@ body.dark,
 .quest-podium-pillar.rank-3 {
   height: 105px;
   background: var(--quest-podium-bronze);
+}
+
+.dark .quest-podium-pillar.rank-2,
+.dark-theme .quest-podium-pillar.rank-2,
+.quest-shell.dark .quest-podium-pillar.rank-2 {
+  color: #F3F5EF;
+}
+
+.dark .quest-podium-pillar.rank-3,
+.dark-theme .quest-podium-pillar.rank-3,
+.quest-shell.dark .quest-podium-pillar.rank-3 {
+  color: #E2E8E4;
 }
 
 .quest-ranks-list {
@@ -978,10 +999,19 @@ body.dark,
 }
 
 .quest-rank-row.user-highlight {
-  background: var(--quest-accent);
-  color: #13211C;
-  font-weight: 700;
-  border-color: var(--quest-accent);
+  background: var(--quest-accent) !important;
+  border-color: var(--quest-accent) !important;
+}
+
+.quest-rank-row.user-highlight,
+.quest-rank-row.user-highlight div,
+.quest-rank-row.user-highlight span,
+.quest-rank-row.user-highlight .quest-rank-pos {
+  color: #13211C !important;
+}
+
+.quest-rank-row.user-highlight svg {
+  stroke: #13211C;
 }
 
 .quest-rank-user-left {
@@ -1294,3 +1324,87 @@ body.dark,
   color: #13211C;
   font-weight: 700;
 }
+
+/* ==========================================================================
+   UNIVERSAL DARK MODE CONTRAST & ACCESSIBILITY SAFEGUARDS
+   ========================================================================== */
+.dark,
+.dark-theme,
+.quest-shell.dark {
+  color-scheme: dark;
+}
+
+/* 1. Surfaces that had hardcoded light backgrounds */
+.dark [style*="background: #FFFFFF"],
+.dark [style*="background: #ffffff"],
+.dark [style*="background: rgb(255, 255, 255)"],
+.dark [style*="background-color: #FFFFFF"],
+.dark [style*="background-color: #ffffff"],
+.dark-theme [style*="background: #FFFFFF"],
+.dark-theme [style*="background: #ffffff"],
+.quest-shell.dark [style*="background: #FFFFFF"],
+.quest-shell.dark [style*="background: #ffffff"] {
+  background: var(--quest-card-bg) !important;
+  color: var(--quest-text-primary);
+}
+
+.dark [style*="background: #F8FAF6"],
+.dark [style*="background: #F0F5EB"],
+.dark [style*="background: #F0F4EC"],
+.dark [style*="background: #F0F3EC"],
+.dark-theme [style*="background: #F8FAF6"],
+.dark-theme [style*="background: #F0F5EB"],
+.dark-theme [style*="background: #F0F4EC"],
+.quest-shell.dark [style*="background: #F8FAF6"],
+.quest-shell.dark [style*="background: #F0F5EB"] {
+  background: var(--quest-surface-subtle) !important;
+  color: var(--quest-text-primary);
+}
+
+/* 2. Soft lime pills & badges in dark mode */
+.dark [style*="background: #EAF6C9"]:not(.quest-hero-btn):not(.quest-btn-lime):not(.quest-daily-card):not(.quest-nav-item.active),
+.dark-theme [style*="background: #EAF6C9"]:not(.quest-hero-btn):not(.quest-btn-lime):not(.quest-daily-card):not(.quest-nav-item.active),
+.quest-shell.dark [style*="background: #EAF6C9"]:not(.quest-hero-btn):not(.quest-btn-lime):not(.quest-daily-card):not(.quest-nav-item.active) {
+  background: rgba(201, 242, 107, 0.16) !important;
+  color: #C9F26B !important;
+  border-color: rgba(201, 242, 107, 0.35) !important;
+}
+
+/* 3. Hardcoded dark text on dark surfaces */
+.dark .quest-stat-card [style*="color: #13211C"]:not(.quest-btn-lime):not(.quest-rank-row.user-highlight *):not(.quest-daily-btn),
+.dark-theme .quest-stat-card [style*="color: #13211C"]:not(.quest-btn-lime):not(.quest-rank-row.user-highlight *):not(.quest-daily-btn),
+.quest-shell.dark .quest-stat-card [style*="color: #13211C"]:not(.quest-btn-lime):not(.quest-rank-row.user-highlight *):not(.quest-daily-btn),
+.dark .quest-lesson-screen [style*="color: #13211C"]:not(.quest-btn-lime),
+.dark-theme .quest-lesson-screen [style*="color: #13211C"]:not(.quest-btn-lime),
+.quest-shell.dark .quest-lesson-screen [style*="color: #13211C"]:not(.quest-btn-lime),
+.dark .quest-you-layout [style*="color: #13211C"]:not(.quest-btn-lime),
+.dark-theme .quest-you-layout [style*="color: #13211C"]:not(.quest-btn-lime),
+.quest-shell.dark .quest-you-layout [style*="color: #13211C"]:not(.quest-btn-lime) {
+  color: var(--quest-text-primary) !important;
+}
+
+/* 4. Inputs, selects, and textareas */
+.dark input[type="text"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark input[type="date"],
+.dark textarea,
+.dark select,
+.dark-theme input,
+.dark-theme textarea,
+.dark-theme select,
+.quest-shell.dark input,
+.quest-shell.dark textarea,
+.quest-shell.dark select {
+  color: var(--quest-text-primary) !important;
+  background-color: var(--quest-card-bg) !important;
+  border-color: var(--quest-border) !important;
+}
+
+/* 5. Dropdown menus and overlays in dark mode */
+.dark div[style*="boxShadow: '0 8px 28px rgba(0,0,0,0.12)'"],
+.dark-theme div[style*="boxShadow: '0 8px 28px rgba(0,0,0,0.12)'"] {
+  background: var(--quest-card-bg) !important;
+  border-color: var(--quest-border) !important;
+}
+
