@@ -125,6 +125,7 @@ const AppContent: React.FC = () => {
           currentTab={currentTab}
           onSelectTab={(tab) => setCurrentTab(tab)}
           onOpenSync={() => setIsSyncOpen(true)}
+          onOpenFlashcards={() => setIsFlashcardOpen(true)}
         />
       )}
 
@@ -140,13 +141,17 @@ const AppContent: React.FC = () => {
           )}
 
           {currentTab === 'learn' && (
-            <LearnChaptersView onStartLesson={handleStartLesson} />
+            <LearnChaptersView
+              onStartLesson={handleStartLesson}
+              onOpenFlashcards={() => setIsFlashcardOpen(true)}
+            />
           )}
 
           {currentTab === 'lesson' && (
             <AimaLessonViewer
               chapterId={activeLessonChapterId && isChapterUnlocked(activeLessonChapterId) ? activeLessonChapterId : 1}
               onClose={() => setCurrentTab('learn')}
+              onOpenFlashcards={() => setIsFlashcardOpen(true)}
               onSelectChapter={(chId) => {
                 if (isChapterUnlocked(chId)) {
                   setActiveLessonChapterId(chId);

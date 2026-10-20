@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, Check, Flame, Trophy, Clock, BookOpen, Sparkles, ChevronRight, Zap } from 'lucide-react';
+import { Play, Check, Flame, Trophy, Clock, BookOpen, Sparkles, ChevronRight, Zap, ArrowRight } from 'lucide-react';
 import { useProgress } from '../context/ProgressContext';
 import { useAuth } from '../context/AuthContext';
 import { soundFX } from '../utils/soundEffects';
@@ -112,6 +112,84 @@ export const HomeFocusView: React.FC<HomeFocusViewProps> = ({
             )}
           </button>
         </div>
+      </div>
+
+      {/* High-Yield Exam Flashcards Banner */}
+      <div
+        onClick={() => {
+          soundFX.playClick();
+          onOpenFlashcards();
+        }}
+        style={{
+          background: 'linear-gradient(135deg, #13211C 0%, #1A2F27 100%)',
+          borderRadius: '20px',
+          padding: '18px 22px',
+          color: '#FFFFFF',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          cursor: 'pointer',
+          marginBottom: '20px',
+          border: '1.5px solid rgba(201, 242, 107, 0.35)',
+          boxShadow: '0 4px 16px rgba(19, 33, 28, 0.12)',
+          transition: 'transform 0.15s ease, box-shadow 0.15s ease'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div
+            style={{
+              width: '46px',
+              height: '46px',
+              borderRadius: '13px',
+              background: '#C9F26B',
+              color: '#13211C',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '22px',
+              flexShrink: 0,
+              boxShadow: '0 4px 12px rgba(201, 242, 107, 0.35)'
+            }}
+          >
+            🃏
+          </div>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.06em', textTransform: 'uppercase', background: 'rgba(201, 242, 107, 0.2)', color: '#C9F26B', padding: '2px 8px', borderRadius: '6px' }}>
+                EXAM DRILL DECK
+              </span>
+              <span style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.7)' }}>25 Cards · Search, Logic, Bayes, MDP & Traps</span>
+            </div>
+            <h3 style={{ margin: '4px 0 0', fontSize: '16px', fontWeight: 800, color: '#F3F5EF' }}>
+              Active Recall Exam Flashcards
+            </h3>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            soundFX.playClick();
+            onOpenFlashcards();
+          }}
+          style={{
+            background: '#C9F26B',
+            color: '#13211C',
+            border: 'none',
+            borderRadius: '12px',
+            padding: '9px 16px',
+            fontWeight: 800,
+            fontSize: '13px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            whiteSpace: 'nowrap'
+          }}
+        >
+          Study Cards <ArrowRight size={14} />
+        </button>
       </div>
 
       {/* Sub Grid: Minutes this week | Exam in N days | Leaderboard */}
@@ -283,8 +361,8 @@ export const HomeFocusView: React.FC<HomeFocusViewProps> = ({
           <div className={`quest-plan-circle ${stats.xp >= 20 ? 'done' : ''}`}>
             {stats.xp >= 20 ? <Check size={14} strokeWidth={3} /> : null}
           </div>
-          <span className="quest-plan-text">Review 10 flashcards</span>
-          <span className="quest-plan-pill" style={{ background: '#EAF6C9' }}>Review</span>
+          <span className="quest-plan-text">Review 25 University Exam Flashcards (+35 XP)</span>
+          <span className="quest-plan-pill" style={{ background: '#EAF6C9' }}>High-Yield</span>
         </div>
 
 

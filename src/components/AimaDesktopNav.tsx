@@ -11,12 +11,14 @@ interface AimaDesktopNavProps {
   currentTab: QuestTab;
   onSelectTab: (tab: QuestTab) => void;
   onOpenSync: () => void;
+  onOpenFlashcards: () => void;
 }
 
 export const AimaDesktopNav: React.FC<AimaDesktopNavProps> = ({
   currentTab,
   onSelectTab,
-  onOpenSync
+  onOpenSync,
+  onOpenFlashcards
 }) => {
   const { stats } = useProgress();
   const { user, isGuest, openSignIn, logout } = useAuth();
@@ -121,6 +123,58 @@ export const AimaDesktopNav: React.FC<AimaDesktopNavProps> = ({
             );
           })}
         </nav>
+
+        {/* Quick Exam Flashcards Action */}
+        <div style={{ padding: '6px 12px 14px' }}>
+          <button
+            type="button"
+            onClick={() => {
+              soundFX.playClick();
+              onOpenFlashcards();
+            }}
+            style={{
+              width: '100%',
+              padding: '11px 13px',
+              borderRadius: '14px',
+              background: 'linear-gradient(135deg, rgba(201, 242, 107, 0.22) 0%, rgba(201, 242, 107, 0.08) 100%)',
+              border: '1.5px solid rgba(201, 242, 107, 0.5)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              cursor: 'pointer',
+              textAlign: 'left',
+              color: 'var(--quest-text-primary)',
+              transition: 'all 0.2s ease',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
+            }}
+            title="Open Exam Flashcards (25 Cards)"
+          >
+            <div
+              style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '9px',
+                background: '#C9F26B',
+                color: '#13211C',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '16px',
+                flexShrink: 0
+              }}
+            >
+              🃏
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: '12.5px', fontWeight: 800, lineHeight: 1.2, color: 'var(--quest-text-primary)' }}>
+                Exam Flashcards
+              </div>
+              <div style={{ fontSize: '10.5px', color: 'var(--quest-text-muted)', marginTop: '2px' }}>
+                25 Rigorous Cards
+              </div>
+            </div>
+          </button>
+        </div>
 
         {/* User Scholar Profile Card in Sidebar */}
         <div style={{ marginTop: 'auto', padding: '0 12px 12px' }}>
@@ -302,6 +356,18 @@ export const AimaDesktopNav: React.FC<AimaDesktopNavProps> = ({
             </button>
           );
         })}
+
+        <button
+          type="button"
+          className="quest-mobile-nav-btn"
+          onClick={() => {
+            soundFX.playClick();
+            onOpenFlashcards();
+          }}
+          title="Open Exam Flashcards"
+        >
+          <span>🃏 Cards</span>
+        </button>
       </nav>
     </>
   );

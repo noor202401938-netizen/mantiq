@@ -6,10 +6,12 @@ import { soundFX } from '../utils/soundEffects';
 
 interface LearnChaptersViewProps {
   onStartLesson: (chapterId: number) => void;
+  onOpenFlashcards?: () => void;
 }
 
 export const LearnChaptersView: React.FC<LearnChaptersViewProps> = ({
-  onStartLesson
+  onStartLesson,
+  onOpenFlashcards
 }) => {
   const { stats } = useProgress();
   const [searchQuery, setSearchQuery] = useState('');
@@ -40,8 +42,36 @@ export const LearnChaptersView: React.FC<LearnChaptersViewProps> = ({
         <div>
           <h1 className="quest-view-title">Chapters</h1>
         </div>
-        <div className="quest-header-level-badge" style={{ background: '#EAF6C9', color: '#13211C', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-          <Check size={13} strokeWidth={2.5} color="#166534" /> Saved offline
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {onOpenFlashcards && (
+            <button
+              type="button"
+              onClick={() => {
+                soundFX.playClick();
+                onOpenFlashcards();
+              }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 14px',
+                borderRadius: '12px',
+                background: '#13211C',
+                color: '#C9F26B',
+                border: '1px solid rgba(201, 242, 107, 0.4)',
+                fontSize: '13px',
+                fontWeight: 800,
+                cursor: 'pointer',
+                transition: 'all 0.15s ease'
+              }}
+              title="Practice with 25 university exam flashcards"
+            >
+              <span>🃏 Exam Flashcards (25)</span>
+            </button>
+          )}
+          <div className="quest-header-level-badge" style={{ background: '#EAF6C9', color: '#13211C', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+            <Check size={13} strokeWidth={2.5} color="#166534" /> Saved offline
+          </div>
         </div>
       </div>
 

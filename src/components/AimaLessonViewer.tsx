@@ -17,6 +17,7 @@ interface AimaLessonViewerProps {
   onClose: () => void;
   onStartQuiz: (chapterId: number) => void;
   onSelectChapter?: (chapterId: number) => void;
+  onOpenFlashcards?: () => void;
 }
 
 export const AimaLessonViewer: React.FC<AimaLessonViewerProps> = ({
@@ -24,6 +25,7 @@ export const AimaLessonViewer: React.FC<AimaLessonViewerProps> = ({
   onClose,
   onStartQuiz,
   onSelectChapter,
+  onOpenFlashcards,
 }) => {
   const { stats, markChapterRead } = useProgress();
   const { getNotesByChapter, addNote, deleteNote, togglePin } = useNotes();
@@ -923,54 +925,81 @@ export const AimaLessonViewer: React.FC<AimaLessonViewerProps> = ({
               </p>
             </div>
 
-            {/* Zen 3-Stage Segmented Control */}
-            <div
-              style={{
-                display: 'inline-flex',
-                background: '#F0F3EC',
-                padding: '4px',
-                borderRadius: '12px',
-                gap: '4px',
-                alignSelf: 'flex-start',
-                marginTop: '6px',
-                border: '1px solid var(--quest-border)'
-              }}
-            >
-              {[
-                { id: 'reading', label: 'Lesson', icon: BookOpen },
-                { id: 'practice', label: 'Practice & Code', icon: Terminal },
-                { id: 'rigor', label: 'Rigor & Library', icon: GraduationCap },
-              ].map((tab) => {
-                const Icon = tab.icon;
-                const isActive = activeTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => {
-                      soundFX.playClick();
-                      setActiveTab(tab.id as any);
-                    }}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '7px',
-                      padding: '7px 16px',
-                      borderRadius: '8px',
-                      border: 'none',
-                      background: isActive ? '#13211C' : 'transparent',
-                      color: isActive ? '#C9F26B' : 'var(--quest-text-secondary)',
-                      fontWeight: isActive ? 800 : 600,
-                      fontSize: '13px',
-                      cursor: 'pointer',
-                      transition: 'all 0.15s ease',
-                      whiteSpace: 'nowrap'
-                    }}
-                  >
-                    <Icon size={14} />
-                    <span>{tab.label}</span>
-                  </button>
-                );
-              })}
+            {/* Zen 3-Stage Segmented Control + Quick Flashcards Button */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginTop: '6px' }}>
+              <div
+                style={{
+                  display: 'inline-flex',
+                  background: '#F0F3EC',
+                  padding: '4px',
+                  borderRadius: '12px',
+                  gap: '4px',
+                  border: '1px solid var(--quest-border)'
+                }}
+              >
+                {[
+                  { id: 'reading', label: 'Lesson', icon: BookOpen },
+                  { id: 'practice', label: 'Practice & Code', icon: Terminal },
+                  { id: 'rigor', label: 'Rigor & Library', icon: GraduationCap },
+                ].map((tab) => {
+                  const Icon = tab.icon;
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => {
+                        soundFX.playClick();
+                        setActiveTab(tab.id as any);
+                      }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '7px',
+                        padding: '7px 16px',
+                        borderRadius: '8px',
+                        border: 'none',
+                        background: isActive ? '#13211C' : 'transparent',
+                        color: isActive ? '#C9F26B' : 'var(--quest-text-secondary)',
+                        fontWeight: isActive ? 800 : 600,
+                        fontSize: '13px',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease',
+                        whiteSpace: 'nowrap'
+                      }}
+                    >
+                      <Icon size={14} />
+                      <span>{tab.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {onOpenFlashcards && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundFX.playClick();
+                    onOpenFlashcards();
+                  }}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '8px 14px',
+                    borderRadius: '10px',
+                    background: '#13211C',
+                    color: '#C9F26B',
+                    border: '1px solid rgba(201, 242, 107, 0.4)',
+                    fontWeight: 800,
+                    fontSize: '12.5px',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.06)'
+                  }}
+                  title="Drill with 25 University Exam Flashcards"
+                >
+                  <span>🃏 Exam Flashcards (25)</span>
+                </button>
+              )}
             </div>
           </div>
 
@@ -1223,6 +1252,85 @@ export const AimaLessonViewer: React.FC<AimaLessonViewerProps> = ({
                           </div>
                         </div>
                       ))}
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Midterm Exam Trap & Counterexample Callout directly in Lesson reading */}
+              {(() => {
+                const enrichment = UNIVERSITY_ENRICHMENTS[chapterId];
+                const primaryTrap = enrichment?.midtermTraps?.[0] || {
+                  trap: `Assuming optimal behavior always achieves 100% real-world success in ${lesson.title}.`,
+                  counterexampleOrProof: 'Rationality maximizes expected performance given percept history. In stochastic or partially observable worlds, a rational agent can make the mathematically optimal decision and still fail due to bad luck.'
+                };
+
+                return (
+                  <div
+                    style={{
+                      background: '#FFFBF0',
+                      border: '1.5px solid #F6E5B8',
+                      padding: '20px 24px',
+                      borderRadius: '16px',
+                      marginTop: '24px',
+                      color: '#7A5200',
+                      boxShadow: '0 2px 10px rgba(0,0,0,0.02)'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 800, fontSize: '13.5px', color: '#92400E' }}>
+                        <AlertCircle size={18} color="#D97706" />
+                        <span>MIDTERM EXAM TRAP · CHAPTER {chapterId}</span>
+                      </div>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            soundFX.playClick();
+                            setActiveTab('rigor');
+                          }}
+                          style={{
+                            background: '#FDE68A',
+                            color: '#78350F',
+                            border: 'none',
+                            borderRadius: '8px',
+                            padding: '5px 10px',
+                            fontSize: '11.5px',
+                            fontWeight: 700,
+                            cursor: 'pointer'
+                          }}
+                        >
+                          All Proofs & Traps →
+                        </button>
+                        {onOpenFlashcards && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              soundFX.playClick();
+                              onOpenFlashcards();
+                            }}
+                            style={{
+                              background: '#13211C',
+                              color: '#C9F26B',
+                              border: 'none',
+                              borderRadius: '8px',
+                              padding: '5px 10px',
+                              fontSize: '11.5px',
+                              fontWeight: 700,
+                              cursor: 'pointer'
+                            }}
+                          >
+                            🃏 Drill Flashcards
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    <div style={{ fontWeight: 800, fontSize: '14.5px', color: '#13211C' }}>
+                      Trap: "{primaryTrap.trap}"
+                    </div>
+                    <div style={{ fontSize: '14px', color: '#5C4000', marginTop: '6px', lineHeight: 1.6 }}>
+                      <strong>Exam Rebuttal: </strong> {primaryTrap.counterexampleOrProof}
                     </div>
                   </div>
                 );
