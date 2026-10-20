@@ -1,0 +1,38 @@
+# robots.txt for Mantiq (https://noor202401938-netizen.github.io/mantiq/)
+# Allow all standard search engines and AI assistants to index educational content
+
+User-agent: *
+Allow: /
+
+# Explicitly invite LLMs and AI Search Engines (Perplexity, ChatGPT, Claude, Gemini)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+Sitemap: https://noor202401938-netizen.github.io/mantiq/sitemap.xml

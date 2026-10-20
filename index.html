@@ -3,16 +3,41 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Mantiq — Let's have some Mantiq about AI</title>
-    <meta name="description" content="Mantiq — Let's have some Mantiq about AI. Master Russell & Norvig's Artificial Intelligence with interactive visual simulations, mathematical proofs, and university exam preparation." />
+    
+    <!-- Primary Page Metadata & SEO -->
+    <title>Mantiq — Interactive Artificial Intelligence & University Exam Companion</title>
+    <meta name="title" content="Mantiq — Interactive Artificial Intelligence & University Exam Companion" />
+    <meta name="description" content="Master Russell & Norvig's Artificial Intelligence: A Modern Approach (AIMA 4th Ed.) with 43+ high-yield exam flashcards, mathematical proofs via KaTeX, dynamic algorithms, and offline-first progress tracking." />
+    <meta name="keywords" content="Artificial Intelligence, AIMA, Russell and Norvig, AI Exam Prep, A* Search, Minimax Alpha Beta, Bayesian Networks, Reinforcement Learning, POMDP, Deep Learning, Transformers, Active Recall, KaTeX, Mantiq" />
+    <meta name="author" content="Netizen / Noor" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <link rel="canonical" href="https://noor202401938-netizen.github.io/mantiq/" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://noor202401938-netizen.github.io/mantiq/" />
+    <meta property="og:title" content="Mantiq — Interactive Artificial Intelligence & University Exam Companion" />
+    <meta property="og:description" content="Master Russell & Norvig's Artificial Intelligence: A Modern Approach with 43+ chapter-grouped exam flashcards, KaTeX math proofs, and offline-first university study tools." />
+    <meta property="og:image" content="https://noor202401938-netizen.github.io/mantiq/mantiq-logo.png" />
+    <meta property="og:site_name" content="Mantiq" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter / X Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://noor202401938-netizen.github.io/mantiq/" />
+    <meta name="twitter:title" content="Mantiq — Interactive Artificial Intelligence & University Exam Companion" />
+    <meta name="twitter:description" content="Master Russell & Norvig's Artificial Intelligence (AIMA) with interactive active recall flashcards, KaTeX mathematical proofs, and graduate exam preparation." />
+    <meta name="twitter:image" content="https://noor202401938-netizen.github.io/mantiq/mantiq-logo.png" />
+
+    <!-- Favicon & PWA App Icons -->
     <link rel="icon" type="image/png" href="./favicon.png" />
     <link rel="apple-touch-icon" href="./mantiq-logo.png" />
     <link rel="manifest" href="./manifest.json" />
+    <meta name="theme-color" content="#13211C" />
 
-    <!-- Cache Purge & Service Worker Unregistration Script (Runs before modules load) -->
+    <!-- Cache Purge & Service Worker Unregistration Script -->
     <script>
       (function() {
-        // Purge service workers
         if ('serviceWorker' in navigator) {
           navigator.serviceWorker.getRegistrations().then(function(regs) {
             for (var i = 0; i < regs.length; i++) {
@@ -20,7 +45,6 @@
             }
           });
         }
-        // Purge cache storage
         if ('caches' in window) {
           caches.keys().then(function(names) {
             for (var i = 0; i < names.length; i++) {
@@ -28,13 +52,55 @@
             }
           });
         }
-        // Handle Vite chunk preload errors when new commits deploy
         window.addEventListener('vite:preloadError', function() {
           window.location.reload();
         });
       })();
     </script>
 
+    <!-- Schema.org Educational & WebApplication JSON-LD for Search Engines & AI Models -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebApplication",
+          "@id": "https://noor202401938-netizen.github.io/mantiq/#app",
+          "name": "Mantiq AI Study Companion",
+          "url": "https://noor202401938-netizen.github.io/mantiq/",
+          "applicationCategory": "EducationalApplication",
+          "operatingSystem": "All",
+          "browserRequirements": "Requires JavaScript. Requires HTML5.",
+          "description": "Comprehensive interactive study companion for Russell & Norvig's Artificial Intelligence textbook with active recall flashcards, KaTeX mathematical derivations, and offline backup.",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          }
+        },
+        {
+          "@type": "Course",
+          "@id": "https://noor202401938-netizen.github.io/mantiq/#course",
+          "name": "Artificial Intelligence: A Modern Approach (Interactive Curriculum)",
+          "description": "Complete interactive curriculum covering 27 chapters across 7 parts of Russell & Norvig's foundational Artificial Intelligence text.",
+          "educationalLevel": "Undergraduate, Graduate",
+          "inLanguage": "en",
+          "provider": {
+            "@type": "Organization",
+            "name": "Mantiq Learning",
+            "url": "https://noor202401938-netizen.github.io/mantiq/"
+          },
+          "hasCourseInstance": {
+            "@type": "CourseInstance",
+            "courseMode": "Online",
+            "courseWorkload": "PT60H"
+          }
+        }
+      ]
+    }
+    </script>
+
+    <!-- Google Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:ital,opsz,wght@0,14..32,300..900;1,14..32,300..900&family=Newsreader:ital,opsz,wght@0,6..72,300..800;1,6..72,300..800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
