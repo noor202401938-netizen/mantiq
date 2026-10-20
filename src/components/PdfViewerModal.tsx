@@ -20,6 +20,8 @@ export const PdfViewerModal: React.FC<PdfViewerModalProps> = ({
   pdfUrl,
   initialPage = 1,
 }) => {
+  if (!isOpen) return null;
+
   // Normalize PDF path for both custom root domains and GitHub Pages subpaths
   const normalizedPdfUrl = pdfUrl.startsWith('http')
     ? pdfUrl

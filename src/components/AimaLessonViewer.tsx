@@ -3203,14 +3203,16 @@ class ${lesson.title.replace(/[^a-zA-Z]/g, '')}Agent:
       </footer>
 
       {/* IN-APP ORIGINAL TEXTBOOK PDF VIEWER MODAL */}
-      <PdfViewerModal
-        isOpen={pdfViewer.isOpen}
-        onClose={() => setPdfViewer((prev) => ({ ...prev, isOpen: false }))}
-        title={pdfViewer.title}
-        author={pdfViewer.author}
-        pdfUrl={pdfViewer.pdfUrl}
-        initialPage={pdfViewer.page}
-      />
+      {pdfViewer.isOpen && (
+        <PdfViewerModal
+          isOpen={pdfViewer.isOpen}
+          onClose={() => setPdfViewer((prev) => ({ ...prev, isOpen: false }))}
+          title={pdfViewer.title}
+          author={pdfViewer.author}
+          pdfUrl={pdfViewer.pdfUrl}
+          initialPage={pdfViewer.page}
+        />
+      )}
     </div>
   );
 };
