@@ -91,17 +91,64 @@ const getSecureScholarId = (user: UserProfile): string => {
   return localStoredId;
 };
 
+const PENDING_SYNC_KEY = 'mantiq_pending_sync';
+
+export const queuePendingSync = (user: UserProfile, stats: UserStats) => {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(PENDING_SYNC_KEY, JSON.stringify({ user, stats, queuedAt: Date.now() }));
+  } catch (e) {
+    console.warn('Could not queue pending sync:', e);
+  }
+};
+
+export const flushPendingSyncToSupabase = async (): Promise<boolean> => {
+  if (typeof window === 'undefined') return false;
+  if (typeof navigator !== 'undefined' && !navigator.onLine) return false;
+
+  try {
+    const raw = localStorage.getItem(PENDING_SYNC_KEY);
+    if (!raw) return false;
+    const { user, stats } = JSON.parse(raw);
+    if (user && stats) {
+      const res = await syncScholarToSupabase(user, stats);
+      if (res.success) {
+        localStorage.removeItem(PENDING_SYNC_KEY);
+        return true;
+      }
+    }
+  } catch (e) {
+    console.warn('Pending sync flush error:', e);
+  }
+  return false;
+};
+
+// Global automatic reconnect listener
+if (typeof window !== 'undefined') {
+  window.addEventListener('online', () => {
+    flushPendingSyncToSupabase();
+  });
+}
+
 /**
  * Upsert the current scholar's progress to the global Supabase leaderboard.
  * Sanitized to ensure zero private data leaks (no emails, passwords, or personal dates).
+ * Automatically queues failed attempts for retry upon network recovery.
  */
 export const syncScholarToSupabase = async (
   user: UserProfile,
   stats: UserStats
 ): Promise<{ success: boolean; error?: string }> => {
+  // If browser is explicitly offline, queue immediately without throwing errors
+  if (typeof navigator !== 'undefined' && !navigator.onLine) {
+    queuePendingSync(user, stats);
+    return { success: false, error: 'Offline mode active (queued for cloud sync)' };
+  }
+
   const client = getSupabaseClient();
   if (!client) {
-    return { success: false, error: 'Supabase not configured' };
+    queuePendingSync(user, stats);
+    return { success: false, error: 'Supabase client unavailable' };
   }
 
   // Strictly sanitized public payload only
@@ -123,13 +170,23 @@ export const syncScholarToSupabase = async (
       .upsert(payload, { onConflict: 'id' });
 
     if (error) {
-      console.warn('Supabase sync error:', error.message);
+      console.warn('Supabase sync warning:', error.message);
+      queuePendingSync(user, stats);
       return { success: false, error: error.message };
+    }
+
+    // Success - clean any queued sync item
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.removeItem(PENDING_SYNC_KEY);
+        localStorage.setItem('mantiq_last_synced_at', new Date().toISOString());
+      } catch {}
     }
 
     return { success: true };
   } catch (err: any) {
-    return { success: false, error: err?.message || 'Network sync error' };
+    queuePendingSync(user, stats);
+    return { success: false, error: err?.message || 'Network sync error (queued)' };
   }
 };
 

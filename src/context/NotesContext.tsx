@@ -43,7 +43,11 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   });
 
   useEffect(() => {
-    localStorage.setItem('mantiq_user_notes', JSON.stringify(notes));
+    try {
+      localStorage.setItem('mantiq_user_notes', JSON.stringify(notes));
+    } catch (e) {
+      console.warn('Storage quota exceeded when saving notes locally:', e);
+    }
   }, [notes]);
 
   const addNote = (noteData: Omit<StudyNote, 'id' | 'createdAt' | 'updatedAt'>): StudyNote => {

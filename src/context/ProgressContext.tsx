@@ -139,8 +139,8 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   // Save to localStorage and sync to Supabase in background
   useEffect(() => {
-    localStorage.setItem('aima_user_stats', JSON.stringify(stats));
     try {
+      localStorage.setItem('aima_user_stats', JSON.stringify(stats));
       const savedUser = localStorage.getItem('aima_user_profile');
       if (savedUser) {
         const user = JSON.parse(savedUser);
@@ -148,11 +148,17 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           syncScholarToSupabase(user, stats);
         }
       }
-    } catch {}
+    } catch (e) {
+      console.warn('Failed to save stats to local storage:', e);
+    }
   }, [stats]);
 
   useEffect(() => {
-    localStorage.setItem('aima_chapter_progress', JSON.stringify(progress));
+    try {
+      localStorage.setItem('aima_chapter_progress', JSON.stringify(progress));
+    } catch (e) {
+      console.warn('Failed to save chapter progress to local storage:', e);
+    }
   }, [progress]);
 
   // Recalculate level based on XP

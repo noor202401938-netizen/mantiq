@@ -1,5 +1,5 @@
-import React from 'react';
-import { Home, BookOpen, GraduationCap, Trophy, User, Flame, LogIn, LogOut, Sun, Moon } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Home, BookOpen, GraduationCap, Trophy, User, Flame, LogIn, LogOut, Sun, Moon, WifiOff, Check } from 'lucide-react';
 import { soundFX } from '../utils/soundEffects';
 import { useProgress } from '../context/ProgressContext';
 import { useAuth } from '../context/AuthContext';
@@ -22,6 +22,23 @@ export const AimaDesktopNav: React.FC<AimaDesktopNavProps> = ({
   const { user, isGuest, openSignIn, logout } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const streakDays = stats.streakDays ?? 0;
+
+  const [isOnline, setIsOnline] = useState<boolean>(() => {
+    return typeof navigator !== 'undefined' ? navigator.onLine : true;
+  });
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   const navItems = [
     { id: 'home' as QuestTab, label: 'Home', icon: Home },
@@ -244,7 +261,25 @@ export const AimaDesktopNav: React.FC<AimaDesktopNavProps> = ({
               <Flame size={16} color="#FF6A00" fill="#FF6A00" />
               <span>{streakDays}-day streak</span>
             </div>
-            <div className="quest-streak-sync-sub">Synced 2 min ago</div>
+            <div
+              className="quest-streak-sync-sub"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                color: isOnline ? 'var(--quest-text-muted)' : '#D97706'
+              }}
+            >
+              {isOnline ? (
+                <>
+                  <Check size={11} color="#10B981" /> Cloud synced
+                </>
+              ) : (
+                <>
+                  <WifiOff size={11} color="#D97706" /> Offline · Saved locally
+                </>
+              )}
+            </div>
           </div>
         </div>
       </aside>
