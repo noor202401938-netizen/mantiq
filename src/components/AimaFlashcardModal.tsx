@@ -3,6 +3,7 @@ import { X, RotateCw, CheckCircle2, Sparkles, Filter, Award, ChevronLeft, Chevro
 import { soundFX } from '../utils/soundEffects';
 import { useProgress } from '../context/ProgressContext';
 import confetti from 'canvas-confetti';
+import { renderKaTeX, renderInlineMathAndStyles } from '../utils/mathRenderer';
 
 interface AimaFlashcardModalProps {
   onClose: () => void;
@@ -251,7 +252,7 @@ export const COMPREHENSIVE_EXAM_FLASHCARDS: ExamFlashcard[] = [
     chapterId: 3,
     q: 'EXAM TRAP: Does an admissible heuristic guarantee optimal solutions in A* GRAPH search?',
     a: 'NO! Admissibility alone is only sufficient for TREE search. Graph search requires CONSISTENCY (monotonicity). If h is admissible but inconsistent, A* can reach a state via a suboptimal path, close it, and later refuse to reopen it when the true optimal path is found!',
-    formula: '\\text{Admissible} \\centernot\\implies \\text{Graph Search Optimal (unless nodes re-opened)}',
+    formula: '\\text{Admissible} \\not\\implies \\text{Graph Search Optimal (unless nodes re-opened)}',
     examTakeaway: 'University professors test this trap on almost every AI midterm. Remember: Tree search = Admissibility; Graph search = Consistency.'
   },
   {
@@ -336,12 +337,23 @@ export const AimaFlashcardModal: React.FC<AimaFlashcardModalProps> = ({
   };
 
   return (
-    <div className="quest-modal-overlay">
+    <div
+      className="quest-modal-overlay"
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '12px',
+        boxSizing: 'border-box'
+      }}
+    >
       <div
         className="quest-quiz-container"
         style={{
+          width: '100%',
           maxWidth: '580px',
-          minHeight: '620px',
+          maxHeight: '94vh',
+          overflowY: 'auto',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
@@ -349,17 +361,19 @@ export const AimaFlashcardModal: React.FC<AimaFlashcardModalProps> = ({
           borderRadius: '24px',
           border: '1px solid var(--quest-border)',
           boxShadow: '0 24px 60px rgba(0,0,0,0.18)',
-          padding: '24px 28px'
+          padding: '20px 24px',
+          margin: 'auto',
+          boxSizing: 'border-box'
         }}
       >
         {/* Top Header & Close */}
-        <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+        <div style={{ flexShrink: 0 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span style={{ background: '#13211C', color: '#C9F26B', padding: '3px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 800 }}>
                 EXAM DECK
               </span>
-              <span style={{ fontSize: '14px', fontWeight: 800, color: 'var(--quest-text-primary)' }}>
+              <span style={{ fontSize: '13.5px', fontWeight: 800, color: 'var(--quest-text-primary)' }}>
                 {sessionCompleted ? 'Session Complete' : `${currentIndex + 1} of ${filteredCards.length}`}
               </span>
             </div>
@@ -367,22 +381,27 @@ export const AimaFlashcardModal: React.FC<AimaFlashcardModalProps> = ({
             <button
               onClick={onClose}
               style={{
-                background: 'transparent',
-                border: 0,
+                width: '32px',
+                height: '32px',
+                borderRadius: '8px',
+                background: 'var(--quest-bg)',
+                border: '1px solid var(--quest-border)',
                 cursor: 'pointer',
-                color: 'var(--quest-text-muted)',
-                padding: '4px',
+                color: 'var(--quest-text-primary)',
+                padding: 0,
                 display: 'flex',
-                alignItems: 'center'
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.15s ease'
               }}
               title="Close Flashcards"
             >
-              <X size={20} />
+              <X size={18} />
             </button>
           </div>
 
           {/* Category Filter Chips */}
-          <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '8px', marginBottom: '10px' }}>
+          <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '6px', marginBottom: '10px' }}>
             {[
               { id: 'all', label: `All (${COMPREHENSIVE_EXAM_FLASHCARDS.length})` },
               { id: 'traps', label: '⚠️ Exam Traps' },
@@ -422,7 +441,7 @@ export const AimaFlashcardModal: React.FC<AimaFlashcardModalProps> = ({
           </div>
 
           {/* Progress Bar */}
-          <div style={{ width: '100%', height: '4px', background: 'var(--quest-border)', borderRadius: '2px', overflow: 'hidden', marginBottom: '16px' }}>
+          <div style={{ width: '100%', height: '4px', background: 'var(--quest-border)', borderRadius: '2px', overflow: 'hidden', marginBottom: '14px' }}>
             <div style={{ width: `${progressPercent}%`, height: '100%', background: '#C9F26B', transition: 'width 0.2s ease' }} />
           </div>
 
@@ -434,21 +453,21 @@ export const AimaFlashcardModal: React.FC<AimaFlashcardModalProps> = ({
                 setIsRevealed(!isRevealed);
               }}
               style={{
-                minHeight: '340px',
+                minHeight: '220px',
                 background: isRevealed ? (currentCard.category === 'traps' ? 'rgba(239, 68, 68, 0.05)' : '#F9FBF8') : 'var(--quest-card-bg)',
                 border: isRevealed ? (currentCard.category === 'traps' ? '2px solid #EF4444' : '2px solid #13211C') : '1.5px solid var(--quest-border)',
-                borderRadius: '20px',
-                padding: '28px 24px',
+                borderRadius: '18px',
+                padding: '20px 20px',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
-                boxShadow: '0 8px 20px rgba(0,0,0,0.04)'
+                boxShadow: '0 4px 16px rgba(0,0,0,0.04)'
               }}
             >
               <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                   <span
                     style={{
                       fontSize: '11px',
@@ -463,8 +482,8 @@ export const AimaFlashcardModal: React.FC<AimaFlashcardModalProps> = ({
 
                   <span
                     style={{
-                      fontSize: '11px',
-                      fontWeight: 700,
+                      fontSize: '10.5px',
+                      fontWeight: 800,
                       padding: '2px 8px',
                       borderRadius: '4px',
                       background: isRevealed ? '#13211C' : '#EAF6C9',
@@ -478,59 +497,64 @@ export const AimaFlashcardModal: React.FC<AimaFlashcardModalProps> = ({
                 <div
                   style={{
                     fontFamily: 'var(--quest-font-heading)',
-                    fontSize: isRevealed ? '18px' : '22px',
-                    fontWeight: 800,
-                    lineHeight: 1.35,
+                    fontSize: isRevealed ? '16px' : '19px',
+                    fontWeight: 700,
+                    lineHeight: 1.45,
                     color: 'var(--quest-text-primary)',
-                    marginTop: '12px'
+                    marginTop: '8px'
                   }}
                 >
-                  {isRevealed ? currentCard.a : currentCard.q}
+                  {renderInlineMathAndStyles(isRevealed ? currentCard.a : currentCard.q)}
                 </div>
 
                 {isRevealed && currentCard.formula && (
                   <div
                     style={{
-                      marginTop: '16px',
-                      padding: '10px 14px',
-                      borderRadius: '10px',
+                      marginTop: '14px',
+                      padding: '12px 14px',
+                      borderRadius: '12px',
                       background: '#13211C',
                       color: '#C9F26B',
-                      fontFamily: 'monospace',
-                      fontSize: '13px',
-                      lineHeight: 1.4
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      overflowX: 'auto',
+                      textAlign: 'center'
                     }}
                   >
-                    <code>{currentCard.formula}</code>
+                    <div style={{ color: '#C9F26B', fontSize: '15px' }}>
+                      {renderKaTeX(currentCard.formula, true)}
+                    </div>
                   </div>
                 )}
 
                 {isRevealed && currentCard.examTakeaway && (
                   <div
                     style={{
-                      marginTop: '14px',
+                      marginTop: '12px',
                       padding: '10px 14px',
                       borderRadius: '10px',
                       background: 'rgba(201, 242, 107, 0.25)',
                       border: '1px solid rgba(19, 33, 28, 0.1)',
                       fontSize: '12.5px',
                       color: '#13211C',
-                      fontWeight: 600
+                      fontWeight: 600,
+                      lineHeight: 1.45
                     }}
                   >
-                    <strong>🎯 Exam Takeaway: </strong> {currentCard.examTakeaway}
+                    <strong>🎯 Exam Takeaway: </strong> {renderInlineMathAndStyles(currentCard.examTakeaway)}
                   </div>
                 )}
               </div>
 
               <div
                 style={{
-                  marginTop: '20px',
-                  padding: '8px 16px',
+                  marginTop: '16px',
+                  padding: '7px 14px',
                   borderRadius: '10px',
                   background: 'var(--quest-bg)',
                   color: 'var(--quest-text-muted)',
-                  fontSize: '12px',
+                  fontSize: '11.5px',
                   fontWeight: 700,
                   textAlign: 'center',
                   display: 'flex',
@@ -539,7 +563,7 @@ export const AimaFlashcardModal: React.FC<AimaFlashcardModalProps> = ({
                   gap: '6px'
                 }}
               >
-                <RotateCw size={13} />
+                <RotateCw size={12} />
                 {isRevealed ? 'Tap to view question' : 'Tap anywhere to reveal solution'}
               </div>
             </div>
@@ -547,10 +571,10 @@ export const AimaFlashcardModal: React.FC<AimaFlashcardModalProps> = ({
             /* Session Completed Screen */
             <div
               style={{
-                minHeight: '340px',
+                minHeight: '260px',
                 background: 'var(--quest-card-bg)',
                 borderRadius: '20px',
-                padding: '36px 24px',
+                padding: '28px 20px',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -561,43 +585,43 @@ export const AimaFlashcardModal: React.FC<AimaFlashcardModalProps> = ({
             >
               <div
                 style={{
-                  width: '56px',
-                  height: '56px',
-                  borderRadius: '18px',
+                  width: '52px',
+                  height: '52px',
+                  borderRadius: '16px',
                   background: '#C9F26B',
                   color: '#13211C',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  marginBottom: '16px'
+                  marginBottom: '14px'
                 }}
               >
-                <Award size={30} />
+                <Award size={28} />
               </div>
 
-              <h3 style={{ fontFamily: 'var(--quest-font-heading)', fontSize: '24px', fontWeight: 900, margin: '0 0 6px 0', color: 'var(--quest-text-primary)' }}>
+              <h3 style={{ fontFamily: 'var(--quest-font-heading)', fontSize: '22px', fontWeight: 900, margin: '0 0 6px 0', color: 'var(--quest-text-primary)' }}>
                 Deck Session Complete!
               </h3>
-              <p style={{ fontSize: '13.5px', color: 'var(--quest-text-muted)', maxWidth: '340px', lineHeight: 1.5, margin: '0 0 16px 0' }}>
+              <p style={{ fontSize: '13px', color: 'var(--quest-text-muted)', maxWidth: '340px', lineHeight: 1.5, margin: '0 0 16px 0' }}>
                 You reviewed <strong>{filteredCards.length} high-yield exam cards</strong>. Active recall cements neural pathways for timed university exams.
               </p>
 
-              <div style={{ background: '#EAF6C9', color: '#13211C', padding: '6px 14px', borderRadius: '8px', fontSize: '13px', fontWeight: 800, marginBottom: '24px' }}>
+              <div style={{ background: '#EAF6C9', color: '#13211C', padding: '6px 14px', borderRadius: '8px', fontSize: '13px', fontWeight: 800, marginBottom: '20px' }}>
                 +35 XP Earned
               </div>
 
-              <div style={{ display: 'flex', gap: '10px', width: '100%', maxWidth: '320px' }}>
+              <div style={{ display: 'flex', gap: '10px', width: '100%', maxWidth: '300px' }}>
                 <button
                   onClick={handleRestartDeck}
                   style={{
                     flex: 1,
-                    padding: '11px',
+                    padding: '10px',
                     borderRadius: '10px',
                     background: '#13211C',
                     color: '#C9F26B',
                     border: 'none',
                     fontWeight: 800,
-                    fontSize: '13.5px',
+                    fontSize: '13px',
                     cursor: 'pointer'
                   }}
                 >
@@ -607,13 +631,13 @@ export const AimaFlashcardModal: React.FC<AimaFlashcardModalProps> = ({
                   onClick={onClose}
                   style={{
                     flex: 1,
-                    padding: '11px',
+                    padding: '10px',
                     borderRadius: '10px',
                     background: 'var(--quest-bg)',
                     color: 'var(--quest-text-primary)',
                     border: '1px solid var(--quest-border)',
                     fontWeight: 700,
-                    fontSize: '13.5px',
+                    fontSize: '13px',
                     cursor: 'pointer'
                   }}
                 >
@@ -626,18 +650,18 @@ export const AimaFlashcardModal: React.FC<AimaFlashcardModalProps> = ({
 
         {/* Rating Buttons on Active Card */}
         {!sessionCompleted && (
-          <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
+          <div style={{ display: 'flex', gap: '8px', marginTop: '12px', flexShrink: 0 }}>
             <button
               onClick={() => handleNextCard('again')}
               style={{
                 flex: 1,
-                padding: '12px 10px',
-                borderRadius: '12px',
+                padding: '10px 8px',
+                borderRadius: '10px',
                 background: 'var(--quest-bg)',
                 border: '1px solid var(--quest-border)',
                 color: '#EF4444',
                 fontWeight: 800,
-                fontSize: '13px',
+                fontSize: '12.5px',
                 cursor: 'pointer'
               }}
               title="Need to review this card again"
@@ -649,13 +673,13 @@ export const AimaFlashcardModal: React.FC<AimaFlashcardModalProps> = ({
               onClick={() => handleNextCard('good')}
               style={{
                 flex: 1,
-                padding: '12px 10px',
-                borderRadius: '12px',
+                padding: '10px 8px',
+                borderRadius: '10px',
                 background: 'var(--quest-bg)',
                 border: '1px solid var(--quest-border)',
                 color: 'var(--quest-text-primary)',
                 fontWeight: 800,
-                fontSize: '13px',
+                fontSize: '12.5px',
                 cursor: 'pointer'
               }}
               title="Good recall"
@@ -667,13 +691,13 @@ export const AimaFlashcardModal: React.FC<AimaFlashcardModalProps> = ({
               onClick={() => handleNextCard('easy')}
               style={{
                 flex: 1,
-                padding: '12px 10px',
-                borderRadius: '12px',
+                padding: '10px 8px',
+                borderRadius: '10px',
                 background: '#13211C',
                 border: '1px solid #13211C',
                 color: '#C9F26B',
                 fontWeight: 800,
-                fontSize: '13px',
+                fontSize: '12.5px',
                 cursor: 'pointer'
               }}
               title="Mastered this concept"
