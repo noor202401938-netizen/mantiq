@@ -1,13 +1,17 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { UserProfile, UserStats } from '../types';
 
+// Default project credentials provided by scholar
+const DEFAULT_SUPABASE_URL = 'https://mekxzuycwqgcfrokiulo.supabase.co';
+const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_ThY5R1jvhaODhp7bsDpbZw_sPXv2Zlf';
+
 // Environment variables or fallback credentials
-const envUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const envAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+const envUrl = (import.meta.env.VITE_SUPABASE_URL as string) || (import.meta.env.NEXT_PUBLIC_SUPABASE_URL as string) || DEFAULT_SUPABASE_URL;
+const envAnonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY as string) || (import.meta.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY as string) || DEFAULT_SUPABASE_ANON_KEY;
 
 // Stored manual override if configured in settings
 const getStoredConfig = () => {
-  if (typeof window === 'undefined') return { url: '', anonKey: '' };
+  if (typeof window === 'undefined') return { url: envUrl, anonKey: envAnonKey };
   try {
     const url = localStorage.getItem('mantiq_supabase_url') || envUrl;
     const anonKey = localStorage.getItem('mantiq_supabase_anon_key') || envAnonKey;

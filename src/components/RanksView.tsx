@@ -84,16 +84,24 @@ export const RanksView: React.FC = () => {
   ];
 
   // Merge rankings
-  let allRankings: Array<{ name: string; xp: number; role?: string; isUser: boolean; rank?: number }> = [];
+  let allRankings: Array<{ name: string; xp: number; role?: string; isUser: boolean; rank?: number; avatar?: string }> = [];
 
   if (cloudRankings && cloudRankings.length > 0) {
-    allRankings = cloudRankings.map((c, idx) => ({
+    const cloudMapped = cloudRankings.map((c) => ({
       name: c.name,
       xp: filter === 'Weekly' ? Math.round(c.xp * 0.4) + (c.streak * 50) : c.xp,
       role: c.university,
       isUser: c.isUser || c.name.toLowerCase() === user.name?.toLowerCase(),
-      rank: idx + 1
+      avatar: c.avatar
     }));
+
+    // If cloud has fewer than 5 members, supplement with cohort peers to keep podium and leaderboard engaging
+    const existingNames = new Set(cloudMapped.map(item => item.name.toLowerCase()));
+    const supplemental = defaultCohortPeers.filter(p => !existingNames.has(p.name.toLowerCase()));
+    
+    allRankings = [...cloudMapped, ...(cloudMapped.length < 5 ? supplemental : [])]
+      .sort((a, b) => b.xp - a.xp)
+      .map((u, idx) => ({ ...u, rank: idx + 1 }));
   } else {
     // Local / Default Cohort Benchmark
     allRankings = [
