@@ -1,17 +1,15 @@
 import React, { useState } from 'react';
-import { Search, Check, Lock, Play, FlaskConical, ArrowRight } from 'lucide-react';
+import { Search, Check, Lock, Play, ArrowRight } from 'lucide-react';
 import { AIMA_PARTS } from '../data/aimaBookData';
 import { useProgress } from '../context/ProgressContext';
 import { soundFX } from '../utils/soundEffects';
 
 interface LearnChaptersViewProps {
   onStartLesson: (chapterId: number) => void;
-  onOpenLab: (chapterId: number) => void;
 }
 
 export const LearnChaptersView: React.FC<LearnChaptersViewProps> = ({
-  onStartLesson,
-  onOpenLab
+  onStartLesson
 }) => {
   const { stats } = useProgress();
   const [searchQuery, setSearchQuery] = useState('');
@@ -128,33 +126,6 @@ export const LearnChaptersView: React.FC<LearnChaptersViewProps> = ({
                       {selectedChapter.sections ? selectedChapter.sections.length : 4} topics · {selectedChapter.pageRange}
                     </div>
                   </div>
-
-                  {selectedChapter.hasSimulation && (
-                    <button
-                      className="quest-btn-outline"
-                      disabled={isSelectedLocked}
-                      style={{
-                        padding: '8px 18px',
-                        fontSize: '13px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        opacity: isSelectedLocked ? 0.45 : 1,
-                        cursor: isSelectedLocked ? 'not-allowed' : 'pointer'
-                      }}
-                      onClick={() => {
-                        if (isSelectedLocked) {
-                          soundFX.playWrong();
-                          return;
-                        }
-                        soundFX.playClick();
-                        onOpenLab(selectedChapter.id);
-                      }}
-                      title={isSelectedLocked ? `Complete Chapter ${selectedChapter.id - 1} first to unlock interactive lab` : 'Launch Interactive Lab'}
-                    >
-                      <FlaskConical size={16} /> Interactive Lab
-                    </button>
-                  )}
                 </div>
 
                 {/* Prominent Prerequisite Banner for Locked Chapters */}

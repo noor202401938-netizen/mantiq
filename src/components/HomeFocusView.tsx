@@ -7,14 +7,12 @@ import { AIMA_PARTS } from '../data/aimaBookData';
 
 interface HomeFocusViewProps {
   onStartLesson: (chapterId: number) => void;
-  onOpenLab: (chapterId: number) => void;
   onOpenFlashcards: () => void;
   onOpenRanks: () => void;
 }
 
 export const HomeFocusView: React.FC<HomeFocusViewProps> = ({
   onStartLesson,
-  onOpenLab,
   onOpenFlashcards,
   onOpenRanks
 }) => {
@@ -289,17 +287,7 @@ export const HomeFocusView: React.FC<HomeFocusViewProps> = ({
           <span className="quest-plan-pill" style={{ background: '#EAF6C9' }}>Review</span>
         </div>
 
-        <div
-          className="quest-plan-card"
-          onClick={() => {
-            soundFX.playClick();
-            onOpenLab(resumeChapter.id);
-          }}
-        >
-          <div className="quest-plan-circle" />
-          <span className="quest-plan-text">Explore Chapter {resumeChapter.id} algorithm lab</span>
-          <span className="quest-plan-pill" style={{ background: '#C9F26B' }}>Lab</span>
-        </div>
+
 
         <div
           className="quest-plan-card"

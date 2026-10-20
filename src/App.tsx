@@ -16,9 +16,6 @@ import './styles/learningAppDesign.css';
 import 'katex/dist/katex.min.css';
 
 // Code-split heavy interactive and textbook modules for faster initial load
-const InteractiveLabView = lazy(() =>
-  import('./components/InteractiveLabView').then((m) => ({ default: m.InteractiveLabView }))
-);
 const AimaLessonViewer = lazy(() =>
   import('./components/AimaLessonViewer').then((m) => ({ default: m.AimaLessonViewer }))
 );
@@ -84,11 +81,6 @@ const AppContent: React.FC = () => {
     return 'home';
   });
 
-  const [learnSubView, setLearnSubView] = useState<'chapters' | 'lab'>(() => {
-    const saved = localStorage.getItem('mantiq_learn_subview');
-    return saved === 'lab' ? 'lab' : 'chapters';
-  });
-
   // Modals & Active IDs - All hooks must be called unconditionally at top of component
   const [activeLessonChapterId, setActiveLessonChapterId] = useState<number | null>(() => {
     const saved = localStorage.getItem('mantiq_active_lesson_chapter');
@@ -104,12 +96,6 @@ const AppContent: React.FC = () => {
       localStorage.setItem('mantiq_active_tab', currentTab);
     }
   }, [currentTab, hasStartedSession]);
-
-  useEffect(() => {
-    if (hasStartedSession) {
-      localStorage.setItem('mantiq_learn_subview', learnSubView);
-    }
-  }, [learnSubView, hasStartedSession]);
 
   useEffect(() => {
     if (hasStartedSession && activeLessonChapterId !== null) {
@@ -131,21 +117,13 @@ const AppContent: React.FC = () => {
     setCurrentTab('lesson');
   };
 
-  const handleOpenLab = (chapterId: number) => {
-    setLearnSubView('lab');
-    setCurrentTab('learn');
-  };
-
   return (
     <div className={`quest-shell ${isDark ? 'dark' : 'light'}`}>
       {/* Desktop & Mobile Navigation (Hidden in Zen Lesson Mode for distraction-free reading) */}
       {currentTab !== 'lesson' && (
         <AimaDesktopNav
           currentTab={currentTab}
-          onSelectTab={(tab) => {
-            setCurrentTab(tab);
-            if (tab === 'learn') setLearnSubView('chapters');
-          }}
+          onSelectTab={(tab) => setCurrentTab(tab)}
           onOpenSync={() => setIsSyncOpen(true)}
         />
       )}
@@ -156,26 +134,13 @@ const AppContent: React.FC = () => {
           {currentTab === 'home' && (
             <HomeFocusView
               onStartLesson={handleStartLesson}
-              onOpenLab={handleOpenLab}
               onOpenFlashcards={() => setIsFlashcardOpen(true)}
               onOpenRanks={() => setCurrentTab('ranks')}
             />
           )}
 
           {currentTab === 'learn' && (
-            <>
-              {learnSubView === 'chapters' ? (
-                <LearnChaptersView
-                  onStartLesson={handleStartLesson}
-                  onOpenLab={handleOpenLab}
-                />
-              ) : (
-                <InteractiveLabView
-                  onStartQuiz={() => handleStartLesson(3)}
-                  onBackToLearn={() => setLearnSubView('chapters')}
-                />
-              )}
-            </>
+            <LearnChaptersView onStartLesson={handleStartLesson} />
           )}
 
           {currentTab === 'lesson' && (
