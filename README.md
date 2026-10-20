@@ -6,7 +6,7 @@
 
 <p align="center">
   <em>"Let's have some Mantiq about AI."</em><br />
-  <strong>Built by a student, for my fellow students mastering Stuart Russell & Peter Norvig's <em>Artificial Intelligence: A Modern Approach (AIMA 4th Edition)</em>.</strong>
+  <strong>A university-grade interactive study companion and active-recall exam prep platform for Stuart Russell & Peter Norvig's <em>Artificial Intelligence: A Modern Approach (AIMA 4th Edition)</em>. Built by a student for university AI coursework.</strong>
 </p>
 
 <p align="center">
@@ -21,36 +21,30 @@
 
 ---
 
-## 💡 Why I Made This For My Fellow Students
+## 🎯 Overview & Motivation
 
-If you've ever stared at Russell & Norvig's 1,100+ page textbook at 2:00 AM before an AI midterm, you probably know the feeling:
-- *"Wait, why does graph search require consistency while tree search only needs admissibility?"*
-- *"How does alpha-beta pruning move ordering drop complexity from $O(b^d)$ to $O(b^{d/2})$?"*
-- *"Why do textbook summaries skip the exact derivations professors ask on exams?"*
+Russell & Norvig's *Artificial Intelligence: A Modern Approach (AIMA)* is the authoritative foundational text in modern university computer science curricula worldwide. However, its comprehensive 1,100+ page density often leaves students without rapid feedback loops, active recall drills, or systematic trap identification prior to midterms and qualifying exams.
 
-I built **Mantiq** (Arabic: **منطق**, meaning *"Logic"* or *"Rational Reasoning"*) for myself and my classmates so we didn't have to struggle through passive PDF reading alone. 
-
-Our goal was simple: **build the exact tool we needed to actually understand the math, remember the algorithms, and crush our exams.**
+**Mantiq** (Arabic: **منطق**, meaning *"Logic"* or *"Rational Reasoning"*) was developed to bridge this gap. Designed from a student's perspective for university AI courses, it connects theoretical proofs directly with interactive algorithm traces, tiered exam questions, and mathematically rigorous KaTeX formulations.
 
 ---
 
-## 🎯 What Makes Mantiq Different For Students
+## 🚀 Core Features
 
-- **🧠 Active Recall Over Passive Skimming:** Reading dense chapters doesn't guarantee you'll remember them in the exam hall. Mantiq tests your memory with interactive chapter-by-chapter drills.
-- **🃏 43+ Chapter-Grouped Flashcards:** Every single chapter from 1 to 27 has dedicated cards with formulas and derivations.
-- **⚠️ 11 Sneaky Exam Traps Filter:** A dedicated toggle just for the trick questions university professors love to throw at you.
-- **📐 Crystal-Clear KaTeX Math:** No blurry screenshots or hand-wavy prose. Every equation and proof is rendered crisply in high-contrast Citron Lime (`#C9F26B`) on Pitch Onyx (`#13211C`).
-- **🏆 3-Tier Multi-Level Quizzes:**
-  - **Tier 1 (Foundation):** Terminology & PEAS framework basics.
-  - **Tier 2 (Midterm Calculations):** Tree search step counting, Bayes factorizations, and heuristic admissibility proofs.
+- **🧠 Active Recall Over Passive Reading:** Replaces passive textbook skimming with structured retrieval practice and chapter-by-chapter drills.
+- **🃏 43+ Chapter-Grouped Flashcards:** Comprehensive coverage across all 27 chapters, filterable by Part I–VII, topic pills, and a dedicated **⚠️ Traps Only (11 Cards)** filter for common exam pitfalls.
+- **📐 Mathematical Precision via KaTeX:** Invariant rules and formal proofs rendered in high-contrast Citron Lime (`#C9F26B`) on Pitch Onyx (`#13211C`).
+- **🏆 3-Tier Examination Quizzes:**
+  - **Tier 1 (Foundation):** Core definitions, PEAS frameworks, environment properties.
+  - **Tier 2 (Midterm Calculation):** Node expansion counts, Bayes network factorizations, heuristic consistency proofs.
   - **Tier 3 (Graduate Rigor):** Completeness proofs, Bellman invariants, and convergence bounds.
-- **🔌 100% Offline & Private:** Campus Wi-Fi down in the basement lecture hall? No problem. Mantiq stores everything locally in your browser with zero mandatory sign-ins and full cryptographic backup export.
+- **🔌 100% Offline-First Architecture:** Complete client-side functionality with zero mandatory network calls, full `localStorage` persistence, and portable cryptographic backup export.
 
 ---
 
-## 📖 The Complete 27-Chapter Curriculum
+## 📖 Complete 27-Chapter Curriculum
 
-| Part | Chapters | What You Master | Key Exam Concepts |
+| Part | Chapters | Focus Areas | Key Exam Concepts |
 | :--- | :--- | :--- | :--- |
 | **Part I: Artificial Intelligence** | Ch. 1–2 | Rationality & Agents | PEAS Framework, Rationality vs Omniscience, Environment Types |
 | **Part II: Problem-Solving** | Ch. 3–6 | Search, Heuristics & Games | $A^*$, Admissibility vs Consistency, Minimax, $\alpha$-$\beta$ Pruning, AC-3 |
@@ -64,22 +58,20 @@ Our goal was simple: **build the exact tool we needed to actually understand the
 
 ## 🎓 Recommended Study Workflow
 
-Here is how my friends and I use Mantiq to prep for exams:
-
 ```mermaid
 graph TD
     A["1. Read Chapter Summary<br/>(Reading Mode)"] --> B["2. Trace Worked Problems<br/>(Practice Mode)"]
     B --> C["3. Review Proofs & Invariants<br/>(Graduate Rigor Mode)"]
     C --> D["4. Drill Chapter Flashcards<br/>(Focus on ⚠️ Traps)"]
     D --> E["5. Take 3-Tier Chapter Quiz<br/>(Tier 1 ➔ 2 ➔ 3)"]
-    E --> F["6. Export Safe Offline Backup<br/>(One-click .json snapshot)"]
+    E --> F["6. Export Safe Offline Backup<br/>(Cryptographically Verified Snapshot)"]
 ```
 
 ---
 
 ## 🎨 Design Tokens
 
-Mantiq is styled specifically for late-night, distraction-free study sessions without eye strain:
+Mantiq is styled specifically for distraction-free study sessions without eye strain:
 
 | Color | Hex | Swatch | Purpose |
 | :--- | :--- | :--- | :--- |
@@ -91,8 +83,6 @@ Mantiq is styled specifically for late-night, distraction-free study sessions wi
 ---
 
 ## 💻 Developer & Contributor Quickstart
-
-Want to contribute new flashcards, worked examples, or help a fellow student? We'd love your help!
 
 ### Setup
 ```bash
@@ -116,7 +106,7 @@ npm run build       # Verify TypeScript types and production bundle
 
 ---
 
-## 📚 Student & Developer Documentation
+## 📚 Documentation Index
 
 - **[Learner Guide](docs/USER_GUIDE.md):** Complete study tips, exam strategies, and backup walkthrough.
 - **[Developer & Architecture Guide](docs/DEVELOPER_GUIDE.md):** Technical design, state context layout, and KaTeX rendering engine.
@@ -128,11 +118,10 @@ npm run build       # Verify TypeScript types and production bundle
 
 ## 📄 License
 
-Distributed under the **MIT License**. Free for all students and educators everywhere.
+Distributed under the **MIT License**.
 
 ---
 
 <p align="center">
-  <strong>Built with ❤️ for my fellow students everywhere studying Artificial Intelligence.</strong><br />
-  <em>If Mantiq helped you ace your exam, share it with a classmate!</em>
+  <strong>An open-source educational project for university students and educators worldwide.</strong>
 </p>
