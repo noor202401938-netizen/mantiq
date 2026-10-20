@@ -158,7 +158,7 @@ export const HomeFocusView: React.FC<HomeFocusViewProps> = ({
               <span style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.06em', textTransform: 'uppercase', background: 'rgba(201, 242, 107, 0.2)', color: '#C9F26B', padding: '2px 8px', borderRadius: '6px' }}>
                 EXAM DRILL DECK
               </span>
-              <span style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.7)' }}>25 Cards · Search, Logic, Bayes, MDP & Traps</span>
+              <span style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.7)' }}>43+ Cards · All 27 Chapters & Exam Traps</span>
             </div>
             <h3 style={{ margin: '4px 0 0', fontSize: '16px', fontWeight: 800, color: '#F3F5EF' }}>
               Active Recall Exam Flashcards

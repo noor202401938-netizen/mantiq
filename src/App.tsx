@@ -88,7 +88,13 @@ const AppContent: React.FC = () => {
   });
   const [activeQuizChapterId, setActiveQuizChapterId] = useState<number | null>(null);
   const [isFlashcardOpen, setIsFlashcardOpen] = useState<boolean>(false);
+  const [flashcardChapterId, setFlashcardChapterId] = useState<number | undefined>(undefined);
   const [isSyncOpen, setIsSyncOpen] = useState<boolean>(false);
+
+  const handleOpenFlashcards = (chapterId?: number) => {
+    setFlashcardChapterId(chapterId);
+    setIsFlashcardOpen(true);
+  };
 
   // Persist navigation states across browser refreshes
   useEffect(() => {
@@ -125,7 +131,7 @@ const AppContent: React.FC = () => {
           currentTab={currentTab}
           onSelectTab={(tab) => setCurrentTab(tab)}
           onOpenSync={() => setIsSyncOpen(true)}
-          onOpenFlashcards={() => setIsFlashcardOpen(true)}
+          onOpenFlashcards={() => handleOpenFlashcards()}
         />
       )}
 
@@ -135,7 +141,7 @@ const AppContent: React.FC = () => {
           {currentTab === 'home' && (
             <HomeFocusView
               onStartLesson={handleStartLesson}
-              onOpenFlashcards={() => setIsFlashcardOpen(true)}
+              onOpenFlashcards={() => handleOpenFlashcards()}
               onOpenRanks={() => setCurrentTab('ranks')}
             />
           )}
@@ -143,7 +149,7 @@ const AppContent: React.FC = () => {
           {currentTab === 'learn' && (
             <LearnChaptersView
               onStartLesson={handleStartLesson}
-              onOpenFlashcards={() => setIsFlashcardOpen(true)}
+              onOpenFlashcards={(chId?: number) => handleOpenFlashcards(chId)}
             />
           )}
 
@@ -151,7 +157,7 @@ const AppContent: React.FC = () => {
             <AimaLessonViewer
               chapterId={activeLessonChapterId && isChapterUnlocked(activeLessonChapterId) ? activeLessonChapterId : 1}
               onClose={() => setCurrentTab('learn')}
-              onOpenFlashcards={() => setIsFlashcardOpen(true)}
+              onOpenFlashcards={(chId?: number) => handleOpenFlashcards(chId ?? (activeLessonChapterId || undefined))}
               onSelectChapter={(chId) => {
                 if (isChapterUnlocked(chId)) {
                   setActiveLessonChapterId(chId);
@@ -184,7 +190,13 @@ const AppContent: React.FC = () => {
         )}
 
         {isFlashcardOpen && (
-          <AimaFlashcardModal onClose={() => setIsFlashcardOpen(false)} />
+          <AimaFlashcardModal
+            initialChapterId={flashcardChapterId}
+            onClose={() => {
+              setIsFlashcardOpen(false);
+              setFlashcardChapterId(undefined);
+            }}
+          />
         )}
 
         {isSyncOpen && (

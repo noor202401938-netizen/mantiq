@@ -147,7 +147,7 @@ export const AimaDesktopNav: React.FC<AimaDesktopNavProps> = ({
               transition: 'all 0.2s ease',
               boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
             }}
-            title="Open Exam Flashcards (25 Cards)"
+            title="Open Exam Flashcards (43+ Cards across all 27 Chapters)"
           >
             <div
               style={{
@@ -170,7 +170,7 @@ export const AimaDesktopNav: React.FC<AimaDesktopNavProps> = ({
                 Exam Flashcards
               </div>
               <div style={{ fontSize: '10.5px', color: 'var(--quest-text-muted)', marginTop: '2px' }}>
-                25 Rigorous Cards
+                43+ Cards • All 27 Ch.
               </div>
             </div>
           </button>

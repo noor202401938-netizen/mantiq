@@ -17,7 +17,7 @@ interface AimaLessonViewerProps {
   onClose: () => void;
   onStartQuiz: (chapterId: number) => void;
   onSelectChapter?: (chapterId: number) => void;
-  onOpenFlashcards?: () => void;
+  onOpenFlashcards?: (chapterId?: number) => void;
 }
 
 export const AimaLessonViewer: React.FC<AimaLessonViewerProps> = ({
@@ -979,7 +979,7 @@ export const AimaLessonViewer: React.FC<AimaLessonViewerProps> = ({
                   type="button"
                   onClick={() => {
                     soundFX.playClick();
-                    onOpenFlashcards();
+                    onOpenFlashcards(chapterId);
                   }}
                   style={{
                     display: 'inline-flex',
@@ -1307,7 +1307,7 @@ export const AimaLessonViewer: React.FC<AimaLessonViewerProps> = ({
                             type="button"
                             onClick={() => {
                               soundFX.playClick();
-                              onOpenFlashcards();
+                              onOpenFlashcards(chapterId);
                             }}
                             style={{
                               background: '#13211C',

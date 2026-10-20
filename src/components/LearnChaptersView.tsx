@@ -6,7 +6,7 @@ import { soundFX } from '../utils/soundEffects';
 
 interface LearnChaptersViewProps {
   onStartLesson: (chapterId: number) => void;
-  onOpenFlashcards?: () => void;
+  onOpenFlashcards?: (chapterId?: number) => void;
 }
 
 export const LearnChaptersView: React.FC<LearnChaptersViewProps> = ({
@@ -48,7 +48,7 @@ export const LearnChaptersView: React.FC<LearnChaptersViewProps> = ({
               type="button"
               onClick={() => {
                 soundFX.playClick();
-                onOpenFlashcards();
+                onOpenFlashcards(selectedChapterId);
               }}
               style={{
                 display: 'inline-flex',
@@ -64,9 +64,9 @@ export const LearnChaptersView: React.FC<LearnChaptersViewProps> = ({
                 cursor: 'pointer',
                 transition: 'all 0.15s ease'
               }}
-              title="Practice with 25 university exam flashcards"
+              title="Practice with 43+ university exam flashcards across all 27 chapters"
             >
-              <span>🃏 Exam Flashcards (25)</span>
+              <span>🃏 Exam Flashcards (43+)</span>
             </button>
           )}
           <div className="quest-header-level-badge" style={{ background: '#EAF6C9', color: '#13211C', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>

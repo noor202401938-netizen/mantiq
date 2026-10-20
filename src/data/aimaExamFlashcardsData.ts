@@ -1,0 +1,612 @@
+export interface ExamFlashcard {
+  id: number;
+  chapterId: number;
+  chapterTitle: string;
+  partId: number;
+  partTitle: string;
+  category: 'search' | 'games' | 'logic' | 'planning' | 'probability' | 'mdp_rl' | 'learning' | 'nlp_vision' | 'ethics' | 'traps';
+  categoryLabel: string;
+  q: string;
+  a: string;
+  formula?: string;
+  examTakeaway: string;
+  isExamTrap?: boolean;
+}
+
+export const COMPREHENSIVE_EXAM_FLASHCARDS: ExamFlashcard[] = [
+  // ==========================================
+  // PART I: ARTIFICIAL INTELLIGENCE (CH 1–2)
+  // ==========================================
+  {
+    id: 1,
+    chapterId: 1,
+    chapterTitle: 'Introduction',
+    partId: 1,
+    partTitle: 'Part I: AI Foundations',
+    category: 'traps',
+    categoryLabel: 'Exam Trap',
+    isExamTrap: true,
+    q: 'EXAM TRAP: Does a rational agent always achieve the best possible actual outcome?',
+    a: 'NO! Rationality maximizes **expected** performance based on the agent\'s percept history and built-in knowledge. In stochastic or partially observable worlds, a rational agent can make the mathematically optimal choice and still fail due to bad luck. Omniscience is impossible in real systems.',
+    formula: 'a^* = \\arg\\max_{a \\in A} \\mathbb{E}[U(s\') \\mid s, a]',
+    examTakeaway: 'Never equate rationality with omniscience or 100% success rate on an exam.'
+  },
+  {
+    id: 2,
+    chapterId: 1,
+    chapterTitle: 'Introduction',
+    partId: 1,
+    partTitle: 'Part I: AI Foundations',
+    category: 'ethics',
+    categoryLabel: 'AI Paradigms',
+    q: 'What are the four historical approaches to defining Artificial Intelligence?',
+    a: '1. **Thinking Humanly**: Cognitive science & brain modeling.\n2. **Acting Humanly**: The operational Turing Test.\n3. **Thinking Rationally**: Deductive formal logic / syllogisms.\n4. **Acting Rationally**: Rational agents maximizing expected utility (the primary foundation of AIMA).',
+    formula: 'P(\\text{Interrogator identifies machine}) \\approx 0.5',
+    examTakeaway: 'AIMA adopts Acting Rationally because mathematical optimization is general and verifiable without replicating biological human biases.'
+  },
+  {
+    id: 3,
+    chapterId: 2,
+    chapterTitle: 'Intelligent Agents',
+    partId: 1,
+    partTitle: 'Part I: AI Foundations',
+    category: 'search',
+    categoryLabel: 'Agent Architectures',
+    q: 'What is the PEAS framework, and why must it be defined before writing code?',
+    a: 'PEAS stands for **Performance measure**, **Environment**, **Actuators**, and **Sensors**. It formally specifies the task environment: what the agent is trying to achieve, where it operates, what tools it uses to act, and how it observes the world.',
+    formula: 'f: P^* \\to A \\quad (\\text{Agent function mapping percept histories to actions})',
+    examTakeaway: 'On exam problems, first write down PEAS before designing any heuristic or policy.'
+  },
+  {
+    id: 4,
+    chapterId: 2,
+    chapterTitle: 'Intelligent Agents',
+    partId: 1,
+    partTitle: 'Part I: AI Foundations',
+    category: 'traps',
+    categoryLabel: 'Exam Trap',
+    isExamTrap: true,
+    q: 'EXAM TRAP: When does a Simple Reflex Agent enter an infinite loop in a partially observable environment?',
+    a: 'When it lacks internal state memory! If distinct physical states generate the exact same sensor percept, a deterministic reflex agent cannot distinguish them, choosing the identical action repeatedly and entering an infinite loop. Randomization or state memory breaks this.',
+    formula: '\\text{Action} = \\text{RULE-MATCH}(\\text{Percept}, \\text{Rules})',
+    examTakeaway: 'Simple reflex agents require fully observable environments to be rational unless randomized.'
+  },
+
+  // ==========================================
+  // PART II: PROBLEM-SOLVING & SEARCH (CH 3–6)
+  // ==========================================
+  {
+    id: 5,
+    chapterId: 3,
+    chapterTitle: 'Classical Search',
+    partId: 2,
+    partTitle: 'Part II: Problem-Solving & Search',
+    category: 'search',
+    categoryLabel: 'Search & Heuristics',
+    q: 'When is a heuristic function h(n) considered admissible?',
+    a: 'A heuristic is **admissible** if it never overestimates the true remaining cost to reach the nearest goal state from node $n$ (i.e., $h(n) \\le h^*(n)$, where $h^*(n)$ is the true optimal cost). Also, $h(G) = 0$ for any goal state $G$.',
+    formula: 'h(n) \\le h^*(n) \\quad \\text{and} \\quad h(G) = 0',
+    examTakeaway: 'Admissibility is the necessary and sufficient condition for A* Tree Search optimality.'
+  },
+  {
+    id: 6,
+    chapterId: 3,
+    chapterTitle: 'Classical Search',
+    partId: 2,
+    partTitle: 'Part II: Problem-Solving & Search',
+    category: 'search',
+    categoryLabel: 'Search & Heuristics',
+    q: 'What is the mathematical definition of heuristic consistency (monotonicity)?',
+    a: 'For every node $n$ and successor $n\'$ generated by action $a$: $h(n) \\le c(n, a, n\') + h(n\')$. This enforces the triangle inequality: the estimated cost to the goal cannot drop by more than the actual step cost.',
+    formula: 'h(n) \\le c(n, a, n\') + h(n\')',
+    examTakeaway: 'Consistency guarantees that $f(n)$ is monotonically non-decreasing, ensuring the first expansion of any node is already on the optimal path in Graph Search.'
+  },
+  {
+    id: 7,
+    chapterId: 3,
+    chapterTitle: 'Classical Search',
+    partId: 2,
+    partTitle: 'Part II: Problem-Solving & Search',
+    category: 'traps',
+    categoryLabel: 'Exam Trap',
+    isExamTrap: true,
+    q: 'EXAM TRAP: Does an admissible heuristic guarantee optimal solutions in A* GRAPH search?',
+    a: 'NO! Admissibility alone is only sufficient for TREE search. Graph search requires **CONSISTENCY** (monotonicity). If $h$ is admissible but inconsistent, A* can reach a state via a suboptimal path, close it, and later refuse to reopen it when the true optimal path is found!',
+    formula: '\\text{Admissible} \\not\\implies \\text{Graph Search Optimal (unless closed nodes re-opened)}',
+    examTakeaway: 'Remember: Tree Search = Admissibility; Graph Search = Consistency.'
+  },
+  {
+    id: 8,
+    chapterId: 3,
+    chapterTitle: 'Classical Search',
+    partId: 2,
+    partTitle: 'Part II: Problem-Solving & Search',
+    category: 'search',
+    categoryLabel: 'Search Complexity',
+    q: 'What are the space and time complexities of Uniform Cost Search (Dijkstra)?',
+    a: 'Time complexity is $O(b^{1 + \\lfloor C^* / \\epsilon \\rfloor})$ and space complexity is $O(b^{1 + \\lfloor C^* / \\epsilon \\rfloor})$, where $C^*$ is the optimal goal cost and $\\epsilon$ is the minimum step cost. Memory is the binding constraint.',
+    formula: '\\text{Space} = O(b^{1 + \\lfloor C^* / \\epsilon \\rfloor})',
+    examTakeaway: 'If all step costs are equal ($\\\\epsilon = c$), Uniform Cost Search reduces exactly to Breadth-First Search.'
+  },
+  {
+    id: 9,
+    chapterId: 3,
+    chapterTitle: 'Classical Search',
+    partId: 2,
+    partTitle: 'Part II: Problem-Solving & Search',
+    category: 'search',
+    categoryLabel: 'Memory-Bounded Search',
+    q: 'How does Iterative Deepening A* (IDA*) avoid memory exhaustion?',
+    a: 'Instead of storing nodes in a priority queue, IDA* runs DFS iterations bounded by an $f$-cost limit. When an iteration exhausts all paths under the limit without finding a goal, the threshold increases to the **minimum $f$-value of all pruned nodes**.',
+    formula: '\\text{Next Cutoff} = \\min_{n \\in \\text{pruned}} f(n), \\quad \\text{Space} = O(bd)',
+    examTakeaway: 'IDA* uses only $O(bd)$ linear memory while retaining optimality if $h$ is admissible.'
+  },
+  {
+    id: 10,
+    chapterId: 4,
+    chapterTitle: 'Complex Environments',
+    partId: 2,
+    partTitle: 'Part II: Problem-Solving & Search',
+    category: 'search',
+    categoryLabel: 'Local Search',
+    q: 'What is the Simulated Annealing acceptance probability for downhill moves?',
+    a: 'Simulated Annealing always accepts uphill moves. Downhill (worse) moves are accepted with probability $P = e^{\\Delta E / T}$, where $\\Delta E < 0$ is the change in evaluation and $T$ is the current temperature.',
+    formula: 'P(\\text{accept worse}) = e^{\\frac{\\Delta E}{T}}',
+    examTakeaway: 'As temperature $T \\to 0$, Simulated Annealing approaches pure greedy hill climbing.'
+  },
+  {
+    id: 11,
+    chapterId: 4,
+    chapterTitle: 'Complex Environments',
+    partId: 2,
+    partTitle: 'Part II: Problem-Solving & Search',
+    category: 'search',
+    categoryLabel: 'Contingency Search',
+    q: 'What is an AND-OR search tree, and when is it required?',
+    a: 'Required in non-deterministic environments! **OR nodes** represent the agent\'s choice of action. **AND nodes** represent the environment\'s non-deterministic branch of all possible outcomes. A solution is a conditional plan (subtree) branching on percepts.',
+    formula: '\\text{Solution} = \\text{Conditional Subtree covering all AND branches}',
+    examTakeaway: 'If an AND node has 3 possible outcomes, the agent must have a contingency plan for all 3.'
+  },
+  {
+    id: 12,
+    chapterId: 5,
+    chapterTitle: 'Adversarial Search & Games',
+    partId: 2,
+    partTitle: 'Part II: Problem-Solving & Search',
+    category: 'games',
+    categoryLabel: 'Game Theory',
+    q: 'What mathematical condition triggers an Alpha-Beta cutoff in adversarial search?',
+    a: 'A cutoff occurs whenever $\\alpha \\ge \\beta$. $\\alpha$ is the highest-value choice found so far along any path for MAX; $\\beta$ is the lowest-value choice found so far for MIN.',
+    formula: '\\alpha \\ge \\beta \\implies \\text{Prune remaining sibling branches}',
+    examTakeaway: 'Alpha pruning occurs inside MIN nodes; Beta pruning occurs inside MAX nodes.'
+  },
+  {
+    id: 13,
+    chapterId: 5,
+    chapterTitle: 'Adversarial Search & Games',
+    partId: 2,
+    partTitle: 'Part II: Problem-Solving & Search',
+    category: 'traps',
+    categoryLabel: 'Exam Trap',
+    isExamTrap: true,
+    q: 'EXAM TRAP: Does Alpha-Beta pruning ever alter the numerical Minimax value of the root?',
+    a: 'NO! Alpha-Beta pruning is mathematically guaranteed to return the **exact same move and value** as full Minimax. It only prunes branches that can never influence the root decision. It is NOT an approximation.',
+    formula: '\\text{Value}(\\text{AlphaBeta}) \\equiv \\text{Value}(\\text{Minimax})',
+    examTakeaway: 'Never describe Alpha-Beta as a heuristic or lossy approximation on exams.'
+  },
+  {
+    id: 14,
+    chapterId: 5,
+    chapterTitle: 'Adversarial Search & Games',
+    partId: 2,
+    partTitle: 'Part II: Problem-Solving & Search',
+    category: 'games',
+    categoryLabel: 'Game Complexity',
+    q: 'What is the time complexity of Alpha-Beta search under perfect move ordering?',
+    a: 'With best-first move ordering, Alpha-Beta evaluates $O(b^{d/2}) = O((\\sqrt{b})^d)$ leaf nodes instead of standard Minimax $O(b^d)$. This effectively doubles the depth searchable within the same time limit.',
+    formula: 'O(b^{d/2}) = O((\\sqrt{b})^d)',
+    examTakeaway: 'The effective branching factor drops from $b$ down to $\\sqrt{b}$.'
+  },
+  {
+    id: 15,
+    chapterId: 6,
+    chapterTitle: 'Constraint Satisfaction Problems',
+    partId: 2,
+    partTitle: 'Part II: Problem-Solving & Search',
+    category: 'search',
+    categoryLabel: 'Constraint Satisfaction',
+    q: 'What is the Arc Consistency condition (AC-3) for a directed arc Xi -> Xj?',
+    a: 'An arc $X_i \\to X_j$ is arc-consistent if for every value $x \\in \\text{Domain}(X_i)$, there exists at least one value $y \\in \\text{Domain}(X_j)$ that satisfies the binary constraint between $X_i$ and $X_j$. If no such $y$ exists, $x$ is pruned from $\\text{Domain}(X_i)$.',
+    formula: '\\forall x \\in D_i, \\quad \\exists y \\in D_j \\text{ such that } (x, y) \\text{ satisfies constraint}',
+    examTakeaway: 'Time complexity of AC-3 is $O(cd^3)$, where $c$ is the number of constraints and $d$ is maximum domain size.'
+  },
+  {
+    id: 16,
+    chapterId: 6,
+    chapterTitle: 'Constraint Satisfaction Problems',
+    partId: 2,
+    partTitle: 'Part II: Problem-Solving & Search',
+    category: 'traps',
+    categoryLabel: 'Exam Trap',
+    isExamTrap: true,
+    q: 'EXAM TRAP: In CSP backtracking, which variable and value heuristics should you apply?',
+    a: 'Variable choice: **MRV (Minimum Remaining Values)** = "Fail-first" to detect dead ends immediately. Value choice: **LCV (Least Constraining Value)** = "Fail-last" to leave maximum flexibility for remaining unassigned variables!',
+    formula: '\\text{Variable} = \\arg\\min_{X} |D_X| \\quad \\text{vs} \\quad \\text{Value} = \\arg\\max_{v} |\\text{remaining valid domain values}|',
+    examTakeaway: 'Do not swap them: fail-first for variables, fail-last for values.'
+  },
+
+  // ==========================================
+  // PART III: KNOWLEDGE & LOGIC (CH 7–12)
+  // ==========================================
+  {
+    id: 17,
+    chapterId: 7,
+    chapterTitle: 'Logical Agents',
+    partId: 3,
+    partTitle: 'Part III: Knowledge & Reasoning',
+    category: 'logic',
+    categoryLabel: 'Propositional Logic',
+    q: 'What is the Propositional Resolution rule, and why is it refutation-complete?',
+    a: 'Resolution resolves two clauses containing complementary literals ($P$ and $\\neg P$), producing a resolvent containing all other literals. It is refutation-complete: $KB \\models \\alpha$ if and only if $(KB \\land \\neg \\alpha)$ derives the empty clause ($\\square$).',
+    formula: '\\frac{l_1 \\lor \\dots \\lor P, \\quad m_1 \\lor \\dots \\lor \\neg P}{(l_1 \\lor \\dots) \\lor (m_1 \\lor \\dots)} \\implies \\square \\;(\\text{Contradiction})',
+    examTakeaway: 'To prove entailment by resolution, always negate the goal and derive contradiction.'
+  },
+  {
+    id: 18,
+    chapterId: 7,
+    chapterTitle: 'Logical Agents',
+    partId: 3,
+    partTitle: 'Part III: Knowledge & Reasoning',
+    category: 'traps',
+    categoryLabel: 'Exam Trap',
+    isExamTrap: true,
+    q: 'EXAM TRAP: What makes Horn clause inference tractably solvable in linear time O(n)?',
+    a: 'A Horn clause contains **at most one positive (non-negated) literal**. This restriction allows Forward Chaining and Backward Chaining to run in $O(n)$ linear time, avoiding the NP-completeness of general SAT.',
+    formula: '(\\neg A \\lor \\neg B \\lor C) \\iff (A \\land B \\implies C)',
+    examTakeaway: 'General 3-SAT is NP-complete, but Horn-SAT is solvable in polynomial $O(n)$ time.'
+  },
+  {
+    id: 19,
+    chapterId: 8,
+    chapterTitle: 'First-Order Logic',
+    partId: 3,
+    partTitle: 'Part III: Knowledge & Reasoning',
+    category: 'logic',
+    categoryLabel: 'First-Order Logic',
+    q: 'What is the difference in expressive power between Propositional Logic and First-Order Logic?',
+    a: 'Propositional logic assumes ontological commitment to facts (true/false). First-Order Logic commits to **Objects** (people, numbers), **Relations** (taller than, brother of), and **Functions** (mother of), using quantifiers ($\\forall, \\exists$).',
+    formula: '\\forall x \\; (\\text{King}(x) \\land \\text{Greedy}(x) \\implies \\text{Evil}(x))',
+    examTakeaway: 'FOL avoids the exponential sentence duplication required in propositional representations of world states.'
+  },
+  {
+    id: 20,
+    chapterId: 9,
+    chapterTitle: 'Inference in First-Order Logic',
+    partId: 3,
+    partTitle: 'Part III: Knowledge & Reasoning',
+    category: 'logic',
+    categoryLabel: 'FOL Inference',
+    q: 'What is the Most General Unifier (MGU) in First-Order Logic?',
+    a: 'The MGU $\\theta = \\text{UNIFY}(p, q)$ is a variable substitution such that $\\text{SUBST}(\\theta, p) = \\text{SUBST}(\\theta, q)$ while making the fewest possible variable commitments, preserving maximal generality for downstream inferences.',
+    formula: '\\text{UNIFY}(\\text{Knows}(\\text{John}, x), \\text{Knows}(y, \\text{Jane})) = \\{x/\\text{Jane}, y/\\text{John}\\}',
+    examTakeaway: 'Always include the occur check: unifying $x$ with $f(x)$ causes an infinite loop.'
+  },
+  {
+    id: 21,
+    chapterId: 10,
+    chapterTitle: 'Classical Planning',
+    partId: 3,
+    partTitle: 'Part III: Knowledge & Reasoning',
+    category: 'planning',
+    categoryLabel: 'Classical Planning',
+    q: 'What are the three components of a PDDL action schema?',
+    a: '1. **Action Name & Parameter List**\n2. **Precondition**: Conjunction of positive literals that must hold before execution.\n3. **Effect**: Added literals (Add List) and deleted literals (Delete List) that change in the next state.',
+    formula: 'S\' = (S \\setminus \\text{DeleteList}(a)) \\cup \\text{AddList}(a)',
+    examTakeaway: 'States in PDDL are complete assignments of ground fluents; unmentioned fluents persist (STRIPS assumption).'
+  },
+  {
+    id: 22,
+    chapterId: 11,
+    chapterTitle: 'Real-World Planning',
+    partId: 3,
+    partTitle: 'Part III: Knowledge & Reasoning',
+    category: 'planning',
+    categoryLabel: 'Hierarchical Planning',
+    q: 'What is Hierarchical Task Network (HTN) planning?',
+    a: 'HTN decomposes high-level non-primitive compound tasks into sequences of lower-level subtasks until primitive executable actions remain. It incorporates human domain operational knowledge to drastically prune planning search spaces.',
+    formula: '\\text{Decompose}(Task_{high}) \\to [Subtask_1, Subtask_2, \\dots, PrimitiveAction_k]',
+    examTakeaway: 'HTN planning search operates in task space rather than raw state space.'
+  },
+  {
+    id: 23,
+    chapterId: 12,
+    chapterTitle: 'Knowledge Representation',
+    partId: 3,
+    partTitle: 'Part III: Knowledge & Reasoning',
+    category: 'logic',
+    categoryLabel: 'Ontologies',
+    q: 'What is Reification in knowledge representation?',
+    a: 'Reification turns an abstract relationship or event into a first-class concrete object in logic. Instead of $Fly(Bob, London, Monday)$, we create an event object $E$ with $Type(E, Flight)$, $Agent(E, Bob)$, $Dest(E, London)$.',
+    formula: '\\exists e \\; (\\text{Event}(e) \\land \\text{Type}(e, \\text{Flight}) \\land \\text{Agent}(e, \\text{Bob}))',
+    examTakeaway: 'Reification solves variable-arity relation problems in standard First-Order Logic.'
+  },
+
+  // ==========================================
+  // PART IV: UNCERTAIN KNOWLEDGE (CH 13–18)
+  // ==========================================
+  {
+    id: 24,
+    chapterId: 13,
+    chapterTitle: 'Probabilistic Reasoning',
+    partId: 4,
+    partTitle: 'Part IV: Uncertain Knowledge & Reasoning',
+    category: 'probability',
+    categoryLabel: 'Bayesian Foundations',
+    q: 'State Bayes\' Rule and define the Base Rate Fallacy.',
+    a: 'Bayes\' Rule computes posterior probability from likelihood, prior, and marginal evidence. The **Base Rate Fallacy** occurs when people ignore the low prior probability $P(Y)$, falsely concluding a high positive test rate implies near-certain disease status.',
+    formula: 'P(Y \\mid X) = \\frac{P(X \\mid Y) P(Y)}{P(X)} = \\alpha P(X \\mid Y) P(Y)',
+    examTakeaway: 'When calculating Bayes\' rule on an exam, always normalize using the law of total probability.'
+  },
+  {
+    id: 25,
+    chapterId: 14,
+    chapterTitle: 'Bayesian Networks',
+    partId: 4,
+    partTitle: 'Part IV: Uncertain Knowledge & Reasoning',
+    category: 'probability',
+    categoryLabel: 'Bayesian Networks',
+    q: 'What is the fundamental joint distribution factorization theorem for Bayesian Networks?',
+    a: 'The full joint distribution of all variables $X_1, \\dots, X_n$ in a Bayesian Network DAG is simply the product of each variable\'s conditional distribution given its direct parents in the graph.',
+    formula: 'P(x_1, \\dots, x_n) = \\prod_{i=1}^n P(x_i \\mid \\text{Parents}(X_i))',
+    examTakeaway: 'This reduces parameter storage from exponential $2^n$ down to $O(n \\cdot 2^k)$, where $k$ is max parent count.'
+  },
+  {
+    id: 26,
+    chapterId: 14,
+    chapterTitle: 'Bayesian Networks',
+    partId: 4,
+    partTitle: 'Part IV: Uncertain Knowledge & Reasoning',
+    category: 'traps',
+    categoryLabel: 'Exam Trap',
+    isExamTrap: true,
+    q: 'EXAM TRAP: How does D-Separation behave on a Collider (V-structure) node?',
+    a: 'OPPOSITE of chains and forks! In a collider $A \\to B \\leftarrow C$, $A$ and $C$ are **marginally independent**. BUT conditioning on $B$ (or any descendant of $B$) **ACTIVATES** the path, making $A$ and $C$ conditionally dependent (explaining away)!',
+    formula: 'A \\perp C \\quad \\text{BUT} \\quad A \\not\\perp C \\mid B',
+    examTakeaway: 'Conditioning on a collider OPENS the path; conditioning on a non-collider BLOCKS the path.'
+  },
+  {
+    id: 27,
+    chapterId: 15,
+    chapterTitle: 'Temporal Probabilistic Models',
+    partId: 4,
+    partTitle: 'Part IV: Uncertain Knowledge & Reasoning',
+    category: 'probability',
+    categoryLabel: 'Hidden Markov Models',
+    q: 'What is the distinction between Filtering and Smoothing in Hidden Markov Models?',
+    a: '**Filtering** computes belief of current state given evidence up to today: $P(X_t \\mid e_{1:t})$ (online monitoring). **Smoothing** computes belief of a PAST state given evidence up to the future: $P(X_k \\mid e_{1:t})$ where $k < t$ (retrospective diagnosis).',
+    formula: '\\text{Filtering: } P(X_t \\mid e_{1:t}) \\quad \\text{vs} \\quad \\text{Smoothing: } P(X_k \\mid e_{1:t}), \\; k < t',
+    examTakeaway: 'Filtering uses the Forward pass; Smoothing uses the Forward-Backward algorithm.'
+  },
+  {
+    id: 28,
+    chapterId: 15,
+    chapterTitle: 'Temporal Probabilistic Models',
+    partId: 4,
+    partTitle: 'Part IV: Uncertain Knowledge & Reasoning',
+    category: 'probability',
+    categoryLabel: 'Dynamic Programming',
+    q: 'What does the Viterbi Algorithm calculate in an HMM?',
+    a: 'It computes the **single most likely sequence of hidden states** that generated the observed sequence of evidence, using dynamic programming over time steps $O(T \\cdot |S|^2)$.',
+    formula: 'm_t[j] = \\max_{i} (m_{t-1}[i] \\cdot P(X_t=j \\mid X_{t-1}=i)) \\cdot P(e_t \\mid X_t=j)',
+    examTakeaway: 'Do not confuse Viterbi (most likely sequence) with individual state posterior marginals.'
+  },
+  {
+    id: 29,
+    chapterId: 16,
+    chapterTitle: 'Making Simple Decisions',
+    partId: 4,
+    partTitle: 'Part IV: Uncertain Knowledge & Reasoning',
+    category: 'probability',
+    categoryLabel: 'Decision Theory',
+    q: 'What is the Value of Perfect Information (VPI), and can it ever be negative?',
+    a: 'VPI is the difference in expected utility between acting with new evidence $E_j$ versus acting without it. VPI is **strictly non-negative**: $\\text{VPI}(E_j) \\ge 0$. Information can never decrease expected utility under rational choice.',
+    formula: '\\text{VPI}(E_j) = \\left( \\sum_k P(E_j = e_{jk}) \\max_a \\mathbb{E}[U(a \\mid e_{jk})] \\right) - \\max_a \\mathbb{E}[U(a)] \\ge 0',
+    examTakeaway: 'Information has zero value only if it would never change the chosen decision.'
+  },
+  {
+    id: 30,
+    chapterId: 17,
+    chapterTitle: 'Multi-Period Decisions (MDPs)',
+    partId: 4,
+    partTitle: 'Part IV: Uncertain Knowledge & Reasoning',
+    category: 'mdp_rl',
+    categoryLabel: 'Bellman Equations',
+    q: 'State the Bellman Optimality Equation for state values V*(s).',
+    a: 'The optimal value of state $s$ is the immediate reward $R(s)$ plus the discounted expected optimal value of the successor state reachable under the best possible legal action.',
+    formula: 'V^*(s) = R(s) + \\gamma \\max_{a \\in A(s)} \\sum_{s\'} P(s\' \\mid s, a) V^*(s\')',
+    examTakeaway: 'The Bellman equation is non-linear due to the max operator, requiring Value Iteration.'
+  },
+  {
+    id: 31,
+    chapterId: 17,
+    chapterTitle: 'Multi-Period Decisions (MDPs)',
+    partId: 4,
+    partTitle: 'Part IV: Uncertain Knowledge & Reasoning',
+    category: 'mdp_rl',
+    categoryLabel: 'MDP Convergence',
+    q: 'Why does Value Iteration converge to a unique optimal fixed point?',
+    a: 'Because the Bellman operator $B$ is a **contraction mapping** in the infinity norm with contraction factor $\\gamma < 1$: $||B(U) - B(V)||_\\infty \\le \\gamma ||U - V||_\\infty$. By Banach\'s fixed-point theorem, convergence to unique $V^*$ is guaranteed.',
+    formula: '||B(U) - B(V)||_\\infty \\le \\gamma ||U - V||_\\infty',
+    examTakeaway: 'Stopping criterion: if $||V_{k+1} - V_k||_\\infty < \\epsilon(1-\\gamma)/\\gamma$, the resulting policy error is bounded by $\\epsilon$.'
+  },
+  {
+    id: 32,
+    chapterId: 18,
+    chapterTitle: 'Multi-Agent Decisions',
+    partId: 4,
+    partTitle: 'Part IV: Uncertain Knowledge & Reasoning',
+    category: 'games',
+    categoryLabel: 'Game Theory',
+    q: 'What is a Nash Equilibrium in multi-agent game theory?',
+    a: 'A strategy profile where no agent has an incentive to unilaterally deviate from their chosen strategy. Given the choices of all other players, each player\'s strategy is a best response.',
+    formula: 'u_i(s_i^*, s_{-i}^*) \\ge u_i(s_i, s_{-i}^*) \\quad \\forall s_i \\in S_i',
+    examTakeaway: 'A Nash equilibrium is not necessarily Pareto optimal (e.g. Prisoner\'s Dilemma defect-defect).'
+  },
+
+  // ==========================================
+  // PART V: MACHINE LEARNING (CH 19–21)
+  // ==========================================
+  {
+    id: 33,
+    chapterId: 19,
+    chapterTitle: 'Learning from Data',
+    partId: 5,
+    partTitle: 'Part V: Machine Learning',
+    category: 'learning',
+    categoryLabel: 'Decision Trees',
+    q: 'How does Information Gain guide Decision Tree splits?',
+    a: 'Information Gain measures the reduction in entropy (uncertainty) achieved by partitioning a dataset $S$ on attribute $A$. The decision tree algorithm selects the attribute that maximizes Information Gain.',
+    formula: '\\text{Gain}(S, A) = \\text{Entropy}(S) - \\sum_{v \\in \\text{Values}(A)} \\frac{|S_v|}{|S|} \\text{Entropy}(S_v)',
+    examTakeaway: 'Entropy of a balanced binary set is 1 bit; entropy of a pure single-class set is 0 bits.'
+  },
+  {
+    id: 34,
+    chapterId: 19,
+    chapterTitle: 'Learning from Data',
+    partId: 5,
+    partTitle: 'Part V: Machine Learning',
+    category: 'traps',
+    categoryLabel: 'Exam Trap',
+    isExamTrap: true,
+    q: 'EXAM TRAP: What is the difference between L1 (Lasso) and L2 (Ridge) regularization?',
+    a: 'L1 adds the absolute parameter norm $\\lambda \\sum |w_i|$ and produces **sparse weights** (driving irrelevant feature weights exactly to 0 for automatic feature selection). L2 adds the squared norm $\\lambda \\sum w_i^2$ and shrinks weights smoothly without zeroing them.',
+    formula: 'L_1: \\lambda ||w||_1 \\;(\\text{Sparsity}) \\quad \\text{vs} \\quad L_2: \\lambda ||w||_2^2 \\;(\\text{Smooth shrinkage})',
+    examTakeaway: 'L1 produces exact zeros due to diamond-shaped geometric corners touching the loss contour.'
+  },
+  {
+    id: 35,
+    chapterId: 20,
+    chapterTitle: 'Deep Learning',
+    partId: 5,
+    partTitle: 'Part V: Machine Learning',
+    category: 'learning',
+    categoryLabel: 'Neural Networks',
+    q: 'Why did deep neural networks suffer from the Vanishing Gradient problem with Sigmoid activations?',
+    a: 'The derivative of Sigmoid is at most 0.25 ($\\sigma\'(x) = \\sigma(x)(1 - \\sigma(x)) \\le 0.25$). By the chain rule, multiplying these small fractions across $L$ layers causes gradients to shrink exponentially ($0.25^L \\to 0$), freezing early layer learning. ReLU solves this with derivative 1 for $x > 0$.',
+    formula: '\\frac{\\partial L}{\\partial w_1} = \\prod_{l=1}^L \\sigma\'(z_l) \\cdot \\dots \\to 0',
+    examTakeaway: 'Modern deep nets use ReLU and Residual connections ($x + F(x)$) to bypass vanishing gradients.'
+  },
+  {
+    id: 36,
+    chapterId: 21,
+    chapterTitle: 'Reinforcement Learning',
+    partId: 5,
+    partTitle: 'Part V: Machine Learning',
+    category: 'mdp_rl',
+    categoryLabel: 'Reinforcement Learning',
+    q: 'State the Temporal Difference TD(0) update rule for value functions.',
+    a: 'TD(0) updates current state value $V(S_t)$ immediately using observed reward $R_{t+1}$ and discounted estimate of the next state $\\gamma V(S_{t+1})$, without waiting for the episode to finish (unlike Monte Carlo).',
+    formula: 'V(S_t) \\leftarrow V(S_t) + \\alpha [R_{t+1} + \\gamma V(S_{t+1}) - V(S_t)]',
+    examTakeaway: '$\\delta_t = R_{t+1} + \\gamma V(S_{t+1}) - V(S_t)$ is the TD error.'
+  },
+  {
+    id: 37,
+    chapterId: 21,
+    chapterTitle: 'Reinforcement Learning',
+    partId: 5,
+    partTitle: 'Part V: Machine Learning',
+    category: 'traps',
+    categoryLabel: 'Exam Trap',
+    isExamTrap: true,
+    q: 'EXAM TRAP: What is the fundamental algorithmic difference between Q-Learning and SARSA?',
+    a: '**Q-Learning is OFF-POLICY**: its update assumes the greedy action $\\max_{a\'} Q(s\', a\')$ regardless of what action the agent actually takes. **SARSA is ON-POLICY**: its update uses the actual action $a\'$ selected by the current behavioral policy (e.g. $\\epsilon$-greedy).',
+    formula: '\\text{Q-Learn Target: } R + \\gamma \\max_{a\'} Q(s\', a\') \\quad \\text{vs} \\quad \\text{SARSA Target: } R + \\gamma Q(s\', a\')',
+    examTakeaway: 'SARSA avoids risky cliffs during training if $\\\\epsilon > 0$; Q-Learning learns the optimal path directly.'
+  },
+
+  // ==========================================
+  // PART VI: COMMUNICATING, PERCEIVING & ACTING (CH 22–25)
+  // ==========================================
+  {
+    id: 38,
+    chapterId: 22,
+    chapterTitle: 'Natural Language Processing',
+    partId: 6,
+    partTitle: 'Part VI: Language, Vision & Robotics',
+    category: 'nlp_vision',
+    categoryLabel: 'NLP Foundations',
+    q: 'How does an N-gram language model approximate the probability of a word sequence?',
+    a: 'Under the Markov assumption of order $N-1$, the probability of word $w_k$ depends only on the preceding $N-1$ words rather than the entire document history.',
+    formula: 'P(w_1, \\dots, w_m) = \\prod_{k=1}^m P(w_k \\mid w_{k-N+1}^{k-1})',
+    examTakeaway: 'N-grams suffer from exponential vocabulary sparsity, requiring smoothing (Laplace or Kneser-Ney).'
+  },
+  {
+    id: 39,
+    chapterId: 23,
+    chapterTitle: 'Deep Learning for NLP',
+    partId: 6,
+    partTitle: 'Part VI: Language, Vision & Robotics',
+    category: 'nlp_vision',
+    categoryLabel: 'Transformers',
+    q: 'State the Scaled Dot-Product Attention equation in Transformer architectures.',
+    a: 'Computes attention weights between Query matrix $Q$ and Key matrix $K$, scaling by $\\sqrt{d_k}$ to prevent softmax gradients from vanishing into saturated regions with large vector dimensions.',
+    formula: '\\text{Attention}(Q, K, V) = \\text{softmax}\\left(\\frac{QK^T}{\\sqrt{d_k}}\\right) V',
+    examTakeaway: 'The scaling factor $1/\\sqrt{d_k}$ stabilizes variance when dot products grow large.'
+  },
+  {
+    id: 40,
+    chapterId: 24,
+    chapterTitle: 'Computer Vision',
+    partId: 6,
+    partTitle: 'Part VI: Language, Vision & Robotics',
+    category: 'nlp_vision',
+    categoryLabel: 'Computer Vision',
+    q: 'What is Intersection over Union (IoU) in visual object detection?',
+    a: 'IoU measures bounding box overlap accuracy: the area of overlap between predicted box $B_p$ and ground-truth box $B_{gt}$ divided by their combined union area. An IoU $\\ge 0.5$ or $0.75$ is standard for declaring true positives.',
+    formula: '\\text{IoU} = \\frac{\\text{Area}(B_p \\cap B_{gt})}{\\text{Area}(B_p \\cup B_{gt})}',
+    examTakeaway: 'IoU is the evaluation metric used for Non-Maximum Suppression (NMS) and Mean Average Precision (mAP).'
+  },
+  {
+    id: 41,
+    chapterId: 25,
+    chapterTitle: 'Robotics',
+    partId: 6,
+    partTitle: 'Part VI: Language, Vision & Robotics',
+    category: 'nlp_vision',
+    categoryLabel: 'Robotics',
+    q: 'What is Configuration Space (C-space) in robotic motion planning?',
+    a: 'C-space represents all possible robot configurations as dimensionless points. Robot obstacles are "grown" into C-obstacles by taking the Minkowski sum with the robot geometry, allowing path planning for a point robot.',
+    formula: 'C_{obs} = A \\oplus (-B) = \\{q \\in C \\mid A(q) \\cap B \\neq \\emptyset\\}',
+    examTakeaway: 'A complex 6-joint arm robot plans collision-free paths in a 6-dimensional C-space.'
+  },
+
+  // ==========================================
+  // PART VII: PHILOSOPHY, ETHICS & SAFETY (CH 26–27)
+  // ==========================================
+  {
+    id: 42,
+    chapterId: 26,
+    chapterTitle: 'Philosophy, Ethics & Safety',
+    partId: 7,
+    partTitle: 'Part VII: Safety & Future',
+    category: 'ethics',
+    categoryLabel: 'AI Safety',
+    q: 'What is the Value Alignment Problem and Instrumental Convergence?',
+    a: '**Value Alignment**: Ensuring an autonomous AI\'s objective function aligns with true human preferences, avoiding the King Midas trap. **Instrumental Convergence**: Multiple distinct terminal goals naturally create identical subgoals (resource acquisition, self-preservation, goal preservation).',
+    formula: '\\text{Terminal Goal } G \\implies \\text{Subgoals: Self-Preservation, Resource Acquisition, Freedom}',
+    examTakeaway: 'Instrumental goals arise naturally from rationality and must be explicitly constrained by design.'
+  },
+  {
+    id: 43,
+    chapterId: 27,
+    chapterTitle: 'The Future of AI',
+    partId: 7,
+    partTitle: 'Part VII: Safety & Future',
+    category: 'ethics',
+    categoryLabel: 'Future of AI',
+    q: 'Why does Russell advocate for Probabilistic Solved Objectives instead of fixed utility functions?',
+    a: 'To maintain human safety, an AI must be **uncertain about human preferences** ($P(U)$). An agent that believes it knows the objective with 100% certainty will resist being turned off. An agent uncertain about its objective welcomes human intervention and corrections.',
+    formula: '\\text{Agent Objective} = \\mathbb{E}_{U \\sim P(U)} [\\text{Human Utility } U]',
+    examTakeaway: 'Uncertainty about human preferences is the mathematical foundation of provably beneficial AI.'
+  }
+];
