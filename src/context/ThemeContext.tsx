@@ -21,11 +21,15 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       document.documentElement.classList.remove('light-theme', 'light');
       document.body.classList.add('dark');
       document.body.classList.remove('light');
+      document.body.style.backgroundColor = '#0C1411';
+      document.body.style.color = '#F3F5EF';
     } else {
       document.documentElement.classList.add('light-theme', 'light');
       document.documentElement.classList.remove('dark-theme', 'dark');
       document.body.classList.add('light');
       document.body.classList.remove('dark');
+      document.body.style.backgroundColor = '#F3F5EF';
+      document.body.style.color = '#13211C';
     }
   }, [isDark]);
 

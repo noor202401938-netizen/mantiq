@@ -55,7 +55,7 @@ export const AimaDesktopNav: React.FC<AimaDesktopNavProps> = ({
       {/* Desktop Sidebar (Pages 21-36) */}
       <aside className="quest-desktop-sidebar">
         {/* Brand Lockup & Theme Switcher */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '28px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
           <div className="quest-brand-lockup" onClick={() => onSelectTab('home')} style={{ margin: 0 }}>
             <img
               src="./mantiq-logo.png"
@@ -125,7 +125,7 @@ export const AimaDesktopNav: React.FC<AimaDesktopNavProps> = ({
         </nav>
 
         {/* Quick Exam Flashcards Action */}
-        <div style={{ padding: '6px 12px 14px' }}>
+        <div style={{ padding: '4px 0 10px' }}>
           <button
             type="button"
             onClick={() => {
@@ -176,38 +176,38 @@ export const AimaDesktopNav: React.FC<AimaDesktopNavProps> = ({
           </button>
         </div>
 
-        {/* User Scholar Profile Card in Sidebar */}
-        <div style={{ marginTop: 'auto', padding: '0 12px 12px' }}>
+        {/* Integrated Sidebar Footer: Scholar Profile & Streak Status */}
+        <div className="quest-sidebar-footer">
           <div
             onClick={() => {
               soundFX.playClick();
               onSelectTab('you');
             }}
             style={{
-              padding: '10px 12px',
-              borderRadius: '16px',
+              padding: '8px 10px',
+              borderRadius: '12px',
               background: currentTab === 'you' ? 'rgba(74, 222, 128, 0.1)' : 'var(--quest-bg)',
               border: currentTab === 'you' ? '1px solid var(--quest-accent)' : '1px solid var(--quest-border)',
               display: 'flex',
               flexDirection: 'column',
-              gap: '8px',
+              gap: '6px',
               cursor: 'pointer',
               transition: 'all 0.2s ease'
             }}
           >
             {/* Top Row: Avatar, Name & Role, and Logout button */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%' }}>
               <div
                 style={{
-                  width: '34px',
-                  height: '34px',
-                  borderRadius: '10px',
+                  width: '30px',
+                  height: '30px',
+                  borderRadius: '9px',
                   background: '#13211C',
                   color: '#C9F26B',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '13px',
+                  fontSize: '12px',
                   fontWeight: 800,
                   fontFamily: 'var(--quest-font-heading)',
                   flexShrink: 0
@@ -219,7 +219,7 @@ export const AimaDesktopNav: React.FC<AimaDesktopNavProps> = ({
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div
                   style={{
-                    fontSize: '13px',
+                    fontSize: '12.5px',
                     fontWeight: 800,
                     color: 'var(--quest-text-primary)',
                     whiteSpace: 'nowrap',
@@ -232,7 +232,7 @@ export const AimaDesktopNav: React.FC<AimaDesktopNavProps> = ({
                 </div>
                 <div
                   style={{
-                    fontSize: '11px',
+                    fontSize: '10.5px',
                     color: 'var(--quest-text-muted)',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
@@ -251,7 +251,7 @@ export const AimaDesktopNav: React.FC<AimaDesktopNavProps> = ({
                   logout();
                 }}
                 style={{
-                  padding: '5px',
+                  padding: '4px',
                   borderRadius: '6px',
                   background: 'transparent',
                   color: 'var(--quest-text-muted)',
@@ -264,7 +264,7 @@ export const AimaDesktopNav: React.FC<AimaDesktopNavProps> = ({
                 }}
                 title={isGuest ? 'Return to Welcome Screen' : 'Sign out'}
               >
-                <LogOut size={14} />
+                <LogOut size={13} />
               </button>
             </div>
 
@@ -279,29 +279,27 @@ export const AimaDesktopNav: React.FC<AimaDesktopNavProps> = ({
                 }}
                 style={{
                   width: '100%',
-                  padding: '6px 10px',
-                  borderRadius: '8px',
+                  padding: '5px 8px',
+                  borderRadius: '6px',
                   background: 'var(--quest-accent, #C9F26B)',
                   color: '#13211C',
-                  fontSize: '11.5px',
+                  fontSize: '11px',
                   fontWeight: 800,
                   border: 'none',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: '5px'
+                  gap: '4px'
                 }}
                 title="Sign in or register"
               >
-                <LogIn size={12} /> Sign In
+                <LogIn size={11} /> Sign In
               </button>
             )}
           </div>
-        </div>
 
-        {/* Sidebar Footer (Streak + Sync indicator) */}
-        <div className="quest-sidebar-footer">
+          {/* Streak + Sync Indicator */}
           <div
             className="quest-streak-pill-bottom"
             onClick={() => {
@@ -312,7 +310,7 @@ export const AimaDesktopNav: React.FC<AimaDesktopNavProps> = ({
             title="Click to view sync status"
           >
             <div className="quest-streak-pill-text">
-              <Flame size={16} color="#FF6A00" fill="#FF6A00" />
+              <Flame size={14} color="#FF6A00" fill="#FF6A00" />
               <span>{streakDays}-day streak</span>
             </div>
             <div

@@ -89,22 +89,38 @@ body.dark,
   width: 250px;
   min-width: 250px;
   height: 100vh;
+  max-height: 100vh;
   position: sticky;
   top: 0;
   background-color: var(--quest-sidebar-bg);
   border-right: 1px solid var(--quest-border);
   display: flex;
   flex-direction: column;
-  padding: 32px 20px 24px 20px;
+  padding: 18px 14px 14px 14px;
   box-sizing: border-box;
   z-index: 50;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.quest-desktop-sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.quest-desktop-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.quest-desktop-sidebar::-webkit-scrollbar-thumb {
+  background: var(--quest-border);
+  border-radius: 4px;
 }
 
 .quest-brand-lockup {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 36px;
+  margin-bottom: 20px;
   cursor: pointer;
   text-decoration: none;
 }
@@ -135,21 +151,21 @@ body.dark,
 .quest-nav-links {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  flex: 1;
+  gap: 4px;
+  flex: 0 0 auto;
 }
 
 .quest-nav-item {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 12px 18px;
+  gap: 12px;
+  padding: 10px 14px;
   border-radius: var(--quest-radius-pill);
   border: 0;
   background: transparent;
   color: var(--quest-text-secondary);
   font-family: var(--quest-font-body);
-  font-size: 16px;
+  font-size: 14.5px;
   font-weight: 600;
   cursor: pointer;
   text-align: left;
@@ -175,8 +191,8 @@ body.dark,
   margin-top: auto;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding-top: 16px;
+  gap: 8px;
+  padding-top: 10px;
   border-top: 1px solid var(--quest-border);
 }
 
@@ -184,10 +200,10 @@ body.dark,
   background: var(--quest-card-bg);
   border: 1px solid var(--quest-border);
   border-radius: var(--quest-radius-sm);
-  padding: 12px 14px;
+  padding: 8px 12px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .quest-streak-pill-text {
@@ -985,6 +1001,32 @@ body.dark,
 .dark-theme .quest-podium-pillar.rank-3,
 .quest-shell.dark .quest-podium-pillar.rank-3 {
   color: #E2E8E4;
+}
+
+@media (max-height: 720px) {
+  .quest-main-viewport {
+    padding: 18px 32px 36px 32px;
+  }
+  .quest-view-header {
+    margin-bottom: 14px;
+  }
+  .quest-view-title {
+    font-size: 26px;
+  }
+  .quest-podium-container {
+    height: 180px;
+    margin-top: 4px;
+    margin-bottom: 10px;
+  }
+  .quest-podium-pillar.rank-1 {
+    height: 100px;
+  }
+  .quest-podium-pillar.rank-2 {
+    height: 70px;
+  }
+  .quest-podium-pillar.rank-3 {
+    height: 50px;
+  }
 }
 
 .quest-ranks-list {

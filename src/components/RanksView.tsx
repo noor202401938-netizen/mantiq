@@ -20,17 +20,15 @@ import {
 export const RanksView: React.FC = () => {
   const { stats } = useProgress();
   const { user } = useAuth();
-  const [filter, setFilter] = useState<'Weekly' | 'All time'>('Weekly');
+  const [filter, setFilter] = useState<'All time' | 'Weekly'>('All time');
 
   // Supabase Cloud State
   const [isCloudReady, setIsCloudReady] = useState<boolean>(isSupabaseConfigured());
   const [cloudRankings, setCloudRankings] = useState<LeaderboardEntry[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // Compute realistic user XP per filter
-  const userTotalXP = stats.xp;
-  const userWeeklyXP = Math.min(userTotalXP, Math.round(userTotalXP * 0.4) + (stats.streakDays * 50));
-  const currentDisplayXP = filter === 'Weekly' ? userWeeklyXP : userTotalXP;
+  // Authoritative user XP (guarantees zero mismatch between profile, home, and leaderboard)
+  const userActualXP = stats.xp;
 
   // Load from Supabase on mount
   const refreshCloudLeaderboard = async () => {
@@ -60,23 +58,32 @@ export const RanksView: React.FC = () => {
   let allRankings: Array<{ name: string; xp: number; role?: string; isUser: boolean; rank?: number; avatar?: string }> = [];
 
   if (cloudRankings && cloudRankings.length > 0) {
-    const cloudMapped = cloudRankings.map((c) => ({
-      name: c.name,
-      xp: filter === 'Weekly' ? Math.round(c.xp * 0.4) + (c.streak * 50) : c.xp,
-      role: c.university,
-      isUser: c.isUser || c.name.toLowerCase() === (user.name || '').toLowerCase(),
-      avatar: c.avatar
-    }));
+    const cloudMapped = cloudRankings.map((c) => {
+      const isUser = Boolean(
+        c.isUser ||
+        (user.id && c.id === user.id) ||
+        (user.name && c.name.toLowerCase() === user.name.toLowerCase())
+      );
 
-    // If current scholar isn't listed yet, include them
-    const userFound = cloudMapped.some(item => item.isUser);
+      return {
+        name: isUser ? (user.name || c.name) : c.name,
+        // The active user always shows their exact actual XP
+        xp: isUser ? userActualXP : (filter === 'Weekly' ? Math.round(c.xp * 0.4) + (c.streak * 50) : c.xp),
+        role: c.university,
+        isUser,
+        avatar: c.avatar
+      };
+    });
+
+    // If current scholar isn't listed yet, include them with their actual XP
+    const userFound = cloudMapped.some((item) => item.isUser);
     if (!userFound && user.name) {
       cloudMapped.push({
         name: user.name,
-        xp: currentDisplayXP,
+        xp: userActualXP,
         role: user.university || 'Independent Scholar',
         isUser: true,
-        avatar: undefined
+        avatar: user.avatar
       });
     }
 
@@ -88,7 +95,7 @@ export const RanksView: React.FC = () => {
     allRankings = [
       {
         name: user.name || 'You',
-        xp: currentDisplayXP,
+        xp: userActualXP,
         role: user.university || 'Independent Scholar',
         isUser: true,
         rank: 1
@@ -96,7 +103,7 @@ export const RanksView: React.FC = () => {
     ];
   }
 
-  const rank1 = allRankings[0] || { name: user.name || 'You', xp: currentDisplayXP, isUser: true, rank: 1 };
+  const rank1 = allRankings[0] || { name: user.name || 'You', xp: userActualXP, isUser: true, rank: 1 };
   const rank2 = allRankings[1];
   const rank3 = allRankings[2];
 
@@ -147,7 +154,7 @@ export const RanksView: React.FC = () => {
           </button>
 
           <div className="quest-ranks-filter-pills">
-            {(['Weekly', 'All time'] as const).map((tab) => (
+            {(['All time', 'Weekly'] as const).map((tab) => (
               <button
                 key={tab}
                 className={`quest-filter-pill ${filter === tab ? 'active' : ''}`}
