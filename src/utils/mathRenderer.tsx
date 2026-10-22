@@ -118,13 +118,13 @@ export const renderInlineMathAndStyles = (text: string): React.ReactNode => {
         <code
           key={index}
           style={{
-            background: '#F0F3EC',
+            background: 'var(--quest-surface-subtle)',
             padding: '2px 7px',
             borderRadius: '6px',
             fontFamily: 'monospace',
             fontSize: '13.5px',
-            color: '#13211C',
-            border: '1px solid rgba(0,0,0,0.06)'
+            color: 'var(--quest-accent-text)',
+            border: '1px solid var(--quest-border)'
           }}
         >
           {part.slice(1, -1)}
@@ -344,7 +344,7 @@ export const renderUniversityMarkdown = (markdown: string): React.ReactNode => {
             margin: '16px 0',
             padding: '14px 20px',
             borderLeft: '4px solid var(--quest-accent)',
-            background: '#F5F9ED',
+            background: 'var(--quest-surface-subtle)',
             borderRadius: '0 14px 14px 0',
             color: 'var(--quest-text-primary)',
             fontSize: '15px',
@@ -479,8 +479,9 @@ export const renderUniversityMarkdown = (markdown: string): React.ReactNode => {
                           fontWeight: 800,
                           textTransform: 'uppercase',
                           letterSpacing: '0.04em',
-                          background: '#EAF6C9',
-                          color: '#13211C',
+                          background: 'var(--quest-light-tint)',
+                          color: 'var(--quest-light-tint-text)',
+                          border: '1px solid var(--quest-border)',
                           padding: '2px 6px',
                           borderRadius: '4px',
                           flexShrink: 0,

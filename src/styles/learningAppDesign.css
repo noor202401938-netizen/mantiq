@@ -1458,3 +1458,23 @@ body.dark,
   border-color: var(--quest-border) !important;
 }
 
+/* 6. KaTeX & Math rendering in dark mode */
+.dark .katex,
+.dark-theme .katex,
+.quest-shell.dark .katex,
+.dark .mantiq-math-inline,
+.dark-theme .mantiq-math-inline,
+.quest-shell.dark .mantiq-math-inline,
+.dark .mantiq-math-block,
+.dark-theme .mantiq-math-block,
+.quest-shell.dark .mantiq-math-block {
+  color: var(--quest-text-primary) !important;
+}
+
+.dark .mantiq-math-block,
+.dark-theme .mantiq-math-block,
+.quest-shell.dark .mantiq-math-block {
+  background-color: var(--quest-surface-subtle) !important;
+  border-color: var(--quest-border) !important;
+}
+
