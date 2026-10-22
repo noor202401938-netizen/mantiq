@@ -86,6 +86,7 @@ export interface UserProfile {
 export interface ChapterProgress {
   chapterId: number;
   read: boolean;
+  completedStepIndices?: number[];
   quizScore?: number;
   quizTotal?: number;
   quizPassed?: boolean;

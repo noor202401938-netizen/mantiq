@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, ArrowRight, ArrowLeft, BookOpen, Lightbulb, Link2, Sparkles, AlertCircle, Play, Check, Lock, ChevronRight, ChevronDown, Info, Compass, HelpCircle, ArrowLeftCircle, Award, Maximize2, Minimize2, Layers, BookmarkCheck, Code2, Copy, CheckCheck, Scale, GraduationCap, Pin, Plus, Trash2, Edit3, StickyNote, Bookmark, RefreshCw, Terminal, PlayCircle, Sliders, ExternalLink, CheckCircle2, XCircle } from 'lucide-react';
 import { AIMA_DETAILED_LESSONS, LessonStep } from '../data/aimaLessonsData';
 import { AIMA_PARTS } from '../data/aimaBookData';
@@ -15,6 +15,7 @@ import { useTheme } from '../context/ThemeContext';
 
 interface AimaLessonViewerProps {
   chapterId: number;
+  initialStepIndex?: number;
   onClose: () => void;
   onStartQuiz: (chapterId: number) => void;
   onSelectChapter?: (chapterId: number) => void;
@@ -23,15 +24,16 @@ interface AimaLessonViewerProps {
 
 export const AimaLessonViewer: React.FC<AimaLessonViewerProps> = ({
   chapterId,
+  initialStepIndex = 0,
   onClose,
   onStartQuiz,
   onSelectChapter,
   onOpenFlashcards,
 }) => {
   const { isDark } = useTheme();
-  const { stats, markChapterRead } = useProgress();
+  const { stats, progress, markChapterRead, markStepCompleted } = useProgress();
   const { getNotesByChapter, addNote, deleteNote, togglePin } = useNotes();
-  const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
+  const [currentStepIndex, setCurrentStepIndex] = useState<number>(initialStepIndex);
   const [activeTab, setActiveTab] = useState<'reading' | 'practice' | 'rigor'>('reading');
   const [copiedCode, setCopiedCode] = useState<boolean>(false);
   const [selectedQuadrant, setSelectedQuadrant] = useState<'acting_rationally' | 'thinking_humanly' | 'thinking_rationally' | 'acting_humanly'>('acting_rationally');
@@ -95,6 +97,18 @@ export const AimaLessonViewer: React.FC<AimaLessonViewerProps> = ({
   const currentStep: LessonStep = steps[currentStepIndex] || steps[0];
 
   const progressPercent = ((currentStepIndex + 1) / steps.length) * 100;
+
+  // Mark current step as completed in chapter progress
+  useEffect(() => {
+    markStepCompleted(chapterId, currentStepIndex);
+  }, [chapterId, currentStepIndex, markStepCompleted]);
+
+  // Synchronize step if external navigation requested a specific initial step
+  useEffect(() => {
+    if (typeof initialStepIndex === 'number' && initialStepIndex >= 0 && initialStepIndex < steps.length) {
+      setCurrentStepIndex(initialStepIndex);
+    }
+  }, [initialStepIndex, steps.length]);
 
   const handleNext = () => {
     soundFX.playClick();
@@ -3181,7 +3195,7 @@ class ${lesson.title.replace(/[^a-zA-Z]/g, '')}Agent:
             >
               {steps.map((st, sIdx) => {
                 const isStepActive = sIdx === currentStepIndex;
-                const isStepPast = sIdx < currentStepIndex;
+                const isStepDone = sIdx < currentStepIndex || Boolean(progress[chapterId]?.completedStepIndices?.includes(sIdx));
 
                 return (
                   <div
@@ -3208,14 +3222,14 @@ class ${lesson.title.replace(/[^a-zA-Z]/g, '')}Agent:
                         fontSize: '11px',
                         fontFamily: 'monospace',
                         fontWeight: 700,
-                        color: isStepActive ? 'var(--quest-light-tint-text)' : isStepPast ? 'var(--quest-accent-text)' : 'var(--quest-text-muted)',
+                        color: isStepActive ? 'var(--quest-light-tint-text)' : isStepDone ? 'var(--quest-accent-text)' : 'var(--quest-text-muted)',
                         width: '18px',
                         paddingTop: '2px',
                         display: 'flex',
                         alignItems: 'center',
                       }}
                     >
-                      {isStepPast ? <Check size={12} strokeWidth={2.5} color="var(--quest-accent-text)" /> : `0${sIdx + 1}`}
+                      {isStepDone ? <Check size={12} strokeWidth={2.5} color="var(--quest-accent-text)" /> : `0${sIdx + 1}`}
                     </span>
 
                     <span

@@ -5,15 +5,17 @@ import { useProgress } from '../context/ProgressContext';
 import { soundFX } from '../utils/soundEffects';
 
 interface LearnChaptersViewProps {
-  onStartLesson: (chapterId: number) => void;
+  onStartLesson: (chapterId: number, initialStep?: number) => void;
+  onStartQuiz?: (chapterId: number) => void;
   onOpenFlashcards?: (chapterId?: number) => void;
 }
 
 export const LearnChaptersView: React.FC<LearnChaptersViewProps> = ({
   onStartLesson,
+  onStartQuiz,
   onOpenFlashcards
 }) => {
-  const { stats } = useProgress();
+  const { stats, progress } = useProgress();
   const [searchQuery, setSearchQuery] = useState('');
 
   // Dynamically default to the next incomplete chapter (or Chapter 1)
@@ -121,9 +123,11 @@ export const LearnChaptersView: React.FC<LearnChaptersViewProps> = ({
                       <div className="quest-ch-sub">
                         {isCompleted
                           ? 'Completed · Exam Ready'
+                          : progress[ch.id]?.read
+                          ? 'Quiz Pending · Take Assessment'
                           : isUnlocked
                           ? 'Available to study · ~12 min'
-                          : `Locked · Complete Ch ${ch.id - 1} first`}
+                          : `Locked · Complete Ch ${ch.id - 1} quiz first`}
                       </div>
                     </div>
 
@@ -186,8 +190,11 @@ export const LearnChaptersView: React.FC<LearnChaptersViewProps> = ({
                   {(selectedChapter.sections || ['Core Formalism & Intuition', 'Algorithmic Methods', 'Theoretical Bounds & Proofs', 'Empirical Benchmarks']).map((sectionTitle, idx) => {
                     const topicNum = `${selectedChapter.id}.${idx + 1}`;
                     const isChapterDone = stats.completedChapterIds?.includes(selectedChapter.id);
-                    const isTopicDone = isChapterDone;
-                    const isTopicActive = !isChapterDone && idx === 0 && !isSelectedLocked;
+                    const chProgress = progress[selectedChapter.id];
+                    const isTopicDone = isChapterDone || Boolean(chProgress?.completedStepIndices?.includes(idx));
+                    const isTopicActive = !isTopicDone && !isSelectedLocked && (
+                      idx === 0 || Boolean(chProgress?.completedStepIndices?.includes(idx - 1))
+                    );
 
                     return (
                       <div
@@ -200,7 +207,7 @@ export const LearnChaptersView: React.FC<LearnChaptersViewProps> = ({
                             return;
                           }
                           soundFX.playClick();
-                          onStartLesson(selectedChapter.id);
+                          onStartLesson(selectedChapter.id, idx);
                         }}
                       >
                         <div
@@ -222,7 +229,7 @@ export const LearnChaptersView: React.FC<LearnChaptersViewProps> = ({
                             {isTopicDone
                               ? 'Topic completed'
                               : isSelectedLocked
-                              ? `Locked · Complete Chapter ${selectedChapter.id - 1} first`
+                              ? `Locked · Complete Chapter ${selectedChapter.id - 1} quiz first`
                               : 'AIMA curriculum coverage · ~10 min'}
                           </div>
                         </div>
@@ -251,7 +258,11 @@ export const LearnChaptersView: React.FC<LearnChaptersViewProps> = ({
                         return;
                       }
                       soundFX.playClick();
-                      onStartLesson(selectedChapter.id);
+                      if (onStartQuiz) {
+                        onStartQuiz(selectedChapter.id);
+                      } else {
+                        onStartLesson(selectedChapter.id);
+                      }
                     }}
                   >
                     <div className="quest-topic-badge" style={{ background: isSelectedLocked ? '#E2E8E4' : '#13211C', color: isSelectedLocked ? '#6B7280' : '#C9F26B' }}>
@@ -260,9 +271,11 @@ export const LearnChaptersView: React.FC<LearnChaptersViewProps> = ({
                     <div style={{ flex: 1 }}>
                       <div className="quest-topic-title">Chapter assessment</div>
                       <div className="quest-topic-sub">
-                        {isSelectedLocked
-                          ? `Locked · Complete Chapter ${selectedChapter.id - 1} first`
-                          : 'Midterm exam questions · +35 XP'}
+                        {stats.completedChapterIds?.includes(selectedChapter.id)
+                          ? 'Assessment passed · Mastered (+35 XP)'
+                          : isSelectedLocked
+                          ? `Locked · Complete Chapter ${selectedChapter.id - 1} quiz first`
+                          : 'Midterm exam questions · Required to unlock next chapter (+35 XP)'}
                       </div>
                     </div>
                     {isSelectedLocked ? (

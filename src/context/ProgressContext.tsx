@@ -12,6 +12,7 @@ interface ProgressContextType {
   badges: Badge[];
   addXP: (amount: number) => void;
   markChapterRead: (chapterId: number) => void;
+  markStepCompleted: (chapterId: number, stepIndex: number) => void;
   recordQuizResult: (chapterId: number, score: number, total: number) => void;
   markSimulationInteracted: (chapterId: number) => void;
   completeDailyChallenge: () => void;
@@ -73,9 +74,24 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           return DEFAULT_STATS;
         }
 
+        // Ensure completedChapterIds only contains chapters where the quiz was actually passed
+        let validCompletedIds = parsed.completedChapterIds ?? [];
+        const savedProgress = localStorage.getItem('aima_chapter_progress');
+        if (savedProgress) {
+          try {
+            const parsedProg = JSON.parse(savedProgress);
+            validCompletedIds = validCompletedIds.filter((id: number) => parsedProg[id]?.quizPassed === true);
+          } catch {
+            // Keep default if malformed
+          }
+        } else {
+          validCompletedIds = [];
+        }
+
         return {
           ...DEFAULT_STATS,
           ...parsed,
+          completedChapterIds: validCompletedIds,
           gems: parsed.gems ?? 0,
           hearts: parsed.hearts ?? 5,
           maxHearts: parsed.maxHearts ?? 5,
@@ -192,44 +208,73 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   const markChapterRead = (chapterId: number) => {
-    setProgress((prev) => ({
-      ...prev,
-      [chapterId]: {
-        ...(prev[chapterId] || {
-          chapterId,
-          read: false,
-          simulationInteracted: false,
-          lastStudiedAt: new Date().toISOString()
-        }),
-        read: true,
-        lastStudiedAt: new Date().toISOString()
+    let wasAlreadyRead = false;
+    setProgress((prev) => {
+      if (prev[chapterId]?.read) {
+        wasAlreadyRead = true;
+        return prev;
       }
-    }));
-
-    setStats((prev) => {
-      const alreadyCompleted = prev.completedChapterIds.includes(chapterId);
-      if (alreadyCompleted) return prev;
-
-      const newXP = prev.xp + 50;
-      const oldLevel = prev.level;
-      const newLevel = calculateLevel(newXP);
-
-      if (newLevel > oldLevel) {
-        soundFX.playLevelUp();
-        confetti({
-          particleCount: 80,
-          spread: 70,
-          origin: { y: 0.6 }
-        });
-      } else {
-        soundFX.playCorrect();
-      }
-
       return {
         ...prev,
-        xp: newXP,
-        level: newLevel,
-        completedChapterIds: [...prev.completedChapterIds, chapterId]
+        [chapterId]: {
+          ...(prev[chapterId] || {
+            chapterId,
+            simulationInteracted: false,
+            completedStepIndices: [],
+            lastStudiedAt: new Date().toISOString()
+          }),
+          read: true,
+          lastStudiedAt: new Date().toISOString()
+        }
+      };
+    });
+
+    if (!wasAlreadyRead) {
+      setStats((prev) => {
+        const newXP = prev.xp + 50;
+        const oldLevel = prev.level;
+        const newLevel = calculateLevel(newXP);
+
+        if (newLevel > oldLevel) {
+          soundFX.playLevelUp();
+          confetti({
+            particleCount: 80,
+            spread: 70,
+            origin: { y: 0.6 }
+          });
+        } else {
+          soundFX.playCorrect();
+        }
+
+        return {
+          ...prev,
+          xp: newXP,
+          level: newLevel
+        };
+      });
+    }
+  };
+
+  const markStepCompleted = (chapterId: number, stepIndex: number) => {
+    setProgress((prev) => {
+      const current = prev[chapterId] || {
+        chapterId,
+        read: false,
+        completedStepIndices: [],
+        simulationInteracted: false,
+        lastStudiedAt: new Date().toISOString()
+      };
+      const existingSteps = current.completedStepIndices || [];
+      if (existingSteps.includes(stepIndex)) {
+        return prev;
+      }
+      return {
+        ...prev,
+        [chapterId]: {
+          ...current,
+          completedStepIndices: [...existingSteps, stepIndex],
+          lastStudiedAt: new Date().toISOString()
+        }
       };
     });
   };
@@ -347,9 +392,10 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // Exam readiness calculation (0 - 100%)
   const totalChaptersCount = 27;
   const completedCount = stats.completedChapterIds.length;
+  const readChaptersCount = Object.values(progress).filter((p) => p.read).length;
   const passedQuizzesCount = Object.values(progress).filter((p) => p.quizPassed).length;
 
-  const readingScore = (completedCount / totalChaptersCount) * 40; // 40% weight
+  const readingScore = (readChaptersCount / totalChaptersCount) * 40; // 40% weight
   const quizMasteryScore = (passedQuizzesCount / totalChaptersCount) * 60; // 60% weight
   const examReadinessScore = Math.min(100, Math.round(readingScore + quizMasteryScore));
 
@@ -416,6 +462,7 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         badges: ALL_BADGES,
         addXP,
         markChapterRead,
+        markStepCompleted,
         recordQuizResult,
         markSimulationInteracted,
         completeDailyChallenge,

@@ -86,6 +86,7 @@ const AppContent: React.FC = () => {
     const saved = localStorage.getItem('mantiq_active_lesson_chapter');
     return saved ? parseInt(saved, 10) : 1;
   });
+  const [activeLessonStepIndex, setActiveLessonStepIndex] = useState<number>(0);
   const [activeQuizChapterId, setActiveQuizChapterId] = useState<number | null>(null);
   const [isFlashcardOpen, setIsFlashcardOpen] = useState<boolean>(false);
   const [flashcardChapterId, setFlashcardChapterId] = useState<number | undefined>(undefined);
@@ -114,12 +115,13 @@ const AppContent: React.FC = () => {
     return <AuthLandingPage />;
   }
 
-  const handleStartLesson = (chapterId: number) => {
+  const handleStartLesson = (chapterId: number, initialStep: number = 0) => {
     if (!isChapterUnlocked(chapterId)) {
       soundFX.playWrong();
       return;
     }
     setActiveLessonChapterId(chapterId);
+    setActiveLessonStepIndex(initialStep);
     setCurrentTab('lesson');
   };
 
@@ -149,6 +151,7 @@ const AppContent: React.FC = () => {
           {currentTab === 'learn' && (
             <LearnChaptersView
               onStartLesson={handleStartLesson}
+              onStartQuiz={(chId) => setActiveQuizChapterId(chId)}
               onOpenFlashcards={(chId?: number) => handleOpenFlashcards(chId)}
             />
           )}
@@ -156,11 +159,13 @@ const AppContent: React.FC = () => {
           {currentTab === 'lesson' && (
             <AimaLessonViewer
               chapterId={activeLessonChapterId && isChapterUnlocked(activeLessonChapterId) ? activeLessonChapterId : 1}
+              initialStepIndex={activeLessonStepIndex}
               onClose={() => setCurrentTab('learn')}
               onOpenFlashcards={(chId?: number) => handleOpenFlashcards(chId ?? (activeLessonChapterId || undefined))}
               onSelectChapter={(chId) => {
                 if (isChapterUnlocked(chId)) {
                   setActiveLessonChapterId(chId);
+                  setActiveLessonStepIndex(0);
                 } else {
                   soundFX.playWrong();
                 }
