@@ -518,12 +518,11 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({ onContinueAsGu
                   </div>
                 </div>
 
-                {/* Remember me & Forgot Password */}
+                {/* Remember me */}
                 <div
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'space-between',
                     fontSize: '13px',
                     margin: '2px 0 6px'
                   }}
@@ -545,21 +544,6 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({ onContinueAsGu
                     />
                     <span>Remember me</span>
                   </label>
-                  <button
-                    type="button"
-                    onClick={() => alert('Enter any email address to sign in or click Continue as Guest Scholar.')}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: isDark ? 'var(--quest-accent, #C9F26B)' : '#13211C',
-                      fontSize: '13px',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      padding: 0
-                    }}
-                  >
-                    Forgot password?
-                  </button>
                 </div>
 
                 {/* Primary Submit Button matching App Accent */}
