@@ -12,13 +12,15 @@ interface AimaDesktopNavProps {
   onSelectTab: (tab: QuestTab) => void;
   onOpenSync: () => void;
   onOpenFlashcards: () => void;
+  onOpenGuide: () => void;
 }
 
 export const AimaDesktopNav: React.FC<AimaDesktopNavProps> = ({
   currentTab,
   onSelectTab,
   onOpenSync,
-  onOpenFlashcards
+  onOpenFlashcards,
+  onOpenGuide
 }) => {
   const { stats } = useProgress();
   const { user, isGuest, openSignIn, logout } = useAuth();
@@ -124,8 +126,59 @@ export const AimaDesktopNav: React.FC<AimaDesktopNavProps> = ({
           })}
         </nav>
 
-        {/* Quick Exam Flashcards Action */}
-        <div style={{ padding: '4px 0 10px' }}>
+        {/* Quick Side Actions */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '4px 0 10px' }}>
+          {/* App & Study Guide Button */}
+          <button
+            type="button"
+            onClick={() => {
+              soundFX.playClick();
+              onOpenGuide();
+            }}
+            style={{
+              width: '100%',
+              padding: '10px 12px',
+              borderRadius: '14px',
+              background: 'var(--quest-bg)',
+              border: '1.5px solid var(--quest-border)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              cursor: 'pointer',
+              textAlign: 'left',
+              color: 'var(--quest-text-primary)',
+              transition: 'all 0.2s ease',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.02)'
+            }}
+            title="Open App & Study Guide (App Usage, Russell & Norvig Curriculum, Labs)"
+          >
+            <div
+              style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '9px',
+                background: '#13211C',
+                color: '#C9F26B',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '16px',
+                flexShrink: 0
+              }}
+            >
+              📖
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: '12.5px', fontWeight: 800, lineHeight: 1.2, color: 'var(--quest-text-primary)' }}>
+                App & Study Guide
+              </div>
+              <div style={{ fontSize: '10.5px', color: 'var(--quest-text-muted)', marginTop: '2px' }}>
+                How to use • AIMA 4th Ed.
+              </div>
+            </div>
+          </button>
+
+          {/* Exam Flashcards Button */}
           <button
             type="button"
             onClick={() => {
@@ -134,7 +187,7 @@ export const AimaDesktopNav: React.FC<AimaDesktopNavProps> = ({
             }}
             style={{
               width: '100%',
-              padding: '11px 13px',
+              padding: '10px 12px',
               borderRadius: '14px',
               background: 'linear-gradient(135deg, rgba(201, 242, 107, 0.22) 0%, rgba(201, 242, 107, 0.08) 100%)',
               border: '1.5px solid rgba(201, 242, 107, 0.5)',
@@ -354,6 +407,18 @@ export const AimaDesktopNav: React.FC<AimaDesktopNavProps> = ({
             </button>
           );
         })}
+
+        <button
+          type="button"
+          className="quest-mobile-nav-btn"
+          onClick={() => {
+            soundFX.playClick();
+            onOpenGuide();
+          }}
+          title="Open App & Study Guide"
+        >
+          <span>📖 Guide</span>
+        </button>
 
         <button
           type="button"

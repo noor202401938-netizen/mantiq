@@ -203,8 +203,15 @@ export const HomeFocusView: React.FC<HomeFocusViewProps> = ({
               const todayIdx = (new Date().getDay() + 6) % 7;
               const isToday = idx === todayIdx;
               const isFuture = idx > todayIdx;
-              const isPastStreakDay = !isFuture && !isToday && (todayIdx - idx < streakDays);
-              const isTodayActive = isToday && (stats.xp > 0 || stats.dailyChallengeCompleted);
+
+              const todayDate = new Date();
+              const year = todayDate.getFullYear();
+              const month = String(todayDate.getMonth() + 1).padStart(2, '0');
+              const day = String(todayDate.getDate()).padStart(2, '0');
+              const todayStr = `${year}-${month}-${day}`;
+
+              const isTodayActive = isToday && stats.lastActiveDate === todayStr;
+              const isPastStreakDay = !isFuture && !isToday && streakDays > 0 && (todayIdx - idx < (isTodayActive ? streakDays : streakDays + 1));
 
               let barHeight = '8%';
               let isHighlighted = false;

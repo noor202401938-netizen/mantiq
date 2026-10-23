@@ -28,18 +28,24 @@ interface ProgressContextType {
 }
 
 // Helper to get local YYYY-MM-DD date string (respecting user's local timezone instead of UTC)
-const getLocalDateString = (d: Date = new Date()): string => {
+export const getLocalDateString = (d: Date = new Date()): string => {
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 };
 
+export const getYesterdayDateString = (): string => {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  return getLocalDateString(d);
+};
+
 export const DEFAULT_STATS: UserStats = {
   xp: 0,
   level: 1,
   streakDays: 0,
-  lastActiveDate: getLocalDateString(),
+  lastActiveDate: '',
   streakProtected: false,
   totalQuizzesTaken: 0,
   totalCorrectAnswers: 0,
@@ -74,23 +80,37 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           return DEFAULT_STATS;
         }
 
-        // Ensure completedChapterIds only contains chapters where the quiz was actually passed
-        let validCompletedIds = parsed.completedChapterIds ?? [];
-        const savedProgress = localStorage.getItem('aima_chapter_progress');
-        if (savedProgress) {
-          try {
-            const parsedProg = JSON.parse(savedProgress);
-            validCompletedIds = validCompletedIds.filter((id: number) => parsedProg[id]?.quizPassed === true);
-          } catch {
-            // Keep default if malformed
+        const totalQuizzes = Number(parsed.totalQuizzesTaken) || 0;
+
+        // Ensure completedChapterIds only contains chapters where the quiz was actually passed with >= 65%
+        let validCompletedIds: number[] = [];
+        if (totalQuizzes > 0) {
+          const savedProgress = localStorage.getItem('aima_chapter_progress');
+          if (savedProgress) {
+            try {
+              const parsedProg = JSON.parse(savedProgress);
+              const candidateIds = Array.isArray(parsed.completedChapterIds) ? parsed.completedChapterIds : [];
+              validCompletedIds = candidateIds.filter((id: number) => {
+                const p = parsedProg[id];
+                return (
+                  p &&
+                  p.quizPassed === true &&
+                  typeof p.quizScore === 'number' &&
+                  typeof p.quizTotal === 'number' &&
+                  p.quizTotal > 0 &&
+                  (p.quizScore / p.quizTotal) >= 0.65
+                );
+              });
+            } catch {
+              validCompletedIds = [];
+            }
           }
-        } else {
-          validCompletedIds = [];
         }
 
         return {
           ...DEFAULT_STATS,
           ...parsed,
+          totalQuizzesTaken: totalQuizzes,
           completedChapterIds: validCompletedIds,
           gems: parsed.gems ?? 0,
           hearts: parsed.hearts ?? 5,
@@ -114,7 +134,23 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           localStorage.removeItem('aima_chapter_progress');
           return DEFAULT_PROGRESS;
         }
-        return parsed;
+
+        // Strictly sanitize: ensure no chapter falsely claims quizPassed without score >= 65%
+        const sanitized: Record<number, ChapterProgress> = {};
+        for (const [key, val] of Object.entries(parsed)) {
+          const chId = Number(key);
+          const chProg = val as ChapterProgress;
+          const hasScore = typeof chProg.quizScore === 'number' && typeof chProg.quizTotal === 'number' && chProg.quizTotal > 0;
+          const passed = hasScore && (chProg.quizScore! / chProg.quizTotal!) >= 0.65;
+
+          sanitized[chId] = {
+            ...chProg,
+            quizPassed: passed,
+            quizScore: hasScore ? chProg.quizScore : undefined,
+            quizTotal: hasScore ? chProg.quizTotal : undefined
+          };
+        }
+        return sanitized;
       } catch {
         return DEFAULT_PROGRESS;
       }
@@ -122,35 +158,42 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return DEFAULT_PROGRESS;
   });
 
-  // Check and update study streaks on load
+  // Check study streak validity on load.
+  // IMPORTANT: Simply opening the app should NEVER advance or grant a streak.
+  // Streak only increments when genuine learning activity occurs (addXP, quizzes, reading, challenges).
   useEffect(() => {
     const today = getLocalDateString();
-    const lastActive = stats.lastActiveDate;
+    const yesterday = getYesterdayDateString();
 
-    if (lastActive !== today) {
-      const yesterdayDate = new Date();
-      yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-      const yesterday = getLocalDateString(yesterdayDate);
+    setStats((prev) => {
+      const lastActive = prev.lastActiveDate;
 
-      if (lastActive === yesterday) {
-        // Consecutive day: advance streak
-        setStats((prev) => ({
-          ...prev,
-          streakDays: prev.streakDays + 1,
-          lastActiveDate: today,
-          dailyChallengeCompleted: false
-        }));
-      } else {
-        // Day missed: check streak freeze protection
-        setStats((prev) => ({
-          ...prev,
-          streakDays: prev.streakProtected ? prev.streakDays : 1,
-          streakProtected: false,
-          lastActiveDate: today,
-          dailyChallengeCompleted: false
-        }));
+      // If no activity yet, or active today/yesterday: streak remains intact
+      if (!lastActive || lastActive === today || lastActive === yesterday) {
+        if (lastActive !== today && prev.dailyChallengeCompleted) {
+          return { ...prev, dailyChallengeCompleted: false };
+        }
+        return prev;
       }
-    }
+
+      // If user was absent for 2 or more days:
+      if (prev.streakProtected && prev.streakDays > 0) {
+        // Streak freeze protects existing streak count once, but is consumed
+        return {
+          ...prev,
+          streakProtected: false,
+          dailyChallengeCompleted: false
+        };
+      }
+
+      // Absent for 2+ days without protection: reset streak to 0
+      // Do NOT set lastActiveDate to today because no study occurred today yet!
+      return {
+        ...prev,
+        streakDays: 0,
+        dailyChallengeCompleted: false
+      };
+    });
   }, []);
 
   // Save to localStorage and sync to Supabase in background
@@ -182,12 +225,41 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return Math.max(1, Math.floor(xp / 350) + 1);
   };
 
-  const addXP = (amount: number) => {
+  // Helper to accurately record study activity for streaks.
+  // Streaks only advance or start when genuine study activity takes place.
+  const applyStudyActivity = (prev: UserStats): { streakDays: number; lastActiveDate: string } => {
     const today = getLocalDateString();
+    const yesterday = getYesterdayDateString();
+
+    if (prev.lastActiveDate === today) {
+      // Activity already recorded today; maintain current streak
+      return {
+        streakDays: Math.max(1, prev.streakDays),
+        lastActiveDate: today
+      };
+    }
+
+    if (prev.lastActiveDate === yesterday) {
+      // Consecutive daily learning activity! Increment streak
+      return {
+        streakDays: prev.streakDays + 1,
+        lastActiveDate: today
+      };
+    }
+
+    // First learning activity ever or streak was broken by missed days: start 1-day streak
+    return {
+      streakDays: 1,
+      lastActiveDate: today
+    };
+  };
+
+  const addXP = (amount: number) => {
     setStats((prev) => {
       const newXP = prev.xp + amount;
       const oldLevel = prev.level;
       const newLevel = calculateLevel(newXP);
+      const streakUpdate = applyStudyActivity(prev);
 
       if (newLevel > oldLevel) {
         soundFX.playLevelUp();
@@ -202,7 +274,7 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         ...prev,
         xp: newXP,
         level: newLevel,
-        lastActiveDate: today
+        ...streakUpdate
       };
     });
   };
@@ -230,32 +302,12 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     });
 
     if (!wasAlreadyRead) {
-      setStats((prev) => {
-        const newXP = prev.xp + 50;
-        const oldLevel = prev.level;
-        const newLevel = calculateLevel(newXP);
-
-        if (newLevel > oldLevel) {
-          soundFX.playLevelUp();
-          confetti({
-            particleCount: 80,
-            spread: 70,
-            origin: { y: 0.6 }
-          });
-        } else {
-          soundFX.playCorrect();
-        }
-
-        return {
-          ...prev,
-          xp: newXP,
-          level: newLevel
-        };
-      });
+      addXP(50);
     }
   };
 
   const markStepCompleted = (chapterId: number, stepIndex: number) => {
+    let wasNewlyCompleted = false;
     setProgress((prev) => {
       const current = prev[chapterId] || {
         chapterId,
@@ -268,6 +320,7 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       if (existingSteps.includes(stepIndex)) {
         return prev;
       }
+      wasNewlyCompleted = true;
       return {
         ...prev,
         [chapterId]: {
@@ -277,10 +330,14 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         }
       };
     });
+
+    if (wasNewlyCompleted) {
+      addXP(15);
+    }
   };
 
   const recordQuizResult = (chapterId: number, score: number, total: number) => {
-    const passed = score / total >= 0.65;
+    const passed = total > 0 && (score / total >= 0.65);
 
     setProgress((prev) => ({
       ...prev,
@@ -304,6 +361,7 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       const newXP = prev.xp + earnedXP;
       const oldLevel = prev.level;
       const newLevel = calculateLevel(newXP);
+      const streakUpdate = applyStudyActivity(prev);
 
       if (newLevel > oldLevel) {
         soundFX.playLevelUp();
@@ -338,7 +396,8 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         totalQuizzesTaken: newQuizzesTaken,
         totalCorrectAnswers: newCorrectAnswers,
         completedChapterIds: newCompleted,
-        unlockedBadgeIds: newBadges
+        unlockedBadgeIds: newBadges,
+        ...streakUpdate
       };
     });
   };

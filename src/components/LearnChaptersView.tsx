@@ -265,24 +265,51 @@ export const LearnChaptersView: React.FC<LearnChaptersViewProps> = ({
                       }
                     }}
                   >
-                    <div className="quest-topic-badge" style={{ background: isSelectedLocked ? '#E2E8E4' : '#13211C', color: isSelectedLocked ? '#6B7280' : '#C9F26B' }}>
-                      {isSelectedLocked ? <Lock size={13} /> : 'Q'}
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <div className="quest-topic-title">Chapter assessment</div>
-                      <div className="quest-topic-sub">
-                        {stats.completedChapterIds?.includes(selectedChapter.id)
-                          ? 'Assessment passed · Mastered (+35 XP)'
-                          : isSelectedLocked
-                          ? `Locked · Complete Chapter ${selectedChapter.id - 1} quiz first`
-                          : 'Midterm exam questions · Required to unlock next chapter (+35 XP)'}
-                      </div>
-                    </div>
-                    {isSelectedLocked ? (
-                      <Lock size={14} color="var(--quest-text-muted)" />
-                    ) : (
-                      <Play size={16} fill="var(--quest-text-primary)" />
-                    )}
+                    {(() => {
+                      const chProg = progress[selectedChapter.id];
+                      const isQuizPassed = Boolean(
+                        stats.totalQuizzesTaken > 0 &&
+                        stats.completedChapterIds?.includes(selectedChapter.id) &&
+                        chProg?.quizPassed
+                      );
+
+                      return (
+                        <>
+                          <div
+                            className="quest-topic-badge"
+                            style={{
+                              background: isSelectedLocked
+                                ? '#E2E8E4'
+                                : isQuizPassed
+                                ? '#C9F26B'
+                                : '#13211C',
+                              color: isSelectedLocked
+                                ? '#6B7280'
+                                : isQuizPassed
+                                ? '#13211C'
+                                : '#C9F26B'
+                            }}
+                          >
+                            {isSelectedLocked ? <Lock size={13} /> : isQuizPassed ? <Check size={14} strokeWidth={3} /> : 'Q'}
+                          </div>
+                          <div style={{ flex: 1 }}>
+                            <div className="quest-topic-title">Chapter assessment</div>
+                            <div className="quest-topic-sub">
+                              {isQuizPassed
+                                ? `Assessment passed (${chProg?.quizScore ?? 0}/${chProg?.quizTotal ?? 0}) · Mastered (+35 XP)`
+                                : isSelectedLocked
+                                ? `Locked · Complete Chapter ${selectedChapter.id - 1} quiz first`
+                                : 'Midterm exam questions · Required to unlock next chapter (+35 XP)'}
+                            </div>
+                          </div>
+                          {isSelectedLocked ? (
+                            <Lock size={14} color="var(--quest-text-muted)" />
+                          ) : (
+                            <Play size={16} fill="var(--quest-text-primary)" />
+                          )}
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
 

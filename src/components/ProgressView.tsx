@@ -6,19 +6,39 @@ import { Trophy, Award, Flame, Zap, ShieldCheck } from 'lucide-react';
 export const ProgressView: React.FC = () => {
   const { stats, progress, examReadinessScore, badges } = useProgress();
 
-  const completedCount = stats.completedChapterIds?.length || 2;
-  const cardsMastered = 46 + completedCount * 4;
-  const totalMinutes = 182 + completedCount * 15;
+  const completedCount = stats.completedChapterIds?.length || 0;
+  const cardsMastered = completedCount * 4 + (stats.totalQuizzesTaken > 0 ? stats.totalCorrectAnswers : 0);
+  const totalMinutes = Math.max(0, Math.round(stats.xp * 0.4));
 
-  const weekBars = [
-    { day: 'M', height: '40%' },
-    { day: 'T', height: '65%' },
-    { day: 'W', height: '30%' },
-    { day: 'T', height: '80%' },
-    { day: 'F', height: '55%' },
-    { day: 'S', height: '90%', isToday: true },
-    { day: 'S', height: '20%' }
-  ];
+  const todayIdx = (new Date().getDay() + 6) % 7;
+  const todayDate = new Date();
+  const year = todayDate.getFullYear();
+  const month = String(todayDate.getMonth() + 1).padStart(2, '0');
+  const day = String(todayDate.getDate()).padStart(2, '0');
+  const todayStr = `${year}-${month}-${day}`;
+  const isTodayActive = stats.lastActiveDate === todayStr;
+
+  const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+  const weekBars = days.map((dayLabel, idx) => {
+    const isToday = idx === todayIdx;
+    const isPast = idx < todayIdx;
+    const isPastStreak = isPast && stats.streakDays > 0 && (todayIdx - idx < (isTodayActive ? stats.streakDays : stats.streakDays + 1));
+
+    let height = '10%';
+    if (isToday) {
+      height = isTodayActive ? '80%' : '16%';
+    } else if (isPastStreak) {
+      height = `${Math.min(90, 35 + idx * 8)}%`;
+    } else if (isPast) {
+      height = '12%';
+    }
+
+    return {
+      day: dayLabel,
+      height,
+      isToday: isToday && isTodayActive
+    };
+  });
 
   return (
     <div className="progress-screen-container">

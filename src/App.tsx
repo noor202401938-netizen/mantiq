@@ -31,6 +31,9 @@ const AimaFlashcardModal = lazy(() =>
 const SyncModal = lazy(() =>
   import('./components/SyncModal').then((m) => ({ default: m.SyncModal }))
 );
+const ScholarGuideModal = lazy(() =>
+  import('./components/ScholarGuideModal').then((m) => ({ default: m.ScholarGuideModal }))
+);
 
 const ViewLoadingFallback: React.FC = () => (
   <div
@@ -91,6 +94,7 @@ const AppContent: React.FC = () => {
   const [isFlashcardOpen, setIsFlashcardOpen] = useState<boolean>(false);
   const [flashcardChapterId, setFlashcardChapterId] = useState<number | undefined>(undefined);
   const [isSyncOpen, setIsSyncOpen] = useState<boolean>(false);
+  const [isGuideOpen, setIsGuideOpen] = useState<boolean>(false);
 
   const handleOpenFlashcards = (chapterId?: number) => {
     setFlashcardChapterId(chapterId);
@@ -134,6 +138,7 @@ const AppContent: React.FC = () => {
           onSelectTab={(tab) => setCurrentTab(tab)}
           onOpenSync={() => setIsSyncOpen(true)}
           onOpenFlashcards={() => handleOpenFlashcards()}
+          onOpenGuide={() => setIsGuideOpen(true)}
         />
       )}
 
@@ -206,6 +211,15 @@ const AppContent: React.FC = () => {
 
         {isSyncOpen && (
           <SyncModal isOpen={isSyncOpen} onClose={() => setIsSyncOpen(false)} />
+        )}
+
+        {isGuideOpen && (
+          <ScholarGuideModal
+            isOpen={isGuideOpen}
+            onClose={() => setIsGuideOpen(false)}
+            onOpenFlashcards={() => handleOpenFlashcards()}
+            onNavigateToTab={(tab) => setCurrentTab(tab)}
+          />
         )}
       </Suspense>
 

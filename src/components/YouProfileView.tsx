@@ -698,8 +698,18 @@ export const YouProfileView: React.FC<YouProfileViewProps> = ({ onOpenSync }) =>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
                 {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, idx) => {
                   const todayIdx = (new Date().getDay() + 6) % 7;
-                  const isPastOrToday = idx <= todayIdx;
-                  const isDayDone = streakDays > 0 && isPastOrToday && (todayIdx - idx < streakDays);
+                  const isToday = idx === todayIdx;
+
+                  const todayDate = new Date();
+                  const year = todayDate.getFullYear();
+                  const month = String(todayDate.getMonth() + 1).padStart(2, '0');
+                  const dayNum = String(todayDate.getDate()).padStart(2, '0');
+                  const todayStr = `${year}-${month}-${dayNum}`;
+
+                  const isTodayActive = stats.lastActiveDate === todayStr;
+                  const isDayDone = isToday
+                    ? (streakDays > 0 && isTodayActive)
+                    : (streakDays > 0 && idx < todayIdx && (todayIdx - idx < (isTodayActive ? streakDays : streakDays + 1)));
 
                   return (
                     <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>

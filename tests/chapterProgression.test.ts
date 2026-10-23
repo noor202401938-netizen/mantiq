@@ -211,3 +211,144 @@ describe('Chapter Progression & Unlock Logic', () => {
     expect(isTopicCompleted(1, 2, completedChapterIds, progress[1])).toBe(false);
   });
 });
+
+export function evaluateStreakOnLoad(stats: UserStats, today: string, yesterday: string): UserStats {
+  const lastActive = stats.lastActiveDate;
+  if (!lastActive || lastActive === today || lastActive === yesterday) {
+    if (lastActive !== today && stats.dailyChallengeCompleted) {
+      return { ...stats, dailyChallengeCompleted: false };
+    }
+    return stats;
+  }
+
+  if (stats.streakProtected && stats.streakDays > 0) {
+    return {
+      ...stats,
+      streakProtected: false,
+      dailyChallengeCompleted: false
+    };
+  }
+
+  return {
+    ...stats,
+    streakDays: 0,
+    dailyChallengeCompleted: false
+  };
+}
+
+export function applyStudyActivity(stats: UserStats, today: string, yesterday: string): UserStats {
+  if (stats.lastActiveDate === today) {
+    return {
+      ...stats,
+      streakDays: Math.max(1, stats.streakDays),
+      lastActiveDate: today
+    };
+  }
+
+  if (stats.lastActiveDate === yesterday) {
+    return {
+      ...stats,
+      streakDays: stats.streakDays + 1,
+      lastActiveDate: today
+    };
+  }
+
+  return {
+    ...stats,
+    streakDays: 1,
+    lastActiveDate: today
+  };
+}
+
+describe('Streak Recording & Reset Logic', () => {
+  const baseStats: UserStats = {
+    xp: 200,
+    level: 1,
+    streakDays: 5,
+    lastActiveDate: '2026-10-20',
+    streakProtected: false,
+    totalQuizzesTaken: 1,
+    totalCorrectAnswers: 4,
+    completedChapterIds: [1],
+    unlockedBadgeIds: [],
+    dailyChallengeCompleted: true,
+    dailyChallengeDate: '2026-10-20',
+    gems: 50,
+    hearts: 5,
+    maxHearts: 5,
+    claimedChests: []
+  };
+
+  const today = '2026-10-23';
+  const yesterday = '2026-10-22';
+  const twoDaysAgo = '2026-10-21';
+
+  it('resets streak to 0 if absent for 2 or more days and not streak-protected', () => {
+    const stats: UserStats = {
+      ...baseStats,
+      lastActiveDate: twoDaysAgo, // last logged in 2 days ago
+      streakDays: 4,
+      streakProtected: false
+    };
+
+    const evaluated = evaluateStreakOnLoad(stats, today, yesterday);
+    expect(evaluated.streakDays).toBe(0);
+    // Crucially: lastActiveDate must NOT be marked as today
+    expect(evaluated.lastActiveDate).toBe(twoDaysAgo);
+    expect(evaluated.dailyChallengeCompleted).toBe(false);
+  });
+
+  it('preserves streak if streakProtected when absent for 2+ days and consumes freeze', () => {
+    const stats: UserStats = {
+      ...baseStats,
+      lastActiveDate: twoDaysAgo,
+      streakDays: 6,
+      streakProtected: true
+    };
+
+    const evaluated = evaluateStreakOnLoad(stats, today, yesterday);
+    expect(evaluated.streakDays).toBe(6);
+    expect(evaluated.streakProtected).toBe(false);
+  });
+
+  it('opening the app without studying never advances streak or marks today active', () => {
+    const stats: UserStats = {
+      ...baseStats,
+      lastActiveDate: yesterday, // studied yesterday
+      streakDays: 3
+    };
+
+    const evaluated = evaluateStreakOnLoad(stats, today, yesterday);
+    expect(evaluated.streakDays).toBe(3); // stays 3, does NOT become 4
+    expect(evaluated.lastActiveDate).toBe(yesterday); // remains yesterday, today not active yet
+  });
+
+  it('advances streak only when active study occurs (e.g. lesson, quiz, challenge)', () => {
+    const stats: UserStats = {
+      ...baseStats,
+      lastActiveDate: yesterday,
+      streakDays: 3
+    };
+
+    const afterStudy = applyStudyActivity(stats, today, yesterday);
+    expect(afterStudy.streakDays).toBe(4);
+    expect(afterStudy.lastActiveDate).toBe(today);
+
+    // Doing additional study on the same day does not repeatedly increment streak
+    const afterSecondStudy = applyStudyActivity(afterStudy, today, yesterday);
+    expect(afterSecondStudy.streakDays).toBe(4);
+    expect(afterSecondStudy.lastActiveDate).toBe(today);
+  });
+
+  it('starts a 1-day streak when studying after a broken streak', () => {
+    const stats: UserStats = {
+      ...baseStats,
+      lastActiveDate: twoDaysAgo,
+      streakDays: 0
+    };
+
+    const afterStudy = applyStudyActivity(stats, today, yesterday);
+    expect(afterStudy.streakDays).toBe(1);
+    expect(afterStudy.lastActiveDate).toBe(today);
+  });
+});
