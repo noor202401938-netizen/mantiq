@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Home, BookOpen, GraduationCap, Trophy, User, Flame, LogIn, LogOut, Sun, Moon, WifiOff, Check } from 'lucide-react';
+import { Home, BookOpen, GraduationCap, Trophy, User, Flame, LogIn, LogOut, Sun, Moon, WifiOff, Check, Compass, Layers } from 'lucide-react';
 import { soundFX } from '../utils/soundEffects';
 import { useProgress } from '../context/ProgressContext';
 import { useAuth } from '../context/AuthContext';
@@ -124,110 +124,35 @@ export const AimaDesktopNav: React.FC<AimaDesktopNavProps> = ({
               </button>
             );
           })}
-        </nav>
 
-        {/* Quick Side Actions */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '4px 0 10px' }}>
-          {/* App & Study Guide Button */}
+          {/* App & Study Guide Navigation Item */}
           <button
             type="button"
+            className="quest-nav-item"
             onClick={() => {
               soundFX.playClick();
               onOpenGuide();
             }}
-            style={{
-              width: '100%',
-              padding: '10px 12px',
-              borderRadius: '14px',
-              background: 'var(--quest-bg)',
-              border: '1.5px solid var(--quest-border)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-              cursor: 'pointer',
-              textAlign: 'left',
-              color: 'var(--quest-text-primary)',
-              transition: 'all 0.2s ease',
-              boxShadow: '0 2px 6px rgba(0,0,0,0.02)'
-            }}
-            title="Open App & Study Guide (App Usage, Russell & Norvig Curriculum, Labs)"
+            title="Open App & Study Guide"
           >
-            <div
-              style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '9px',
-                background: '#13211C',
-                color: '#C9F26B',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '16px',
-                flexShrink: 0
-              }}
-            >
-              📖
-            </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: '12.5px', fontWeight: 800, lineHeight: 1.2, color: 'var(--quest-text-primary)' }}>
-                App & Study Guide
-              </div>
-              <div style={{ fontSize: '10.5px', color: 'var(--quest-text-muted)', marginTop: '2px' }}>
-                How to use • AIMA 4th Ed.
-              </div>
-            </div>
+            <Compass size={20} />
+            <span>App & Study Guide</span>
           </button>
 
-          {/* Exam Flashcards Button */}
+          {/* Exam Flashcards Navigation Item */}
           <button
             type="button"
+            className="quest-nav-item"
             onClick={() => {
               soundFX.playClick();
               onOpenFlashcards();
             }}
-            style={{
-              width: '100%',
-              padding: '10px 12px',
-              borderRadius: '14px',
-              background: 'linear-gradient(135deg, rgba(201, 242, 107, 0.22) 0%, rgba(201, 242, 107, 0.08) 100%)',
-              border: '1.5px solid rgba(201, 242, 107, 0.5)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-              cursor: 'pointer',
-              textAlign: 'left',
-              color: 'var(--quest-text-primary)',
-              transition: 'all 0.2s ease',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
-            }}
             title="Open Exam Flashcards (43+ Cards across all 27 Chapters)"
           >
-            <div
-              style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '9px',
-                background: '#C9F26B',
-                color: '#13211C',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '16px',
-                flexShrink: 0
-              }}
-            >
-              🃏
-            </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: '12.5px', fontWeight: 800, lineHeight: 1.2, color: 'var(--quest-text-primary)' }}>
-                Exam Flashcards
-              </div>
-              <div style={{ fontSize: '10.5px', color: 'var(--quest-text-muted)', marginTop: '2px' }}>
-                43+ Cards • All 27 Ch.
-              </div>
-            </div>
+            <Layers size={20} />
+            <span>Exam Flashcards</span>
           </button>
-        </div>
+        </nav>
 
         {/* Integrated Sidebar Footer: Scholar Profile & Streak Status */}
         <div className="quest-sidebar-footer">
@@ -417,7 +342,7 @@ export const AimaDesktopNav: React.FC<AimaDesktopNavProps> = ({
           }}
           title="Open App & Study Guide"
         >
-          <span>📖 Guide</span>
+          <span>Guide</span>
         </button>
 
         <button
@@ -429,7 +354,7 @@ export const AimaDesktopNav: React.FC<AimaDesktopNavProps> = ({
           }}
           title="Open Exam Flashcards"
         >
-          <span>🃏 Cards</span>
+          <span>Cards</span>
         </button>
       </nav>
     </>
