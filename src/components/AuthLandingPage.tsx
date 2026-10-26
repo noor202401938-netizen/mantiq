@@ -560,7 +560,6 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({ onContinueAsGu
                     fontWeight: 900,
                     fontFamily: 'var(--quest-font-heading, "Newsreader", serif)',
                     cursor: isLoading ? 'wait' : 'pointer',
-                    boxShadow: '0 4px 14px rgba(201, 242, 107, 0.4)',
                     transition: 'transform 0.1s ease, opacity 0.15s ease'
                   }}
                 >
@@ -719,7 +718,6 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({ onContinueAsGu
                     fontWeight: 900,
                     fontFamily: 'var(--quest-font-heading, "Newsreader", serif)',
                     cursor: isLoading ? 'wait' : 'pointer',
-                    boxShadow: '0 4px 14px rgba(201, 242, 107, 0.4)',
                     transition: 'opacity 0.15s ease'
                   }}
                 >

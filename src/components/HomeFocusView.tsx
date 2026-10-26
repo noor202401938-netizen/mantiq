@@ -147,8 +147,7 @@ export const HomeFocusView: React.FC<HomeFocusViewProps> = ({
               alignItems: 'center',
               justifyContent: 'center',
               fontSize: '22px',
-              flexShrink: 0,
-              boxShadow: '0 4px 12px rgba(201, 242, 107, 0.35)'
+              flexShrink: 0
             }}
           >
             🃏

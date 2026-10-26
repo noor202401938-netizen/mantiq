@@ -391,8 +391,7 @@ export const YouProfileView: React.FC<YouProfileViewProps> = ({ onOpenSync }) =>
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '40px',
-              boxShadow: '0 8px 24px rgba(74, 222, 128, 0.15)'
+              fontSize: '40px'
             }}
           >
             {user.avatar}
@@ -1730,8 +1729,7 @@ export const YouProfileView: React.FC<YouProfileViewProps> = ({ onOpenSync }) =>
                     fontWeight: 800,
                     fontSize: '15px',
                     border: 'none',
-                    cursor: 'pointer',
-                    boxShadow: '0 2px 8px rgba(201, 242, 107, 0.3)'
+                    cursor: 'pointer'
                   }}
                 >
                   Save Exam Goals & Milestones

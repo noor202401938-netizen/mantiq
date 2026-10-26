@@ -110,8 +110,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
                   border: 'none',
                   fontWeight: 800,
                   fontSize: '14px',
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 14px rgba(201, 242, 107, 0.4)'
+                  cursor: 'pointer'
                 }}
               >
                 Return to Home Dashboard

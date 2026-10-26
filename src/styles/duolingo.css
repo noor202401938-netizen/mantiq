@@ -508,7 +508,7 @@
   background-color: var(--duo-green);
   color: #FFFFFF;
   border-bottom: 8px solid var(--duo-green-shadow);
-  box-shadow: 0 4px 16px rgba(88, 204, 2, 0.4);
+  box-shadow: none;
 }
 
 .duo-node-btn.active:hover {
@@ -518,7 +518,7 @@
 .duo-node-btn.active:active {
   transform: translateY(6px);
   border-bottom-width: 2px;
-  box-shadow: 0 2px 4px rgba(88, 204, 2, 0.4);
+  box-shadow: none;
 }
 
 /* Active Pulsing Ring */
@@ -554,7 +554,7 @@
   background-color: var(--duo-blue);
   color: #FFFFFF;
   border-bottom: 8px solid var(--duo-blue-shadow);
-  box-shadow: 0 4px 16px rgba(28, 176, 246, 0.4);
+  box-shadow: none;
 }
 
 /* Locked Node (Gray) */
