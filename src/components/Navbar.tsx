@@ -21,6 +21,7 @@ import { useAuth } from '../context/AuthContext';
 import { useProgress } from '../context/ProgressContext';
 import { useTheme } from '../context/ThemeContext';
 import { soundFX } from '../utils/soundEffects';
+import { MantiqLogo } from './MantiqLogo';
 
 interface NavbarProps {
   onOpenProfile: () => void;
@@ -79,13 +80,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             setCurrentView('dashboard');
           }}
         >
-          <div className="brand-icon-wrapper" style={{ padding: 0, overflow: 'hidden' }}>
-            <img
-              src="./mantiq-logo.png"
-              alt="Mantiq Logo"
-              style={{ width: '28px', height: '28px', borderRadius: '8px', objectFit: 'cover' }}
-            />
-          </div>
+          <MantiqLogo size={32} />
           <div className="brand-text">
             <span className="brand-title">Mantiq</span>
             <span className="brand-badge">Let's have some Mantiq about AI</span>

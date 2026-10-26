@@ -11,6 +11,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { soundFX } from '../utils/soundEffects';
+import { MantiqLogo } from './MantiqLogo';
 
 interface AuthLandingPageProps {
   onContinueAsGuest?: () => void;
@@ -161,17 +162,7 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({ onContinueAsGu
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <img
-            src="./mantiq-logo.png"
-            alt="Mantiq Logo"
-            style={{
-              width: '42px',
-              height: '42px',
-              borderRadius: '12px',
-              objectFit: 'cover',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
-            }}
-          />
+          <MantiqLogo size={42} />
           <div>
             <div
               style={{
