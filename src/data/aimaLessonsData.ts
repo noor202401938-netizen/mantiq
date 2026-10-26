@@ -1028,19 +1028,19 @@ This is always admissible and dominates all component heuristics!`,
 In many problems, the **path to the goal doesn't matter** — only the **goal state itself** matters.
 
 Examples:
-- **8-Queens**: Find a configuration with no queens attacking each other (you don't care which order you placed queens)
-- **VLSI Layout**: Place chips to minimize wire length
-- **Protein Folding**: Find minimum-energy 3D structure
-- **Traveling Salesman Problem (TSP)**: Find minimum-cost tour (ordering matters, intermediate steps don't)
+- **8-Queens**: Find a placement of 8 queens where no two attack each other. The order in which you placed the queens is irrelevant.
+- **VLSI Layout**: Place chips to minimize wire length.
+- **Protein Folding**: Find the minimum-energy 3D structure.
+- **Traveling Salesman Problem (TSP)**: Find the minimum-cost tour. The order of cities in the final tour matters, but the intermediate steps of building it do not.
 
-For these problems, classical search wastes memory tracking paths. **Local Search** operates using a **single current state** and moves to neighboring states — using only **O(1) memory**!
+For these problems, classical search wastes memory tracking paths. **Local search** keeps only a **single current state** and moves to neighboring states, so it needs only **O(1) memory** beyond that state.
 
 ### The Landscape Metaphor
 Imagine the **state space** as a geographic landscape where:
-- **Elevation** = objective function value (quality of state)
-- **Position** = current state
+- **Elevation** = objective function value (quality of the state)
+- **Position** = the current state
 
-The goal: find the **highest peak** (maximization) or **lowest valley** (minimization).
+The goal is to find the **highest peak** (maximization) or the **lowest valley** (minimization).
 
 ### Hill-Climbing Search (Steepest Ascent)
 \`\`\`
@@ -1052,19 +1052,33 @@ function HILL-CLIMBING(problem) → state
     current ← neighbor
 \`\`\`
 
+The algorithm looks only at the neighbors of its current position and always moves uphill. It never moves downhill, so it never "backs out" of a bad region.
+
+### A Worked Example
+Maximize the value of five states arranged in a line: state 1 has value 3, state 2 has value 6, state 3 has value 4, state 4 has value 7, and state 5 has value 9. Each state's neighbors are the states immediately left and right of it.
+
+- **Start at state 3** (value 4): neighbors are state 2 (value 6) and state 4 (value 7). Move to state 4. From state 4, the neighbors are state 3 (value 4) and state 5 (value 9). Move to state 5. State 5's only neighbor is state 4 (value 7), which is lower, so the algorithm stops at **state 5**. This is the global maximum.
+- **Start at state 2** (value 6): neighbors are state 1 (value 3) and state 3 (value 4). Both are lower, so the algorithm stops immediately at **state 2**. This is a **local maximum**, not the global one.
+
+The same algorithm gives different answers depending on where it starts. This is the central weakness of hill climbing.
+
 ### The Three Fatal Problems of Hill Climbing
 
-**1. Local Maxima**: A peak that is higher than all neighbors but NOT the global maximum.
-The algorithm stops here — it can't "see" that a better peak exists elsewhere.
+**1. Local Maxima**: A peak that is higher than all its neighbors but not the global maximum. The algorithm stops here because it cannot see that a better peak exists elsewhere.
 
-**2. Ridges**: A series of local maxima connected together. Each is a peak in some directions, valley in others. Algorithm bounces around.
+**2. Ridges**: A sequence of local maxima connected together. Each step looks uphill along one direction, but the best direction is diagonal, so the algorithm zigzags with little progress.
 
-**3. Plateaux / Flat Shoulders**: The evaluation function is constant — no gradient to follow. Algorithm does random walk (or stalls).`,
+**3. Plateaux / Flat Shoulders**: Regions where all neighbors have the same value. There is no gradient to follow, so the algorithm either stalls or wanders at random.
+
+### Common Misconceptions
+- **"Hill climbing eventually explores everything."** It does not. It only ever moves to better neighbors, so it cannot cross a valley to reach a higher peak.
+- **"Local search is useless because it is not optimal."** Local search is often very effective in practice, even when it has no guarantee of finding the global optimum. The question is how well it works for a given problem.
+- **"Hill climbing considers all neighbors before moving."** Steepest-ascent hill climbing does evaluate all neighbors before each move. Other variants, such as first-choice hill climbing, move to the first better neighbor they find.`,
         keyPoints: [
-          'Local search trades path memory for solving optimization problems efficiently',
-          'Uses O(1) memory — only stores current state (+ possibly a few neighbors)',
-          'Hill climbing is greedy — always moves to best neighbor',
-          '3 failure modes: local maxima, ridges, plateaux',
+          'Local search trades path memory for efficient optimization: it keeps one current state (plus perhaps a few neighbors)',
+          'Hill climbing is greedy: it always moves to the best neighbor and never moves downhill',
+          'The result depends on the starting state: a local maximum can trap the search',
+          '3 failure modes: local maxima, ridges, and plateaux',
         ],
       },
       {
@@ -1075,15 +1089,14 @@ The algorithm stops here — it can't "see" that a better peak exists elsewhere.
         visualType: 'simulated_annealing',
         bookCitation: 'AIMA 3rd Ed., pp. 126–129',
         contentMarkdown: `### Why Pure Hill Climbing Fails
-Hill climbing gets stuck at **local maxima** because it never accepts moves that decrease value.
+Hill climbing gets stuck at **local maxima** because it never accepts a move that decreases the value. Two simple fixes exist:
 
-Two simple fixes:
-1. **Random Restart Hill Climbing**: restart from a random state when stuck. Complete (probability 1 as restarts → ∞). Works well when local maxima aren't too common.
+1. **Random-restart hill climbing**: when stuck, restart from a random state and keep the best result. Given enough restarts, it finds the global optimum with probability approaching 1, but it can be slow when local maxima are common.
 
-2. **Simulated Annealing**: accept "bad" moves occasionally, with probability that decreases over time.
+2. **Simulated annealing**: occasionally accept a "bad" move, with a probability that shrinks over time.
 
 ### Simulated Annealing — Inspired by Metallurgy
-When metalworkers heat then slowly cool metal (annealing), atoms settle into a highly ordered, low-energy crystalline structure — the global minimum!
+When metalworkers heat metal and then cool it slowly (annealing), the atoms settle into a highly ordered, low-energy crystal structure. Cooling too fast traps the atoms in disordered arrangements. Simulated annealing applies the same idea to search: a "temperature" parameter controls how willing the search is to accept worse states.
 
 \`\`\`
 function SIMULATED-ANNEALING(problem, schedule) → solution state
@@ -1097,30 +1110,43 @@ function SIMULATED-ANNEALING(problem, schedule) → solution state
     else → current ← next with probability exp(ΔE / T)  ← SOMETIMES accept worsening
 \`\`\`
 
-### The Magic Formula
+Note that the algorithm picks a **random** successor, not the best one. This is what allows it to explore downhill directions.
+
+### The Acceptance Formula
 $$P(\\text{accept bad move}) = e^{\\Delta E / T}$$
 
-- $\\Delta E < 0$: bad move (value decreased)
-- High temperature $T$: $e^{\\Delta E / T} ≈ 1$ → almost always accept bad moves (explore freely)
-- Low temperature $T → 0$: $e^{\\Delta E / T} → 0$ → rarely accept bad moves (converge to best found)
+- $\\Delta E < 0$ for a bad move (the value decreased)
+- High temperature $T$: $e^{\\Delta E / T} ≈ 1$, so bad moves are usually accepted (free exploration)
+- Low temperature $T → 0$: $e^{\\Delta E / T} → 0$, so bad moves are almost always rejected (the search settles into a peak)
 
-### The Convergence Guarantee
-If the **annealing schedule** (how fast T decreases) is slow enough:
-> *"Simulated annealing is guaranteed to find the global optimum with probability approaching 1."* — R&N
+**Worked numbers** (for a move that decreases the value):
 
-**In practice**: The schedule must be "slow enough" — but this can require exponential time. Engineers use heuristic schedules (geometric cooling: $T_{t+1} = \\alpha \\cdot T_t$, $\\alpha \\approx 0.99$).`,
+| ΔE | T | P(accept) | Interpretation |
+|----|---|-----------|----------------|
+| −1 | 1 | e⁻¹ ≈ 0.37 | Small drop, early stage: accepted often |
+| −5 | 1 | e⁻⁵ ≈ 0.007 | Large drop, early stage: rarely accepted |
+| −1 | 0.1 | e⁻¹⁰ ≈ 0.00005 | Small drop, late stage: essentially never accepted |
+
+The acceptance depends on both the size of the drop and the current temperature. Early on, the search can afford to make mistakes; late in the run, it behaves almost like hill climbing.
+
+### Cooling Schedules and Convergence
+The theory says that if the temperature decreases slowly enough (in theory, logarithmically in the time step), simulated annealing converges to a global optimum with probability approaching 1. In practice, that schedule is far too slow to be useful. Engineers instead use faster heuristic schedules, such as geometric cooling $T_{t+1} = \\alpha \\cdot T_t$ with $\\alpha$ around 0.95 to 0.99, and accept a very good answer rather than a provably optimal one.
+
+### Common Misconceptions
+- **"Simulated annealing is just random search."** It is not. Improvements are always accepted, and bad moves are accepted only with a probability that depends on how bad they are.
+- **"Temperature is the step size."** Temperature controls how often bad moves are accepted. The size of each step is set by the neighbor function.`,
         mathBlock: {
           formula: 'P(accept) = e^{ΔE/T}',
           explanation: 'Boltzmann acceptance probability. ΔE = new value − current value (negative for bad moves). T = temperature. As T→0, only improvements are accepted.',
         },
         keyPoints: [
-          'SA randomly selects neighbors (not the best) — this allows exploring bad directions',
-          'High T: almost random walk; Low T: almost hill climbing',
-          'The key: T decreases over time → starts exploring, ends exploiting',
-          'Convergence theorem requires T to decrease logarithmically (very slowly in theory)',
-          'Used in VLSI chip design, scheduling, protein folding in practice',
+          'SA picks a random neighbor, not the best one, which allows exploring downhill directions',
+          'High T: close to a random walk. Low T: close to hill climbing',
+          'The temperature decreases over time, so the search explores early and exploits later',
+          'The convergence guarantee needs a very slow (in theory, logarithmic) cooling schedule',
+          'Used in VLSI chip design, scheduling, and protein folding in practice',
         ],
-        examTip: 'Simulated Annealing convergence: guaranteed in theory but requires exponential time. In practice, use geometric cooling schedule with many restarts.',
+        examTip: 'Simulated annealing is guaranteed to converge to a global optimum only under a very slow cooling schedule, which is impractical. In practice, use a geometric cooling schedule and accept a near-optimal answer.',
       },
       {
         stepNumber: 3,
@@ -1130,8 +1156,13 @@ If the **annealing schedule** (how fast T decreases) is slow enough:
         visualType: 'genetic_algo',
         bookCitation: 'AIMA 3rd Ed., pp. 129–133',
         contentMarkdown: `### Inspiration: Darwinian Evolution
-Genetic Algorithms (GAs) simulate the mechanism of natural evolution:
-- **Population** of candidates → selection of the fittest → reproduction with variation → next generation
+Genetic Algorithms (GAs) simulate natural evolution:
+- A **population** of candidate solutions is evaluated for **fitness**.
+- Fitter individuals are more likely to **reproduce**.
+- Offspring combine parts of their parents (**crossover**) and occasionally change at random (**mutation**).
+- The new generation replaces the old one, and the cycle repeats.
+
+Unlike hill climbing and simulated annealing, a GA tracks a **whole population** of states at once.
 
 ### The GA Algorithm
 \`\`\`
@@ -1150,35 +1181,61 @@ function GENETIC-ALGORITHM(population, FITNESS-FN) → individual
   return BEST-INDIVIDUAL(population)
 \`\`\`
 
-### Example: 8-Queens Encoding
-Encode 8-queens board as an 8-digit string: "24748552"
-- Digit $i$ = row of queen in column $i$
-- Fitness function = number of NON-attacking queen pairs (max 28)
+### Worked Example: 8-Queens
+**Encoding.** Represent a board as an 8-digit string. Digit $i$ is the row of the queen in column $i$. For example, "24748552" places queens at rows 2, 4, 7, 4, 8, 5, 5, 2 in columns 1 to 8.
 
-**Selection**: "24748552" (fitness=24) is 3× more likely chosen than "32752411" (fitness=8)
+**Fitness.** Count the pairs of queens that do **not** attack each other. There are $\\binom{8}{2} = 28$ pairs, so the maximum fitness is 28, reached by a valid solution. Two queens attack each other if they share a row or a diagonal.
+
+| String | Attacking pairs | Fitness |
+|--------|-----------------|---------|
+| 24748552 | 4 | **24** |
+| 32752411 | 5 | **23** |
+
+For "24748552", the attacking pairs are: queens 1 and 8 (row 2), queens 2 and 4 (row 4), queens 3 and 8 (diagonal), and queens 6 and 7 (row 5).
+
+**Selection.** Parents are chosen with probability proportional to fitness:
+
+$$P(\\text{choose } s) = \\frac{\\text{fitness}(s)}{\\sum_{t \\in \\text{population}} \\text{fitness}(t)}$$
+
+So "24748552" is chosen with a ratio of 24 : 23 (about 51% to 49%) against "32752411". It is **not** three times more likely. Selection pressure depends on how different the fitness values are relative to the total. Here the two candidates are nearly equal, so both are likely to be chosen.
 
 **Crossover** at position 5:
 - Parent 1: "24748|552"
-- Parent 2: "32752|411"  
-- Child: "24748411"
+- Parent 2: "32752|411"
+- Child: "24748411" (first five digits from parent 1, last three from parent 2)
 
-**Mutation** (flip one digit): "24748411" → "24748**3**11" (random change to 3)
+**Mutation** (change digit 6 from 4 to 3): "24748411" → "24748**3**11"
 
-### What Makes GAs Powerful?
-1. **Schema Theorem**: Short, high-fitness substrings ("building blocks") survive and combine → complex structures emerge
-2. **Implicit Parallelism**: A population of k individuals evaluates exponentially many schemas simultaneously
-3. **Global Search**: Multiple simultaneous local searches with recombination avoids getting stuck
+### Why Crossover Can Help
+Crossover is useful when the parents are good in **different** parts. The child can inherit a good arrangement from one parent and a good arrangement from the other. This is how a GA can move between regions that a single hill climber would struggle to connect.
+
+Crossover is not a guarantee of improvement. The child above has fitness 22, lower than either parent. That is normal: most offspring are worse, and selection keeps the better ones over time.
+
+### Why Mutation Matters
+Without mutation, the population can lose genetic variety. Once every individual shares the same digit in some position, crossover can no longer produce that digit in a different form. Mutation reintroduces variety so the search can keep exploring.
+
+### What Makes GAs Powerful (and What Is Still Debated)
+1. **Schema theorem (Holland)**: an argument that short, high-fitness patterns ("building blocks") tend to spread through the population. It is a useful heuristic explanation, not a guarantee.
+2. **Implicit parallelism**: a population of $k$ individuals samples many building blocks at once.
+3. **Global search**: several searches run at the same time and can exchange information through crossover.
+
+The effectiveness of a GA depends heavily on the **encoding**. If good solutions are not built from meaningful pieces that crossover can combine, the GA behaves more like random search.
 
 ### GAs vs. Simulated Annealing
-- SA explores one trajectory; GA explores multiple simultaneously
-- SA: escape local optima with random bad moves; GA: escape with crossover (combining good pieces from different regions)
-- GA needs encoding, fitness function; SA needs neighbors, ΔE`,
+- SA follows one trajectory; a GA explores many at once.
+- SA escapes local optima by accepting random bad moves; a GA escapes by recombining parts of different solutions.
+- A GA needs an encoding and a fitness function; SA needs a neighbor function and a way to compare states (ΔE).
+
+### Common Misconceptions
+- **"GAs always beat other methods."** No single method wins on every problem.
+- **"Population size should be as large as possible."** Larger populations explore more but cost more per generation. Common rules of thumb fall in the range of 100 to 1000, depending on the problem.
+- **"Crossover always produces better children."** Most children are worse. Selection, not crossover alone, drives improvement.`,
         keyPoints: [
-          'Representation: states encoded as strings (bit strings, real numbers)',
-          'Selection: probability of reproduction ∝ fitness',
-          'Crossover: child inherits "genes" from both parents at random split point',
-          'Mutation: small random changes prevent premature convergence',
-          'Population size: typically 100–1000; too small = premature convergence; too large = slow',
+          'Representation: states are encoded as strings (bit strings, digit strings, or real numbers)',
+          'Selection: probability of reproduction is proportional to fitness, so close fitness values give nearly equal chances',
+          'Crossover: the child inherits parts of its parents at a split point',
+          'Mutation: small random changes restore diversity and prevent premature convergence',
+          'Population size: too small leads to premature convergence; too large is slow per generation',
         ],
         connectedTo: [
           {
@@ -1197,62 +1254,79 @@ Encode 8-queens board as an 8-digit string: "24748552"
         visualType: 'belief_state',
         bookCitation: 'AIMA 3rd Ed., pp. 136–149',
         contentMarkdown: `### The Partial Observability Problem
-In Chapters 3, the agent always knew its exact state. Now: **sensors don't tell you everything**.
+In Chapter 3, the agent always knew its exact state. Now the agent's **sensors do not reveal everything**. The agent must reason about the set of states it might be in.
 
 ### The Vacuum World with No Sensors
-Physical states: 8 possible configurations (2 rooms × 2 cleanliness each × 2 positions):
-- Sensorless agent doesn't know if it's in Room A or B, or which rooms are dirty
+Physical states: 8 possible configurations (2 rooms × 2 cleanliness values each × 2 agent positions).
 
-**Belief State** $b$: a **set** of physical states the agent might currently be in.
+A sensorless agent does not know whether it is in Room A or Room B, or which rooms are dirty.
 
-Initial belief state (no sensors): $b_0 = \\{1, 2, 3, 4, 5, 6, 7, 8\\}$ — could be anywhere!
+**Belief state** $b$: a **set** of physical states the agent might currently be in.
+
+Initial belief state (no sensors): $b_0 = \\{1, 2, 3, 4, 5, 6, 7, 8\\}$. The agent could be in any of them.
 
 ### Belief State Updates
-When agent takes action $a$ and observes $o$:
+When the agent takes action $a$ and receives observation $o$, the belief state is updated in two steps:
 
-**Step 1 — Predict** (action effect on belief state):
+**Step 1 — Predict** (apply the action to every state in the belief):
 $$b' = \\text{PREDICT}(b, a) = \\{s' : s' = \\text{Result}(s, a), s \\in b\\}$$
 
-**Step 2 — Update** (filter by observation):
+**Step 2 — Update** (keep only the states consistent with the observation):
 $$b'' = \\text{UPDATE}(b', o) = \\{s' \\in b' : o = \\text{PERCEPT}(s')\\}$$
 
+If the agent has no sensors, the update step does nothing: every state produces the same (empty) percept, so the belief state only grows or shrinks through prediction.
+
 ### Sensorless (Conformant) Planning Example
-Can we reach the goal (all clean) with NO sensors at all?
+Can we reach the goal (all clean) with no sensors at all?
 
 Starting from $b_0 = \\{1,2,3,4,5,6,7,8\\}$:
 
 | Action | Belief State Before | Belief State After |
 |--------|---------------------|---------------------|
-| Go Right | {1..8} | {2,4,6,8} — now in Room B |
-| Suck | {2,4,6,8} | {4,8} — Room B is clean |
-| Go Left | {4,8} | {3,7} — now in Room A |
-| Suck | {3,7} | {7} — Room A is clean! |
+| Go Right | {1..8} | {2,4,6,8}: the agent is now certainly in Room B |
+| Suck | {2,4,6,8} | {4,8}: Room B is clean in every remaining state |
+| Go Left | {4,8} | {3,7}: the agent is now certainly in Room A |
+| Suck | {3,7} | {7}: Room A is clean |
 
-$b = \\{7\\}$ is our goal! State 7 = "both clean, agent in A".
+The final belief $\\{7\\}$ contains only the goal state (both rooms clean, agent in A). So the plan works **no matter which state the agent started in**.
 
-**Conformant Plan**: \`[Right, Suck, Left, Suck]\` works regardless of initial state — zero sensors needed!
+**Conformant plan**: \`[Right, Suck, Left, Suck]\`. It needs no sensors at all.
 
-### The Power of Belief State Search
-Key insight: **We can treat the belief state as a single "super-state"** and apply standard search algorithms to the belief space!
-- The belief space has $2^N$ states (N = number of physical states)
-- Requires search algorithms (BFS, A*) over this exponentially large space
-- Chapter 15 upgrades this: instead of SET of possible states, use PROBABILITY DISTRIBUTION (Bayesian filtering)`,
+### Reading the Table: Why the Plan Works
+The key idea is that a plan must succeed for **every** state in the current belief, not just one. The agent never learns which state it is in, so it can only rely on actions whose outcomes are guaranteed for the whole set.
+
+A plan that works for one starting state may fail for another, which is why the belief state must be tracked across all possibilities.
+
+### The Power of Belief-State Search
+We can treat the belief state as a single "super-state" and apply standard search algorithms (BFS, A*) to the **belief space**.
+
+- A belief space with $N$ physical states has up to $2^N$ belief states (every subset of the physical states).
+- That is why belief-state search is hard: the space grows exponentially.
+- Chapter 15 replaces the set of possible states with a **probability distribution** over states (Bayesian filtering). The update rule becomes probabilistic instead of set-based.
+
+### Contingency Planning
+When the agent can sense during execution, it does not need one fixed sequence. It can choose the next action depending on the percept it receives. This produces a **contingency plan**, often shorter and more reliable than a conformant plan that must work for every case.
+
+### Common Misconceptions
+- **"A belief state is a probability distribution."** In this chapter it is only a set. Probabilities come in Chapter 15.
+- **"No sensors means the agent acts randomly."** The agent acts deliberately. It simply plans for every state it might be in.
+- **"Each action must work from the start state."** The action must work from every state in the *current belief state*, which changes after each action.`,
         mathBlock: {
           formula: "b'' = UPDATE(PREDICT(b, a), o)",
-          explanation: "Two-step belief update: Predict expands belief state by action effects; Update shrinks it by filtering states inconsistent with observation o.",
+          explanation: "Two-step belief update: Predict expands the belief state by the action's effects; Update shrinks it by filtering out states that are inconsistent with observation o.",
         },
         keyPoints: [
-          'Belief state = set of physical states agent believes it could be in',
-          'Size: physical state space N → belief space 2^N (exponential!)',
-          'Conformant planning: find action sequence that works in ALL belief states (no sensors)',
+          'Belief state = the set of physical states the agent believes it could be in',
+          'Size: N physical states → up to 2^N belief states (exponential)',
+          'Conformant planning: find an action sequence that works for every state in the belief (no sensors)',
           'Contingency planning: actions depend on observations during execution',
-          'Online search: agent discovers environment as it acts (exploration)',
+          'Online search: the agent discovers the environment as it acts',
         ],
         connectedTo: [
           {
             chapterId: 15,
             chapterTitle: 'Probabilistic Reasoning over Time',
-            relationship: 'HMMs upgrade belief states from "set of possible states" (Boolean) to probability distributions P(State) — Bayesian filtering is the probabilistic version of belief state update.',
+            relationship: 'HMMs upgrade belief states from "set of possible states" (Boolean) to probability distributions P(State). Bayesian filtering is the probabilistic version of belief-state update.',
           },
         ],
       },
@@ -1297,6 +1371,7 @@ Key insight: **We can treat the belief state as a single "super-state"** and app
       { front: 'Three failure modes of Hill Climbing?', back: '1. Local Maxima: better than all neighbors but not global optimum\n2. Ridges: series of local maxima\n3. Plateaux/Shoulders: flat region with no gradient' },
       { front: 'Simulated Annealing acceptance formula?', back: 'P(accept bad move) = exp(ΔE / T)\nΔE = new_value − current_value (negative for bad move)\nT = temperature (decreases over time)\nHigh T ≈ random walk; Low T ≈ hill climbing' },
       { front: 'What is a belief state?', back: 'A SET of physical states the agent believes it might currently be in, given its observation history. Used when the environment is partially observable. If N physical states, 2^N possible belief states.' },
+      { front: 'Fitness of 24748552 in 8-queens?', back: '24 non-attacking pairs (4 attacking pairs out of 28). 32752411 has fitness 23. Selection is roughly 24:23, not 3:1.' },
     ],
   },
 
