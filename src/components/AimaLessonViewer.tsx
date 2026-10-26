@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, ArrowRight, ArrowLeft, BookOpen, Lightbulb, Link2, Sparkles, AlertCircle, Play, Check, Lock, ChevronRight, ChevronDown, Info, Compass, HelpCircle, ArrowLeftCircle, Award, Maximize2, Minimize2, Layers, BookmarkCheck, Code2, Copy, CheckCheck, Scale, GraduationCap, Pin, Plus, Trash2, Edit3, StickyNote, Bookmark, RefreshCw, Terminal, PlayCircle, Sliders, ExternalLink, CheckCircle2, XCircle } from 'lucide-react';
+import { X, ArrowRight, ArrowLeft, BookOpen, Lightbulb, Link2, Sparkles, AlertCircle, Play, Check, Lock, ChevronRight, ChevronDown, Info, Compass, HelpCircle, ArrowLeftCircle, Award, Maximize2, Minimize2, Layers, BookmarkCheck, Code2, Copy, CheckCheck, Scale, GraduationCap, Pin, Plus, Trash2, Edit3, StickyNote, Bookmark, RefreshCw, Terminal, PlayCircle, Sliders, ExternalLink, CheckCircle2, XCircle, Calculator } from 'lucide-react';
 import { AIMA_DETAILED_LESSONS, LessonStep } from '../data/aimaLessonsData';
 import { AIMA_PARTS } from '../data/aimaBookData';
 import { getCanonicalLesson, UNIVERSITY_ENRICHMENTS, FormalProof, WorkedProblem, PythonImplementation } from '../data/universityLessonsSupplement';
@@ -9,6 +9,7 @@ import { useProgress } from '../context/ProgressContext';
 import { useNotes } from '../context/NotesContext';
 import { renderUniversityMarkdown, renderInlineMathAndStyles } from '../utils/mathRenderer';
 import { PdfViewerModal } from './PdfViewerModal';
+import { getStepDeepDive } from '../data/deepDive';
 import { getCompanionData } from '../data/companionBooksEnrichment';
 import { useTheme } from '../context/ThemeContext';
 
@@ -43,6 +44,7 @@ export const AimaLessonViewer: React.FC<AimaLessonViewerProps> = ({
   const [isChapterMenuOpen, setIsChapterMenuOpen] = useState<boolean>(false);
   const [isOutlineOpen, setIsOutlineOpen] = useState<boolean>(false);
   const [isNotesDrawerOpen, setIsNotesDrawerOpen] = useState<boolean>(false);
+  const [openDeepDiveQa, setOpenDeepDiveQa] = useState<Record<string, boolean>>({});
 
   // Chapter notes & quick note taking state
   const chapterNotes = getNotesByChapter(chapterId);
@@ -95,6 +97,7 @@ export const AimaLessonViewer: React.FC<AimaLessonViewerProps> = ({
   const lesson = getCanonicalLesson(chapterId);
   const steps = lesson.steps;
   const currentStep: LessonStep = steps[currentStepIndex] || steps[0];
+  const deepDive = getStepDeepDive(chapterId, currentStep.stepNumber);
 
   const progressPercent = ((currentStepIndex + 1) / steps.length) * 100;
 
@@ -1141,6 +1144,95 @@ export const AimaLessonViewer: React.FC<AimaLessonViewerProps> = ({
                           </li>
                         ))}
                       </ul>
+                    </div>
+                  )}
+
+                  {/* DEEP-DIVE Q&A: question-first active recall, answers revealed on demand */}
+                  {deepDive && deepDive.qa.length > 0 && (
+                    <div
+                      style={{
+                        background: 'var(--quest-surface-subtle)',
+                        border: '1px solid var(--quest-border)',
+                        padding: '18px 20px',
+                        borderRadius: '16px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '10px',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: 800, color: 'var(--quest-text-primary)' }}>
+                        <HelpCircle size={18} color="var(--quest-text-muted)" />
+                        <span>DEEP-DIVE Q&A · TEST YOURSELF BEFORE YOU READ THE ANSWER</span>
+                      </div>
+                      {deepDive.qa.map((item, qIdx) => {
+                        const qaKey = `${chapterId}-${currentStep.stepNumber}-${qIdx}`;
+                        const isQaOpen = !!openDeepDiveQa[qaKey];
+                        return (
+                          <div key={qaKey} style={{ border: '1px solid var(--quest-border)', borderRadius: '12px', overflow: 'hidden' }}>
+                            <button
+                              onClick={() => {
+                                soundFX.playClick();
+                                setOpenDeepDiveQa((prev) => ({ ...prev, [qaKey]: !prev[qaKey] }));
+                              }}
+                              aria-expanded={isQaOpen}
+                              style={{
+                                width: '100%',
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                gap: '10px',
+                                padding: '12px 14px',
+                                background: 'transparent',
+                                border: 'none',
+                                cursor: 'pointer',
+                                textAlign: 'left',
+                                color: 'var(--quest-text-primary)',
+                                fontSize: '14.5px',
+                                fontWeight: 700,
+                              }}
+                            >
+                              <span>Q{qIdx + 1}. {item.question}</span>
+                              <ChevronDown size={18} style={{ transform: isQaOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease', flexShrink: 0 }} />
+                            </button>
+                            {isQaOpen && (
+                              <div style={{ padding: '0 16px 14px 16px', fontSize: '14px', color: 'var(--quest-text-primary)', lineHeight: 1.6 }}>
+                                {renderFormattedMarkdown(item.answer)}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* WORKED EXAMPLE: one concrete instance, traced step by step */}
+                  {deepDive?.workedExample && (
+                    <div
+                      style={{
+                        background: 'var(--quest-surface-subtle)',
+                        border: '1px solid var(--quest-border)',
+                        padding: '18px 20px',
+                        borderRadius: '16px',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: 800, color: 'var(--quest-text-primary)', marginBottom: '10px' }}>
+                        <Calculator size={18} color="var(--quest-text-muted)" />
+                        <span>WORKED EXAMPLE · {deepDive.workedExample.title}</span>
+                      </div>
+                      <div style={{ fontSize: '14px', color: 'var(--quest-text-primary)', lineHeight: 1.6, marginBottom: '12px' }}>
+                        {renderFormattedMarkdown(deepDive.workedExample.scenario)}
+                      </div>
+                      <ol style={{ margin: '0 0 12px 0', paddingLeft: '22px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {deepDive.workedExample.walkthrough.map((line, wIdx) => (
+                          <li key={wIdx} style={{ fontSize: '14px', color: 'var(--quest-text-primary)', lineHeight: 1.6 }}>
+                            {renderInlineStyles(line)}
+                          </li>
+                        ))}
+                      </ol>
+                      <div style={{ fontSize: '14px', color: 'var(--quest-text-primary)', lineHeight: 1.5, borderLeft: '3px solid var(--quest-accent-text)', paddingLeft: '12px' }}>
+                        <strong>Takeaway: </strong>
+                        {renderInlineStyles(deepDive.workedExample.takeaway)}
+                      </div>
                     </div>
                   )}
 
