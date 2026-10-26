@@ -13,9 +13,16 @@ import {
   Shield,
   Layers,
   Sparkles,
-  HelpCircle
+  HelpCircle,
+  Home,
+  GraduationCap,
+  Trophy,
+  User,
+  Calculator,
+  Code2
 } from 'lucide-react';
 import { soundFX } from '../utils/soundEffects';
+import { MantiqLogo } from './MantiqLogo';
 
 interface ScholarGuideModalProps {
   isOpen: boolean;
@@ -61,12 +68,11 @@ export const ScholarGuideModal: React.FC<ScholarGuideModalProps> = ({
         className="quest-modal-card"
         style={{
           width: '100%',
-          maxWidth: '820px',
+          maxWidth: '860px',
           maxHeight: '90vh',
           backgroundColor: 'var(--quest-card-bg)',
           borderRadius: '24px',
           border: '1px solid var(--quest-border)',
-          boxShadow: '0 24px 64px rgba(0, 0, 0, 0.28)',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden'
@@ -83,22 +89,20 @@ export const ScholarGuideModal: React.FC<ScholarGuideModalProps> = ({
             background: 'var(--quest-card-bg)'
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
             <div
               style={{
                 width: '42px',
                 height: '42px',
                 borderRadius: '12px',
                 background: '#13211C',
-                color: '#C9F26B',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '20px',
-                border: '1.5px solid rgba(201, 242, 107, 0.3)'
+                border: '1px solid rgba(201, 242, 107, 0.3)'
               }}
             >
-              📖
+              <MantiqLogo size={26} />
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -123,7 +127,7 @@ export const ScholarGuideModal: React.FC<ScholarGuideModalProps> = ({
                     color: '#13211C'
                   }}
                 >
-                  v4.0
+                  AIMA 4th Edition
                 </span>
               </div>
               <p
@@ -134,7 +138,7 @@ export const ScholarGuideModal: React.FC<ScholarGuideModalProps> = ({
                   fontWeight: 500
                 }}
               >
-                App navigation, Russell & Norvig reading curriculum, and interactive labs
+                App navigation, Russell & Norvig reading curriculum, worked examples & interactive labs
               </p>
             </div>
           </div>
@@ -266,28 +270,39 @@ export const ScholarGuideModal: React.FC<ScholarGuideModalProps> = ({
         >
           {/* TAB 1: HOW TO USE MANTIQ */}
           {activeTab === 'usage' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
-              {/* Core Learning Loop Card */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              {/* App Overview Banner */}
               <div
                 style={{
                   padding: '20px',
                   borderRadius: '18px',
-                  background: 'linear-gradient(135deg, rgba(201, 242, 107, 0.16) 0%, rgba(201, 242, 107, 0.04) 100%)',
-                  border: '1.5px solid rgba(201, 242, 107, 0.45)'
+                  background: 'linear-gradient(135deg, rgba(201, 242, 107, 0.15) 0%, rgba(201, 242, 107, 0.04) 100%)',
+                  border: '1.5px solid rgba(201, 242, 107, 0.4)'
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                   <Sparkles size={18} color="#13211C" />
                   <span style={{ fontSize: '14px', fontWeight: 800, color: '#13211C' }}>
-                    The 3-Step Mastery Loop
+                    Welcome to Mantiq
                   </span>
                 </div>
+                <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--quest-text-primary)', lineHeight: 1.6 }}>
+                  Mantiq is an interactive, textbook-grade academic environment built directly around Stuart Russell & Peter Norvig&apos;s standard canon, <em>Artificial Intelligence: A Modern Approach (4th Edition)</em>. It combines deep theoretical reading, interactive algorithm visualizers, active recall exam flashcards, and chapter assessments into a unified study platform.
+                </p>
+              </div>
+
+              {/* The 5 Main App Views */}
+              <div>
+                <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--quest-text-primary)', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Compass size={16} />
+                  Main App Navigation & Sections
+                </div>
+
                 <div
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
-                    gap: '12px',
-                    marginTop: '12px'
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+                    gap: '10px'
                   }}
                 >
                   <div
@@ -298,14 +313,14 @@ export const ScholarGuideModal: React.FC<ScholarGuideModalProps> = ({
                       border: '1px solid var(--quest-border)'
                     }}
                   >
-                    <div style={{ fontSize: '11px', fontWeight: 800, color: '#2563EB', textTransform: 'uppercase' }}>
-                      Step 1 · Read & Digest
-                    </div>
-                    <div style={{ fontSize: '13px', fontWeight: 700, margin: '4px 0 6px', color: 'var(--quest-text-primary)' }}>
-                      Chapter Curriculum
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginBottom: '6px' }}>
+                      <div style={{ width: '24px', height: '24px', borderRadius: '6px', background: '#13211C', color: '#C9F26B', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Home size={13} />
+                      </div>
+                      <span style={{ fontSize: '13px', fontWeight: 800, color: 'var(--quest-text-primary)' }}>1. Home</span>
                     </div>
                     <div style={{ fontSize: '11.5px', color: 'var(--quest-text-secondary)', lineHeight: 1.45 }}>
-                      Read the chapter lessons structured after Russell & Norvig. Study theoretical bounds, agent formulations, and pseudocode.
+                      Your daily study command deck. Features <em>Today&apos;s Focus</em>, quick resume of your current chapter, daily study streak monitor, curriculum progress, and direct access to the 43+ Active Recall Exam Deck.
                     </div>
                   </div>
 
@@ -317,33 +332,149 @@ export const ScholarGuideModal: React.FC<ScholarGuideModalProps> = ({
                       border: '1px solid var(--quest-border)'
                     }}
                   >
-                    <div style={{ fontSize: '11px', fontWeight: 800, color: '#16A34A', textTransform: 'uppercase' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginBottom: '6px' }}>
+                      <div style={{ width: '24px', height: '24px', borderRadius: '6px', background: '#13211C', color: '#C9F26B', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <BookOpen size={13} />
+                      </div>
+                      <span style={{ fontSize: '13px', fontWeight: 800, color: 'var(--quest-text-primary)' }}>2. Chapters</span>
+                    </div>
+                    <div style={{ fontSize: '11.5px', color: 'var(--quest-text-secondary)', lineHeight: 1.45 }}>
+                      The full sequential academic curriculum of 27 chapters across 7 parts. View unlocked chapters, completion percentage, key learning objectives, and launch directly into lesson reading or chapter assessments.
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      background: 'var(--quest-card-bg)',
+                      padding: '14px',
+                      borderRadius: '14px',
+                      border: '1px solid var(--quest-border)'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginBottom: '6px' }}>
+                      <div style={{ width: '24px', height: '24px', borderRadius: '6px', background: '#13211C', color: '#C9F26B', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <GraduationCap size={13} />
+                      </div>
+                      <span style={{ fontSize: '13px', fontWeight: 800, color: 'var(--quest-text-primary)' }}>3. Lessons</span>
+                    </div>
+                    <div style={{ fontSize: '11.5px', color: 'var(--quest-text-secondary)', lineHeight: 1.45 }}>
+                      Distraction-free academic reading mode with KaTeX math rendering, active recall checkpoints, interactive algorithm visualizers, and step-by-step worked numerical examples with revealable solutions.
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      background: 'var(--quest-card-bg)',
+                      padding: '14px',
+                      borderRadius: '14px',
+                      border: '1px solid var(--quest-border)'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginBottom: '6px' }}>
+                      <div style={{ width: '24px', height: '24px', borderRadius: '6px', background: '#13211C', color: '#C9F26B', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Trophy size={13} />
+                      </div>
+                      <span style={{ fontSize: '13px', fontWeight: 800, color: 'var(--quest-text-primary)' }}>4. Ranks</span>
+                    </div>
+                    <div style={{ fontSize: '11.5px', color: 'var(--quest-text-secondary)', lineHeight: 1.45 }}>
+                      Academic cohort leaderboard and scholar rank progression. Advance through tiers (Novice, Apprentice, Scholar, Master, Architect) as you earn XP through active study and quiz completion.
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      background: 'var(--quest-card-bg)',
+                      padding: '14px',
+                      borderRadius: '14px',
+                      border: '1px solid var(--quest-border)'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginBottom: '6px' }}>
+                      <div style={{ width: '24px', height: '24px', borderRadius: '6px', background: '#13211C', color: '#C9F26B', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <User size={13} />
+                      </div>
+                      <span style={{ fontSize: '13px', fontWeight: 800, color: 'var(--quest-text-primary)' }}>5. Profile</span>
+                    </div>
+                    <div style={{ fontSize: '11.5px', color: 'var(--quest-text-secondary)', lineHeight: 1.45 }}>
+                      Your academic dossier. Tracks daily study streaks, target exam date countdown, earned badges, topic mastery scores, and offline local-storage backup synchronization.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* The 3-Step Academic Mastery Loop */}
+              <div
+                style={{
+                  padding: '18px 20px',
+                  borderRadius: '16px',
+                  background: 'var(--quest-card-bg)',
+                  border: '1px solid var(--quest-border)'
+                }}
+              >
+                <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--quest-text-primary)', marginBottom: '10px' }}>
+                  The 3-Step Mastery Loop
+                </div>
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+                    gap: '12px'
+                  }}
+                >
+                  <div
+                    style={{
+                      background: 'var(--quest-bg)',
+                      padding: '12px 14px',
+                      borderRadius: '12px',
+                      border: '1px solid var(--quest-border)'
+                    }}
+                  >
+                    <div style={{ fontSize: '10.5px', fontWeight: 800, color: '#2563EB', textTransform: 'uppercase' }}>
+                      Step 1 · Read & Comprehend
+                    </div>
+                    <div style={{ fontSize: '12.5px', fontWeight: 700, margin: '3px 0 5px', color: 'var(--quest-text-primary)' }}>
+                      Theory & Deep Dives
+                    </div>
+                    <div style={{ fontSize: '11px', color: 'var(--quest-text-secondary)', lineHeight: 1.45 }}>
+                      Study the chapter text, mathematical theorems, and worked numerical examples. Test yourself on inline active recall checkpoints.
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      background: 'var(--quest-bg)',
+                      padding: '12px 14px',
+                      borderRadius: '12px',
+                      border: '1px solid var(--quest-border)'
+                    }}
+                  >
+                    <div style={{ fontSize: '10.5px', fontWeight: 800, color: '#16A34A', textTransform: 'uppercase' }}>
                       Step 2 · Experiment
                     </div>
-                    <div style={{ fontSize: '13px', fontWeight: 700, margin: '4px 0 6px', color: 'var(--quest-text-primary)' }}>
+                    <div style={{ fontSize: '12.5px', fontWeight: 700, margin: '3px 0 5px', color: 'var(--quest-text-primary)' }}>
                       Interactive Labs
                     </div>
-                    <div style={{ fontSize: '11.5px', color: 'var(--quest-text-secondary)', lineHeight: 1.45 }}>
-                      Step through algorithm visualizers (A* search, Minimax pruning, Value Iteration) to build concrete mathematical intuition.
+                    <div style={{ fontSize: '11px', color: 'var(--quest-text-secondary)', lineHeight: 1.45 }}>
+                      Step through algorithm visualizers (A* pathfinding, Minimax &alpha;-&beta; pruning, Bayes net propagation, Value Iteration) to verify intuition.
                     </div>
                   </div>
 
                   <div
                     style={{
-                      background: 'var(--quest-card-bg)',
-                      padding: '14px',
-                      borderRadius: '14px',
+                      background: 'var(--quest-bg)',
+                      padding: '12px 14px',
+                      borderRadius: '12px',
                       border: '1px solid var(--quest-border)'
                     }}
                   >
-                    <div style={{ fontSize: '11px', fontWeight: 800, color: '#EA580C', textTransform: 'uppercase' }}>
-                      Step 3 · Midterm Assessment
+                    <div style={{ fontSize: '10.5px', fontWeight: 800, color: '#EA580C', textTransform: 'uppercase' }}>
+                      Step 3 · Assessment
                     </div>
-                    <div style={{ fontSize: '13px', fontWeight: 700, margin: '4px 0 6px', color: 'var(--quest-text-primary)' }}>
-                      Pass with 65%+
+                    <div style={{ fontSize: '12.5px', fontWeight: 700, margin: '3px 0 5px', color: 'var(--quest-text-primary)' }}>
+                      Pass with &ge; 65%
                     </div>
-                    <div style={{ fontSize: '11.5px', color: 'var(--quest-text-secondary)', lineHeight: 1.45 }}>
-                      Take the chapter quiz. Scoring 65% or higher unlocks the next chapter in your curriculum and awards mastery XP.
+                    <div style={{ fontSize: '11px', color: 'var(--quest-text-secondary)', lineHeight: 1.45 }}>
+                      Take the chapter quiz. Scoring 65% or higher unlocks the next chapter, awards mastery XP, and records verified chapter mastery.
                     </div>
                   </div>
                 </div>
@@ -369,21 +500,18 @@ export const ScholarGuideModal: React.FC<ScholarGuideModalProps> = ({
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                     <Flame size={18} color="#EA580C" />
                     <span style={{ fontSize: '13.5px', fontWeight: 800, color: 'var(--quest-text-primary)' }}>
-                      How Streaks Are Recorded
+                      Verified Study Streaks
                     </span>
                   </div>
                   <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '12px', color: 'var(--quest-text-secondary)', lineHeight: 1.6 }}>
                     <li>
-                      <strong>Earned Through Learning:</strong> Streaks advance only when you complete active study (reading a chapter, completing steps, passing quizzes, or daily challenges).
+                      <strong>Earned Through Active Study:</strong> Streaks advance only when you engage in actual learning (reading sections, completing interactive steps, or taking quizzes).
                     </li>
                     <li>
-                      <strong>Zero Blind Increments:</strong> Simply opening or refreshing the app will <em>never</em> mark or increase your streak.
+                      <strong>Zero Blind Increments:</strong> Simply refreshing or opening the app never artificially increases your streak count.
                     </li>
                     <li>
-                      <strong>Missing Days:</strong> If 2 or more consecutive days pass without studying, your streak resets to 0 (unless protected by a Streak Freeze).
-                    </li>
-                    <li>
-                      <strong>Streak Freeze:</strong> Shields your streak for 1 day of absence when active.
+                      <strong>Reset Rule:</strong> If 2 or more consecutive days elapse without study, the streak resets to 0 (unless shielded by a Streak Freeze).
                     </li>
                   </ul>
                 </div>
@@ -400,24 +528,24 @@ export const ScholarGuideModal: React.FC<ScholarGuideModalProps> = ({
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                     <Lock size={18} color="#13211C" />
                     <span style={{ fontSize: '13.5px', fontWeight: 800, color: 'var(--quest-text-primary)' }}>
-                      Chapter Progression & Unlocking
+                      Academic Unlocking & Assessments
                     </span>
                   </div>
                   <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '12px', color: 'var(--quest-text-secondary)', lineHeight: 1.6 }}>
                     <li>
-                      <strong>Sequential Academic Path:</strong> Chapter 1 is unlocked by default. Subsequent chapters unlock once the previous chapter's assessment is passed.
+                      <strong>Sequential Progression:</strong> Chapter 1 is unlocked for everyone. Subsequent chapters unlock upon passing the previous chapter&apos;s quiz (&ge; 65%).
                     </li>
                     <li>
-                      <strong>Exam Quizzes Never Auto-Pass:</strong> Quizzes only display as passed when you take the quiz and achieve a passing score (&ge; 65%).
+                      <strong>Authentic Pass Marks:</strong> Assessments provide Socratic feedback explaining why distractors are wrong and why correct choices are valid.
                     </li>
                     <li>
-                      <strong>Retakes Allowed:</strong> You can retake any assessment to improve your score, sharpen concepts, or review Socratic feedback.
+                      <strong>Unlimited Retakes:</strong> You can retake any assessment to review missed concepts, improve your score, or reinforce memory before university exams.
                     </li>
                   </ul>
                 </div>
               </div>
 
-              {/* Scholar Stats: XP, Ranks, Hearts */}
+              {/* Scholar Stats & Shortcuts */}
               <div
                 style={{
                   padding: '16px',
@@ -435,48 +563,44 @@ export const ScholarGuideModal: React.FC<ScholarGuideModalProps> = ({
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <Award size={16} color="#C9F26B" fill="#13211C" />
                     <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--quest-text-primary)' }}>
-                      <strong>XP & Levels:</strong> Earn 350 XP per scholar tier
+                      <strong>XP Tiers:</strong> Earn 350 XP per scholar promotion level
                     </span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <Shield size={16} color="#16A34A" />
+                    <CheckCircle2 size={16} color="#16A34A" />
                     <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--quest-text-primary)' }}>
-                      <strong>5 Hearts:</strong> Conserved through correct answers
-                    </span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <Zap size={16} color="#EAB308" />
-                    <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--quest-text-primary)' }}>
-                      <strong>Gems & Chests:</strong> Rewarded on milestone chapters
+                      <strong>Pass Mark:</strong> 65% minimum required for chapter mastery
                     </span>
                   </div>
                 </div>
 
-                {onNavigateToTab && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      soundFX.playClick();
-                      onClose();
-                      onNavigateToTab('learn');
-                    }}
-                    style={{
-                      padding: '7px 14px',
-                      borderRadius: '10px',
-                      background: '#13211C',
-                      color: '#C9F26B',
-                      border: 'none',
-                      fontSize: '12px',
-                      fontWeight: 800,
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px'
-                    }}
-                  >
-                    Go to Chapters <ArrowRight size={13} />
-                  </button>
-                )}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  {onNavigateToTab && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        soundFX.playClick();
+                        onClose();
+                        onNavigateToTab('learn');
+                      }}
+                      style={{
+                        padding: '7px 14px',
+                        borderRadius: '10px',
+                        background: '#13211C',
+                        color: '#C9F26B',
+                        border: 'none',
+                        fontSize: '12px',
+                        fontWeight: 800,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                      }}
+                    >
+                      Go to Chapters <ArrowRight size={13} />
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           )}
@@ -512,10 +636,10 @@ export const ScholarGuideModal: React.FC<ScholarGuideModalProps> = ({
                         letterSpacing: '0.04em'
                       }}
                     >
-                      FOUNDATIONAL CANON
+                      GLOBAL CANON
                     </span>
                     <span style={{ fontSize: '12px', color: '#C9F26B', fontWeight: 700 }}>
-                      Global Academic Standard
+                      Academic Standard (Used in 1,500+ Universities)
                     </span>
                   </div>
                   <h3 style={{ fontSize: '18px', fontWeight: 800, margin: '4px 0', color: '#F3F5EF' }}>
@@ -537,7 +661,73 @@ export const ScholarGuideModal: React.FC<ScholarGuideModalProps> = ({
                     fontWeight: 700
                   }}
                 >
-                  28 Chapters · 7 Fundamental Parts
+                  27 Chapters · 7 Fundamental Parts
+                </div>
+              </div>
+
+              {/* Deep-Dive Enhancements Overview */}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+                  gap: '12px'
+                }}
+              >
+                <div
+                  style={{
+                    padding: '14px',
+                    borderRadius: '14px',
+                    border: '1px solid var(--quest-border)',
+                    background: 'var(--quest-card-bg)'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                    <Calculator size={16} color="#13211C" />
+                    <span style={{ fontSize: '12.5px', fontWeight: 800, color: 'var(--quest-text-primary)' }}>
+                      Worked Numerical Examples
+                    </span>
+                  </div>
+                  <p style={{ fontSize: '11.5px', color: 'var(--quest-text-secondary)', margin: 0, lineHeight: 1.45 }}>
+                    Every core chapter features practical numerical problems with full step-by-step mathematical solutions (e.g. A* Manhattan path costs, Minimax branch pruning, Bayes posterior calculations).
+                  </p>
+                </div>
+
+                <div
+                  style={{
+                    padding: '14px',
+                    borderRadius: '14px',
+                    border: '1px solid var(--quest-border)',
+                    background: 'var(--quest-card-bg)'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                    <CheckCircle2 size={16} color="#16A34A" />
+                    <span style={{ fontSize: '12.5px', fontWeight: 800, color: 'var(--quest-text-primary)' }}>
+                      Active Recall Checkpoints
+                    </span>
+                  </div>
+                  <p style={{ fontSize: '11.5px', color: 'var(--quest-text-secondary)', margin: 0, lineHeight: 1.45 }}>
+                    Embedded throughout lesson reading to reinforce retention and test critical concepts before attempting the final chapter quiz.
+                  </p>
+                </div>
+
+                <div
+                  style={{
+                    padding: '14px',
+                    borderRadius: '14px',
+                    border: '1px solid var(--quest-border)',
+                    background: 'var(--quest-card-bg)'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                    <Code2 size={16} color="#2563EB" />
+                    <span style={{ fontSize: '12.5px', fontWeight: 800, color: 'var(--quest-text-primary)' }}>
+                      KaTeX Math & Pseudocode
+                    </span>
+                  </div>
+                  <p style={{ fontSize: '11.5px', color: 'var(--quest-text-secondary)', margin: 0, lineHeight: 1.45 }}>
+                    Full mathematical definitions for admissibility, consistency, Bellman equations, and exact pseudocode from the textbook.
+                  </p>
                 </div>
               </div>
 
@@ -559,37 +749,37 @@ export const ScholarGuideModal: React.FC<ScholarGuideModalProps> = ({
                     {
                       part: 'Part I · Artificial Intelligence',
                       chapters: 'Chapters 1 - 2',
-                      desc: 'Foundations of rationality, history of AI, PEAS task environment framework, agent architectures (simple reflex, model-based, goal-based, utility-based).'
+                      desc: 'Foundations of rationality, history of AI, PEAS task environment framework, and 5 agent architectures (simple reflex, model-based, goal-based, utility-based, learning agents).'
                     },
                     {
                       part: 'Part II · Problem-Solving & Search',
                       chapters: 'Chapters 3 - 6',
-                      desc: 'State-space search, uninformed search (BFS, DFS, IDS), informed search (A* admissibility & consistency proofs), Minimax with Alpha-Beta pruning, CSPs.'
+                      desc: 'State-space search, uninformed search (BFS, DFS, IDS), informed search (A* admissibility & consistency proofs), Minimax with Alpha-Beta pruning, and Constraint Satisfaction Problems (AC-3, MRV, LCV).'
                     },
                     {
-                      part: 'Part III · Knowledge & Reasoning',
-                      chapters: 'Chapters 7 - 11',
-                      desc: 'Propositional logic, inference rules, DPLL SAT solvers, first-order logic forward & backward chaining, resolution proofs, classical PDDL planning.'
+                      part: 'Part III · Knowledge, Reasoning, and Planning',
+                      chapters: 'Chapters 7 - 12',
+                      desc: 'Propositional logic, Wumpus World, DPLL SAT solvers, first-order logic forward/backward chaining, resolution refutation proofs, classical PDDL planning, and knowledge representation.'
                     },
                     {
-                      part: 'Part IV · Uncertain Knowledge',
-                      chapters: 'Chapters 12 - 18',
-                      desc: 'Probability theory, Bayesian Networks, d-separation, exact & approximate inference (MCMC, Gibbs), Hidden Markov Models, Markov Decision Processes (MDPs), Bellman equations.'
+                      part: 'Part IV · Uncertain Knowledge and Reasoning',
+                      chapters: 'Chapters 13 - 17',
+                      desc: 'Probability theory, Bayesian Networks, d-separation, variable elimination, Hidden Markov Models, Markov Decision Processes (MDPs), and Bellman optimality equations.'
                     },
                     {
                       part: 'Part V · Machine Learning',
-                      chapters: 'Chapters 19 - 21',
-                      desc: 'Supervised learning (decision trees, linear models), deep neural network architectures & backpropagation, reinforcement learning (Q-learning, policy search).'
+                      chapters: 'Chapters 18 - 21',
+                      desc: 'Supervised learning (decision trees, linear models, neural nets, backpropagation), inductive logic programming, statistical learning (EM algorithm), and reinforcement learning (TD-learning, Q-learning, SARSA).'
                     },
                     {
-                      part: 'Part VI · Perceiving & Acting',
-                      chapters: 'Chapters 22 - 26',
-                      desc: 'Natural language processing, transformer architectures, computer vision convolutional pipelines, robotic kinematics & localization.'
+                      part: 'Part VI · Communicating, Perceiving, and Acting',
+                      chapters: 'Chapters 22 - 25',
+                      desc: 'Natural language processing (n-grams, TF-IDF), PCFG phrase structure parsing (CYK algorithm), computer vision (convolution, edge detection, 3D world), and robotics (configuration space, SLAM).'
                     },
                     {
-                      part: 'Part VII · Philosophy & Ethics',
-                      chapters: 'Chapters 27 - 28',
-                      desc: 'Philosophical limits of AI, Turing test, Chinese Room argument, AI alignment, safety bounds, and future societal impacts.'
+                      part: 'Part VII · Philosophy, Ethics, and Future',
+                      chapters: 'Chapters 26 - 27',
+                      desc: 'Philosophical limits of AI, Turing test, Searle’s Chinese Room argument, AI alignment, provably beneficial AI, and long-term societal impacts.'
                     }
                   ].map((p, idx) => (
                     <div
@@ -633,7 +823,7 @@ export const ScholarGuideModal: React.FC<ScholarGuideModalProps> = ({
               >
                 <HelpCircle size={16} color="var(--quest-text-primary)" style={{ flexShrink: 0 }} />
                 <span>
-                  <strong>Tip:</strong> In Lesson view, use the <em>Textbook Reference</em> toggle to view exact book page references and theorem notations while studying.
+                  <strong>Tip:</strong> In Lesson view, examine both the theoretical explanation and the <em>Worked Numerical Example</em> to develop the concrete arithmetic intuition tested on university exams.
                 </span>
               </div>
             </div>
@@ -675,14 +865,14 @@ export const ScholarGuideModal: React.FC<ScholarGuideModalProps> = ({
                     🕹️
                   </div>
                   <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--quest-text-primary)' }}>
-                    Algorithm Simulators
+                    State-Space & A* Search Simulator
                   </div>
                   <p style={{ fontSize: '11.5px', color: 'var(--quest-text-secondary)', margin: '6px 0 0', lineHeight: 1.45 }}>
-                    Every chapter includes an interactive canvas. Step through A* frontier expansions, play against Minimax game trees with &alpha;-&beta; cutoffs, or run MDP Bellman value iteration until convergence.
+                    Interactive 2D grid canvas. Place custom barriers, toggle between BFS, DFS, and A* with Manhattan or Euclidean heuristics, and watch the frontier and explored sets expand step-by-step.
                   </p>
                 </div>
 
-                {/* Mathematical Proofs & KaTeX */}
+                {/* Minimax & Alpha-Beta Game Trees */}
                 <div
                   style={{
                     padding: '16px',
@@ -705,13 +895,112 @@ export const ScholarGuideModal: React.FC<ScholarGuideModalProps> = ({
                       marginBottom: '10px'
                     }}
                   >
-                    📐
+                    ♟️
                   </div>
                   <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--quest-text-primary)' }}>
-                    Formal Mathematical Bounds
+                    Minimax & &alpha;-&beta; Pruning Lab
                   </div>
                   <p style={{ fontSize: '11.5px', color: 'var(--quest-text-secondary)', margin: '6px 0 0', lineHeight: 1.45 }}>
-                    Real academic formulations rendered with KaTeX: admissibility (h(n) &le; h*(n)), consistency (h(n) &le; c(n, a, n&apos;) + h(n&apos;)), time complexity O(b^d), and exact Bellman optimality U*(s).
+                    Interactive game tree visualizer. Step through node expansions and watch alpha cutoffs (&ge; &beta;) and beta cutoffs (&le; &alpha;) eliminate branches in real time.
+                  </p>
+                </div>
+
+                {/* Vacuum World & Agent Architectures */}
+                <div
+                  style={{
+                    padding: '16px',
+                    borderRadius: '16px',
+                    border: '1px solid var(--quest-border)',
+                    background: 'var(--quest-card-bg)'
+                  }}
+                >
+                  <div
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '8px',
+                      background: '#13211C',
+                      color: '#C9F26B',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '15px',
+                      marginBottom: '10px'
+                    }}
+                  >
+                    🧹
+                  </div>
+                  <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--quest-text-primary)' }}>
+                    Vacuum World Environment
+                  </div>
+                  <p style={{ fontSize: '11.5px', color: 'var(--quest-text-secondary)', margin: '6px 0 0', lineHeight: 1.45 }}>
+                    Simulate simple reflex vs model-based reflex agents in a 2-room or n-room environment. Observe why memoryless agents infinite-loop under partial observability.
+                  </p>
+                </div>
+
+                {/* Bayesian Network Visualizer */}
+                <div
+                  style={{
+                    padding: '16px',
+                    borderRadius: '16px',
+                    border: '1px solid var(--quest-border)',
+                    background: 'var(--quest-card-bg)'
+                  }}
+                >
+                  <div
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '8px',
+                      background: '#13211C',
+                      color: '#C9F26B',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '15px',
+                      marginBottom: '10px'
+                    }}
+                  >
+                    📊
+                  </div>
+                  <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--quest-text-primary)' }}>
+                    Bayesian Network Propagation
+                  </div>
+                  <p style={{ fontSize: '11.5px', color: 'var(--quest-text-secondary)', margin: '6px 0 0', lineHeight: 1.45 }}>
+                    Explore directed acyclic causal graphs, clamp evidence nodes, and watch posterior probabilities update across conditional probability tables.
+                  </p>
+                </div>
+
+                {/* Reinforcement Learning Lab */}
+                <div
+                  style={{
+                    padding: '16px',
+                    borderRadius: '16px',
+                    border: '1px solid var(--quest-border)',
+                    background: 'var(--quest-card-bg)'
+                  }}
+                >
+                  <div
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '8px',
+                      background: '#13211C',
+                      color: '#C9F26B',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '15px',
+                      marginBottom: '10px'
+                    }}
+                  >
+                    ⚡
+                  </div>
+                  <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--quest-text-primary)' }}>
+                    MDP & Q-Learning Gridworld
+                  </div>
+                  <p style={{ fontSize: '11.5px', color: 'var(--quest-text-secondary)', margin: '6px 0 0', lineHeight: 1.45 }}>
+                    Observe Bellman Value Iteration and Q-learning updates in real time as the agent balances exploration (&epsilon;) and exploitation to discover optimal policy &pi;*.
                   </p>
                 </div>
 
@@ -741,10 +1030,10 @@ export const ScholarGuideModal: React.FC<ScholarGuideModalProps> = ({
                     🧠
                   </div>
                   <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--quest-text-primary)' }}>
-                    Socratic Diagnostic Feedback
+                    Socratic Diagnostic Quizzes
                   </div>
                   <p style={{ fontSize: '11.5px', color: 'var(--quest-text-secondary)', margin: '6px 0 0', lineHeight: 1.45 }}>
-                    Assessments provide instant Socratic diagnostic feedback for both correct and incorrect choices, breaking down why distractors are invalid and proving the correct solution.
+                    Assessments provide instant diagnostic feedback for both correct and incorrect choices, explaining precisely why distractors fail and proving the correct mathematical formulation.
                   </p>
                 </div>
               </div>
@@ -771,7 +1060,7 @@ export const ScholarGuideModal: React.FC<ScholarGuideModalProps> = ({
                     </span>
                   </div>
                   <div style={{ fontSize: '12px', color: 'var(--quest-text-secondary)', marginTop: '4px' }}>
-                    Curated flashcard decks spanning all 27 chapters, featuring critical <em>Exam Traps</em> and common student pitfalls.
+                    Spaced-repetition revision deck spanning all 27 chapters, with dedicated <em>Exam Traps</em> highlighting the most common student errors.
                   </div>
                 </div>
 
@@ -794,8 +1083,7 @@ export const ScholarGuideModal: React.FC<ScholarGuideModalProps> = ({
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '6px',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                      gap: '6px'
                     }}
                   >
                     Open Flashcards <ArrowRight size={14} />
